@@ -1,0 +1,33 @@
+#!/bin/sh
+
+help()
+{
+    echo "Usage: $(basename $0) [-d LINUX_DISTRO]
+
+Available distributions:"
+
+    for d in archlinux debian ubuntu fedora
+    do
+        test -f $d/$d-config && echo "    - $d"
+    done
+
+    return 1
+}
+
+test -z $1 && help && return $?
+
+while getopts 'd:' arg
+do
+    case "$arg" in
+        d) LINUX_DISTRO="$OPTARG";;
+        *) help;;
+    esac
+done
+
+case $LINUX_DISTRO in
+    archlinux) cd "archlinux" && sh archlinux-config --setup-all; return $?;;
+    debian) cd "debian" && sh debian-config --setup-all; return $?;;
+    ubuntu) cd "ubuntu" && sh archlinux-config --setup-all; return $?;;
+    fedora) cd "fedora" && sh fedora-config --setup-all; return $?;;
+    *) exit 1;;
+esac
