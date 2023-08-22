@@ -9,7 +9,6 @@ dnsmasq
 fail2ban
 firewalld
 fwupd
-github-cli
 gstreamer-vaapi
 intel-ucode
 kitty
