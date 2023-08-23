@@ -34,8 +34,7 @@ papirus-icon-theme
 pipewire-alsa
 pipewire-pulse
 power-profiles-daemon
-qemu-audio-jack
-qemu-base
+qemu-desktop
 rtkit
 swtpm
 virt-manager
