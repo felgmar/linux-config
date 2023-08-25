@@ -24,10 +24,10 @@ do
     esac
 done
 
-case $LINUX_DISTRO in
+case "$LINUX_DISTRO" in
     archlinux) cd "archlinux" && sh archlinux-config --setup-all; return $?;;
     debian) cd "debian" && sh debian-config --setup-all; return $?;;
-    ubuntu) cd "ubuntu" && sh archlinux-config --setup-all; return $?;;
+    ubuntu) cd "ubuntu" && sh ubuntu-config --setup-all; return $?;;
     fedora) cd "fedora" && sh fedora-config --setup-all; return $?;;
     *) exit 1;;
 esac
