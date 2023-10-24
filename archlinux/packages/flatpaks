@@ -3,7 +3,6 @@ com.microsoft.Edge
 com.spotify.Client
 com.valvesoftware.Steam
 com.valvesoftware.Steam.CompatibilityTool.Proton
-com.valvesoftware.Steam.CompatibilityTool.Proton-GE
 com.visualstudio.code
 net.lutris.Lutris
 net.pcsx2.PCSX2
@@ -12,4 +11,3 @@ org.duckstation.DuckStation
 org.freedesktop.Platform.VulkanLayer.gamescope
 org.freedesktop.Platform.VulkanLayer.MangoHud/x86_64/22.08
 org.gimp.GIMP
-org.libreoffice.LibreOffice
