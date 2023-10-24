@@ -76,7 +76,7 @@ setup_services()
         if test "$(systemctl is-enabled $service)" != "enabled"
         then
             sudo systemctl enable --now $service
-            if "$service" = "gdm.service"
+            if test "$service" = "gdm.service"
             then
                 sudo systemctl enable $service
             else
