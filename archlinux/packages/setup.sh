@@ -5,14 +5,10 @@ test ! -x "$(command -v ccache)" && sudo pacman -Syu ccache --needed --noconfirm
 
 test ! -x "$(command -v git)" && sudo pacman -Syu git --needed --noconfirm
 
-if test ! -x "$(command -v yay)"
+if test ! -x "$(command -v yay)" && test ! -d "packages/yay"
 then
-    test ! -d "packages/yay" && git -C "packages" clone "https://aur.archlinux.org/yay.git"
-
-    if test ! -x "$(command -v yay)"
-    then
-        cd "packages/yay" && makepkg -cCisr && cd ../..
-    fi
+    git -C "packages" clone "https://aur.archlinux.org/yay.git"
+    cd "packages/yay" && makepkg -cCisr && cd "../.."
 fi
 
 read -p "Choose a desktop environment [gnome/kde/xfce]: " desktop_environment
@@ -33,7 +29,7 @@ fi
 test -f packages/aur && yay -S --needed $(cat packages/aur) || exit 1
 test -f packages/pkglist && yay -S --needed $(cat packages/pkglist) || exit 1
 
-if test "`plymouth-set-default-theme -l | grep archlinux`"
+if test "$(plymouth-set-default-theme -l | grep archlinux)"
 then
     sudo plymouth-set-default-theme -R archlinux
 else
