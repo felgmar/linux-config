@@ -2,12 +2,10 @@ com.github.eneshecan.WhatsAppForLinux
 com.microsoft.Edge
 com.spotify.Client
 com.valvesoftware.Steam
-com.valvesoftware.Steam.CompatibilityTool.Proton
 com.visualstudio.code
 net.lutris.Lutris
 net.pcsx2.PCSX2
 net.rpcs3.RPCS3
 org.duckstation.DuckStation
-org.freedesktop.Platform.VulkanLayer.gamescope
 org.freedesktop.Platform.VulkanLayer.MangoHud
 org.gimp.GIMP
