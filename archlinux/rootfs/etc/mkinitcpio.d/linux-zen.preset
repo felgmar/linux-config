@@ -1,10 +1,7 @@
 ALL_kver="/boot/vmlinuz-linux-zen"
 ALL_microcode=(/boot/*-ucode.img)
 
-PRESETS=('default' 'fallback')
+PRESETS=('default')
 
 default_uki="/boot/EFI/Linux/archlinux-linux-zen.efi"
 default_options="--splash /usr/share/systemd/bootctl/splash-arch.bmp"
-
-fallback_uki="/boot/EFI/Linux/archlinux-linux-lts-fallback.efi"
-fallback_options="--splash /usr/share/systemd/bootctl/splash-arch.bmp"
