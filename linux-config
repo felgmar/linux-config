@@ -8,7 +8,7 @@ Available distributions:"
 
     for d in archlinux debian ubuntu fedora
     do
-        test -f $d/$d-config && echo "    - $d"
+        test -f "$d/$d-config" && echo "    - $d"
     done
 
     return 1
@@ -25,9 +25,9 @@ do
 done
 
 case "$LINUX_DISTRO" in
-    archlinux) cd "archlinux" && sh archlinux-config --setup-all; return $?;;
-    debian) cd "debian" && sh debian-config --setup-all; return $?;;
-    ubuntu) cd "ubuntu" && sh ubuntu-config --setup-all; return $?;;
-    fedora) cd "fedora" && sh fedora-config --setup-all; return $?;;
+    archlinux) cd "archlinux" && sh archlinux-config --setup-all; exit $?;;
+    debian) cd "debian" && sh debian-config --setup-all; exit $?;;
+    ubuntu) cd "ubuntu" && sh ubuntu-config --setup-all; exit $?;;
+    fedora) cd "fedora" && sh fedora-config --setup-all; exit $?;;
     *) exit 1;;
 esac
