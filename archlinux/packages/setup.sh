@@ -28,6 +28,7 @@ fi
 
 test -f packages/aur && yay -S --needed $(cat packages/aur) || exit 1
 test -f packages/pkglist && yay -S --needed $(cat packages/pkglist) || exit 1
+test -f packages/flatpaks && flatpak install --user $(cat packages/flatpaks) || exit 1
 
 if test "$(plymouth-set-default-theme -l | grep archlinux)"
 then
