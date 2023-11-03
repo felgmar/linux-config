@@ -107,7 +107,7 @@ setup_rootfs()
     return $?
 }
 
-check
+check || exit 1
 
 if test -z "$1"
 then
@@ -115,28 +115,35 @@ then
     exit 1
 fi
 
-if test $# -gt 1
-then
-    echo "Too many arguments" && help && exit 1
-else
-    while test $# -eq 1
-    do
-        case "$1" in
-            --setup-secure-boot) setup_secure_boot; exit $?;;
-            --install-tkg-kernel) install_tkg_kernel; exit $?;;
-            --setup-rootfs) setup_rootfs; exit $?;;
-            --setup-services) setup_services; exit $?;;
-            --install-packages) install_packages; exit $?;;
-            --setup-all)
-                install_packages || exit $?
-                setup_rootfs || exit $?
-                setup_services || exit $?
-                install_tkg_kernel || exit $?
-                setup_secure_boot || exit $?
-            ;;
-            --help|-h) help; exit $?;;
-            *) printf ":: ERROR: unknown command: $1\n\n" && help && exit $?;;
-        esac
-        shift
-    done
-fi
+while true
+do
+    if test $# -gt 1
+    then
+        echo "error: too many arguments"
+        exit 1
+    fi
+
+    case "$1" in
+        --setup-secure-boot) setup_secure_boot; exit $?;;
+        --install-tkg-kernel) install_tkg_kernel; exit $?;;
+        --setup-rootfs) setup_rootfs; exit $?;;
+        --setup-services) setup_services; exit $?;;
+        --install-packages) install_packages; exit $?;;
+        --setup-all)
+            install_packages || exit $?
+            setup_rootfs || exit $?
+            setup_services || exit $?
+            install_tkg_kernel || exit $?
+            setup_secure_boot || exit $?
+        ;;
+        --help|-h)
+            help
+            exit $?
+        ;;
+        *)
+            echo "error: $1: unknown command"
+            help
+            exit $?
+        ;;
+    esac
+done
