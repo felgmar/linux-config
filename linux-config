@@ -14,7 +14,7 @@ Available distributions:"
     return 1
 }
 
-if test test -z $1
+if test -z $1
 then
     help
     exit 1
