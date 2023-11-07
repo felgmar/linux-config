@@ -59,9 +59,9 @@ else
     while test $# -eq 1
     do
         case "$1" in
-            --setup-rootfs) setup_rootfs; exit $?;;
-            --install-packages) install_packages; exit $?;;
-            --setup-all)
+            setup-rootfs) setup_rootfs; exit $?;;
+            install-packages) install_packages; exit $?;;
+            setup-all)
                 install_packages || exit $?
                 setup_rootfs || exit $?
             ;;

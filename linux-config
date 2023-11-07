@@ -20,18 +20,35 @@ then
     exit 1
 fi
 
-while getopts 'd:' arg
+while getopts 'a:d:' arg
 do
-    case "$arg" in
+    case "${arg}" in
+        a) SCRIPT_ACTION="$OPTARG";;
         d) LINUX_DISTRO="$OPTARG";;
         *) help;;
     esac
 done
 
 case "$LINUX_DISTRO" in
-    archlinux) cd "archlinux" && sh archlinux-config --setup-all; exit $?;;
-    debian) cd "debian" && sh debian-config --setup-all; exit $?;;
-    ubuntu) cd "ubuntu" && sh ubuntu-config --setup-all; exit $?;;
-    fedora) cd "fedora" && sh fedora-config --setup-all; exit $?;;
+    arch|archlinux)
+        cd "archlinux" && \
+            sh archlinux-config ${SCRIPT_ACTION} && \
+            exit $? || exit 1
+    ;;
+    debian)
+        cd "debian" && \
+            sh debian-config ${SCRIPT_ACTION} && \
+            exit $? || exit 1
+    ;;
+    ubuntu|ubuntu)
+        cd "ubuntu" && \
+            sh ubuntu-config ${SCRIPT_ACTION} && \
+            exit $? || exit 1
+    ;;
+    fedora)
+        cd "fedora" && \
+            sh fedora-config ${SCRIPT_ACTION} && \
+            exit $? || exit 1
+    ;;
     *) exit 1;;
 esac

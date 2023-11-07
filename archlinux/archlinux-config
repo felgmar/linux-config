@@ -124,12 +124,12 @@ do
     fi
 
     case "$1" in
-        --setup-secure-boot) setup_secure_boot; exit $?;;
-        --install-tkg-kernel) install_tkg_kernel; exit $?;;
-        --setup-rootfs) setup_rootfs; exit $?;;
-        --setup-services) setup_services; exit $?;;
-        --install-packages) install_packages; exit $?;;
-        --setup-all)
+        setup-secure-boot) setup_secure_boot; exit $?;;
+        install-tkg-kernel) install_tkg_kernel; exit $?;;
+        setup-rootfs) setup_rootfs; exit $?;;
+        setup-services) setup_services; exit $?;;
+        install-packages) install_packages; exit $?;;
+        setup-all)
             install_packages || exit $?
             setup_rootfs || exit $?
             setup_services || exit $?
