@@ -7,6 +7,5 @@ gnome-keyring
 gvfs
 gvfs-mtp
 gvfs-nfs
-libayatana-appindicator
-nautilus
 malcontent
+nautilus
