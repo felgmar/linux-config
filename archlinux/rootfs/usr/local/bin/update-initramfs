@@ -1,0 +1,40 @@
+#!/bin/sh
+
+getInstalledKernels()
+{
+    PS3="Select a kernel preset: "
+    select kernel_preset in $(find /etc/mkinitcpio.d/ -maxdepth 1 -type f -printf "%f\n" | cut -d "." -f 1)
+    do
+        export selectedKernel="${kernel_preset}"
+
+	if test "${selectedKernel}" != "${kernel_preset}" || test -z "${selectedKernel}"
+	then
+            echo "error: invalid kernel chosen, try again."
+	fi
+
+        echo "kernel chosen for rebuilding: ${selectedKernel}"
+
+	break
+    done
+
+    return $?
+}
+
+while getopts 'bh' arg
+do
+    case "${arg}" in
+	b) getInstalledKernels; mkinitcpio -p ${selectedKernel};;
+        h) echo "usage: $0 [-b KERNEL_PRESET]"; exit 0;;
+	?)
+            if test ! -z $1
+	    then
+                echo "error: $1: unknown command"
+		exit 1
+            else
+                echo "no action specified"
+		exit 1
+            fi
+        ;;
+    esac
+    break
+done

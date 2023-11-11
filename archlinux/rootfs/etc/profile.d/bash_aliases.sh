@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # detailed file and directory listing
-alias ll='ls -alih --color=auto'
+alias ll='ls -alBih --color=auto'
 alias ls='ls --color=auto'
 
 # apt-like pacman wrapper
@@ -26,7 +26,3 @@ pkg()
 
     return 1
 }
-
-# others
-alias update-initramfs='sudo mkinitcpio -P'
-alias yay='test $(whoami) = "root" && echo "Do not run yay as root" || sudo -u $(whoami) yay'
