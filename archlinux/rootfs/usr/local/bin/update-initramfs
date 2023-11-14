@@ -1,38 +1,41 @@
 #!/bin/sh
 
-getInstalledKernels()
+updateKernelImage()
 {
-    PS3="Select a kernel preset: "
-    select kernel_preset in $(find /etc/mkinitcpio.d/ -maxdepth 1 -type f -printf "%f\n" | cut -d "." -f 1)
-    do
-        export selectedKernel="${kernel_preset}"
+    if test -z $1
+    then
+        PS3="Select a kernel preset: "
+        select kernel_preset in $(find /etc/mkinitcpio.d/ -maxdepth 1 -type f -printf "%f\n" | cut -d "." -f 1)
+        do
+            selectedKernel="${kernel_preset}"
+            if test "${selectedKernel}" != "${kernel_preset}" || test -z "${selectedKernel}"
+            then
+                echo "error: invalid kernel chosen, try again."
+                exit 1
+            fi
 
-	if test "${selectedKernel}" != "${kernel_preset}" || test -z "${selectedKernel}"
-	then
-            echo "error: invalid kernel chosen, try again."
-	fi
+            mkinitcpio -p "${selectedKernel}"
 
-        echo "kernel chosen for rebuilding: ${selectedKernel}"
-
-	break
-    done
+            break
+        done
+    fi
 
     return $?
 }
 
-while getopts 'bh' arg
+while getopts 'kh' arg
 do
     case "${arg}" in
-	b) getInstalledKernels; mkinitcpio -p ${selectedKernel};;
-        h) echo "usage: $0 [-b KERNEL_PRESET]"; exit 0;;
-	?)
-            if test ! -z $1
-	    then
-                echo "error: $1: unknown command"
-		exit 1
+        k) updateKernelImage;;
+        h) echo "usage: $0 [-k]"; exit 0;;
+        ?)
+            if test -z $1
+            then
+                echo "usage: $0 [-k]"; exit 0
+                exit 1
             else
-                echo "no action specified"
-		exit 1
+                echo "error: $1: unknown command"
+                exit 1
             fi
         ;;
     esac
