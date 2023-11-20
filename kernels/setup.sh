@@ -19,6 +19,7 @@ case "$LINUX_DISTRO" in
             fi
             cd "kernels/linux-tkg" && git pull && ./install.sh && cd "../.."
         fi
+    ;;
     *)
         if test ! -d "kernels/linux-tkg"
         then
@@ -39,3 +40,4 @@ case "$LINUX_DISTRO" in
         fi
     ;;
 esac
+
