@@ -2,15 +2,7 @@
 
 help()
 {
-    echo "Usage: $(basename $0) [-d LINUX_DISTRO]
-
-Available distributions:"
-
-    for d in archlinux debian ubuntu fedora
-    do
-        test -f "$d/$d-config" && echo "    - $d"
-    done
-
+    echo "Usage: $0 [-a SCRIPT_ACTION] [-d LINUX_DISTRO]"
     return 1
 }
 
@@ -23,32 +15,39 @@ fi
 while getopts 'a:d:' arg
 do
     case "${arg}" in
-        a) SCRIPT_ACTION="$OPTARG";;
-        d) LINUX_DISTRO="$OPTARG";;
-        *) help;;
+        a) export SCRIPT_ACTION="$OPTARG";;
+        d) export LINUX_DISTRO="$OPTARG";;
+        *) exit 1;;
     esac
 done
 
 case "$LINUX_DISTRO" in
     arch|archlinux)
-        cd "archlinux" && \
-            sh archlinux-config ${SCRIPT_ACTION} && \
-            exit $? || exit 1
+        shift
+        case "${SCRIPT_ACTION}" in
+            setup-secure-boot)  LINUX_DISTRO=$LINUX_DISTRO sh tools/setup.sh;;
+            install-tkg-kernel) LINUX_DISTRO=$LINUX_DISTRO sh kernels/setup.sh;;
+            setup-rootfs)       LINUX_DISTRO=$LINUX_DISTRO sh rootfs/setup.sh;;
+            setup-services)     LINUX_DISTRO=$LINUX_DISTRO sh tools/setup-services.sh;;
+            install-packages)   LINUX_DISTRO=$LINUX_DISTRO sh packages/setup.sh;;
+            *)
+                if test ! -z "${SCRIPT_ACTION}"
+                then
+                    echo "error: $1: unknown action"
+                    exit 1
+                else
+                    echo "error: $1: invalid action"
+                    exit 1
+                fi
+        esac
     ;;
-    debian)
-        cd "debian" && \
-            sh debian-config ${SCRIPT_ACTION} && \
-            exit $? || exit 1
+    *)
+        if test ! -z $LINUX_DISTRO
+        then
+            echo "error: $LINUX_DISTRO: unknown distribution" && exit 1
+        else
+            echo "error: no distribution was specified" && exit 1
+        fi
     ;;
-    ubuntu|ubuntu)
-        cd "ubuntu" && \
-            sh ubuntu-config ${SCRIPT_ACTION} && \
-            exit $? || exit 1
-    ;;
-    fedora)
-        cd "fedora" && \
-            sh fedora-config ${SCRIPT_ACTION} && \
-            exit $? || exit 1
-    ;;
-    *) exit 1;;
 esac
+
