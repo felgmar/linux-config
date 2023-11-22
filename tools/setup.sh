@@ -2,7 +2,7 @@
 
 if test ! -d "tools/linux-utils"
 then
-    git -C "tools" clone https://gitlab.com/mrkenhoo/linux-utils.git
+    git -C "tools" clone https://gitlab.com/gfelipe099/linux-utils.git
     sudo sh "tools/linux-utils/archlinux-sbct"
 else
     git pull
