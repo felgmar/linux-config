@@ -17,7 +17,7 @@ case "$LINUX_DISTRO" in
             then
                 test $EDITOR && $EDITOR "kernels/linux-tkg/customization.cfg" || exit 1
             fi
-            cd "kernels/linux-tkg" && git pull && makepkg -si && cd "../.."
+            cd "kernels/linux-tkg" && git pull && makepkg -sif && cd "../.."
         fi
     ;;
     *)
