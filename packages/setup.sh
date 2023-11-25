@@ -39,6 +39,6 @@ case $LINUX_DISTRO in
         fi
     ;;
     *)
-        exit 1
+        test -f packages/flatpaks && flatpak install --user $(cat packages/flatpaks) || exit 1
     ;;
 esac
