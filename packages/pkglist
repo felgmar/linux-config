@@ -3,6 +3,7 @@ archlinux-wallpaper
 bridge-utils
 chezmoi
 clamtk
+code
 curl
 dnsmasq
 fail2ban
@@ -19,12 +20,14 @@ linux-lts
 linux-lts-headers
 linux-zen
 linux-zen-headers
+lutris
 pacman-contrib
 papirus-icon-theme
 pipewire-alsa
 pipewire-pulse
 power-profiles-daemon
 qemu-desktop
+steam
 swtpm
 virt-manager
 wget

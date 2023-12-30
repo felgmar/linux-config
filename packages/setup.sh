@@ -29,7 +29,6 @@ case $LINUX_DISTRO in
 
         test -f packages/aur && paru -S --needed $(cat packages/aur) || exit 1
         test -f packages/pkglist && paru -S --needed $(cat packages/pkglist) || exit 1
-        test -f packages/flatpaks && flatpak install --user $(cat packages/flatpaks) || exit 1
 
         if test "$(plymouth-set-default-theme -l | grep archlinux)"
         then
@@ -37,8 +36,5 @@ case $LINUX_DISTRO in
         else
             echo "ERROR: no archlinux plymouth theme was found"
         fi
-    ;;
-    *)
-        test -f packages/flatpaks && flatpak install --user $(cat packages/flatpaks) || exit 1
     ;;
 esac
