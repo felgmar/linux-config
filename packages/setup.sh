@@ -37,4 +37,52 @@ case $LINUX_DISTRO in
             echo "ERROR: no archlinux plymouth theme was found"
         fi
     ;;
+    debian)
+        main_packages=(
+            sddm
+            kde-gtk-config
+            plasma-desktop
+        )
+        extra_packages=(
+            firefox
+            papirus-icon-theme
+            systemd-timesyncd
+            git
+            zsh
+            curl
+            wget
+            zsh
+            zsh-autosuggestion
+            zsh-syntax-highlighting
+            spotify-client
+            code
+            steam
+            virt-manager
+            chezmoi
+            lutris
+            wine-staging
+            power-profiles-daemon
+            bluez-firmware
+            gdisk
+            gnome-disk-utility
+            zram-generator
+            kitty
+        )
+        packages_to_remove=(
+            partitionmanager
+            kup-backup
+            discover
+            konqueror
+            kate
+            kwrite
+            kfind
+            plasma-welcome
+            zutty
+            plasma-discover
+            konsole
+        )
+        echo sudo apt install ${main_packages[@]}
+        echo sudo apt install ${extra_packages[@]}
+        echo sudo apt purge --autoremove ${packages_to_remove[@]}
+    ;;
 esac

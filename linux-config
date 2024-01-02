@@ -41,6 +41,25 @@ case "$LINUX_DISTRO" in
                 fi
         esac
     ;;
+    debian)
+        shift
+        case "${SCRIPT_ACTION}" in
+            setup-secure-boot)  LINUX_DISTRO=$LINUX_DISTRO sh tools/setup.sh;;
+            install-tkg-kernel) echo LINUX_DISTRO=$LINUX_DISTRO sh kernels/setup.sh;;
+            setup-rootfs)       LINUX_DISTRO=$LINUX_DISTRO sh rootfs/setup.sh;;
+            setup-services)     LINUX_DISTRO=$LINUX_DISTRO sh tools/setup-services.sh;;
+            install-packages)   LINUX_DISTRO=$LINUX_DISTRO sh packages/setup.sh;;
+            *)
+                if test ! -z "${SCRIPT_ACTION}"
+                then
+                    echo "error: $1: unknown action"
+                    exit 1
+                else
+                    echo "error: $1: invalid action"
+                    exit 1
+                fi
+        esac
+    ;;
     *)
         if test ! -z $LINUX_DISTRO
         then
