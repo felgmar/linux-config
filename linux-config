@@ -39,13 +39,14 @@ case "$LINUX_DISTRO" in
                     echo "error: $1: invalid action"
                     exit 1
                 fi
+            ;;
         esac
     ;;
     debian)
         shift
         case "${SCRIPT_ACTION}" in
             setup-secure-boot)  LINUX_DISTRO=$LINUX_DISTRO sh tools/setup.sh;;
-            install-tkg-kernel) echo LINUX_DISTRO=$LINUX_DISTRO sh kernels/setup.sh;;
+            install-tkg-kernel) LINUX_DISTRO=$LINUX_DISTRO sh kernels/setup.sh;;
             setup-rootfs)       LINUX_DISTRO=$LINUX_DISTRO sh rootfs/setup.sh;;
             setup-services)     LINUX_DISTRO=$LINUX_DISTRO sh tools/setup-services.sh;;
             install-packages)   LINUX_DISTRO=$LINUX_DISTRO sh packages/setup.sh;;
