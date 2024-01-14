@@ -44,7 +44,7 @@ case $LINUX_DISTRO in
         fi
     ;;
     kubuntu)
-        sudo apt purge --autoremove partitionmanager kup-backup plasma-discover konqueror kate kwrite kfind plasma-welcome zutty konsole plasma-widgets-addonsk mahjongg kmines kpat ksudoku gwenview okular skanlite konversation krdc ktorrent thunderbird elisa haruna pavucontrol-qt ksystemlog ksystemstats xterm kcalc usb-creator-kde kde-spectacle info plasma-vault qsynth
+        sudo apt purge --autoremove partitionmanager kup-backup plasma-discover konqueror kate kwrite kfind plasma-welcome zutty konsole plasma-widgets-addons mahjongg kmines kpat ksudoku gwenview okular skanlite konversation krdc ktorrent thunderbird elisa haruna pavucontrol-qt ksystemlog ksystemstats xterm kcalc usb-creator-kde kde-spectacle info plasma-vault qsynth
     ;;
     *) echo "error: $LINUX_DISTRO: unknown error" && exit 1;;
 esac
