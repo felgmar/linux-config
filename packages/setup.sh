@@ -1,6 +1,12 @@
 #!/bin/sh
 set -e
 
+if test -z "${LINUX_DISTRO}"
+then
+    echo "error: no distribution was specified"
+    exit 1
+fi
+
 case $LINUX_DISTRO in
     archlinux)
         test ! -x "$(command -v ccache)" && sudo pacman -Syu ccache --needed --noconfirm
@@ -37,52 +43,8 @@ case $LINUX_DISTRO in
             echo "ERROR: no archlinux plymouth theme was found"
         fi
     ;;
-    debian)
-        main_packages=(
-            sddm
-            kde-gtk-config
-            plasma-desktop
-        )
-        extra_packages=(
-            firefox
-            papirus-icon-theme
-            systemd-timesyncd
-            git
-            zsh
-            curl
-            wget
-            zsh
-            zsh-autosuggestion
-            zsh-syntax-highlighting
-            spotify-client
-            code
-            steam
-            virt-manager
-            chezmoi
-            lutris
-            wine-staging
-            power-profiles-daemon
-            bluez-firmware
-            gdisk
-            gnome-disk-utility
-            zram-generator
-            kitty
-        )
-        packages_to_remove=(
-            partitionmanager
-            kup-backup
-            discover
-            konqueror
-            kate
-            kwrite
-            kfind
-            plasma-welcome
-            zutty
-            plasma-discover
-            konsole
-        )
-        echo sudo apt install ${main_packages[@]}
-        echo sudo apt install ${extra_packages[@]}
-        echo sudo apt purge --autoremove ${packages_to_remove[@]}
+    kubuntu)
+        sudo apt purge --autoremove partitionmanager kup-backup plasma-discover konqueror kate kwrite kfind plasma-welcome zutty konsole plasma-widgets-addonsk mahjongg kmines kpat ksudoku gwenview okular skanlite konversation krdc ktorrent thunderbird elisa haruna pavucontrol-qt ksystemlog ksystemstats xterm kcalc usb-creator-kde kde-spectacle info plasma-vault qsynth
     ;;
+    *) echo "error: $LINUX_DISTRO: unknown error" && exit 1;;
 esac
