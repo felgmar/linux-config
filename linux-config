@@ -46,7 +46,6 @@ case "$LINUX_DISTRO" in
         shift
         case "${SCRIPT_ACTION}" in
             setup-secure-boot)  LINUX_DISTRO=$LINUX_DISTRO sh tools/setup.sh;;
-            install-tkg-kernel) LINUX_DISTRO=$LINUX_DISTRO sh kernels/setup.sh;;
             setup-rootfs)       LINUX_DISTRO=$LINUX_DISTRO sh rootfs/setup.sh;;
             setup-services)     LINUX_DISTRO=$LINUX_DISTRO sh tools/setup-services.sh;;
             install-packages)   LINUX_DISTRO=$LINUX_DISTRO sh packages/setup.sh;;
