@@ -1,6 +1,7 @@
 ananicy-git
 archlinux-artwork
 duckstation-git
+mangohud-git
 pcsx2-git
 plymouth-theme-archlinux
 ppsspp-git
@@ -10,3 +11,4 @@ rpcs3-git
 spotify
 steam-devices-git
 ventoy-bin
+zsh-theme-powerlevel10k-git
