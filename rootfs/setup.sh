@@ -7,10 +7,10 @@ case "${LINUX_DISTRO}" in
         then
             sudo mkdir -pv "/boot/loader/entries-backup"
         fi
-        sudo mv -v --target-directory=/boot/loader/entries-backup /boot/loader/entries/*.conf \;
+        sudo mv -v --target-directory=/boot/loader/entries-backup /boot/loader/entries/*.conf
 
         echo ":: Backing up pacman mirror list..."
-        sudo cp -v /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup.$(date +%m-%d-%y) \;
+        sudo cp -v /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup.$(date +%m-%d-%y)
 
         if test -f "/boot/loader/loader.conf"
         then
@@ -23,12 +23,12 @@ case "${LINUX_DISTRO}" in
         then
             sudo mkdir -v /etc/mkinitcpio.d.backup
         fi
-	for f in /etc/mkinitcpio.d/*.preset
+        for f in /etc/mkinitcpio.d/*.preset
         do
             sudo mv -v $f /etc/mkinitcpio.d.backup/${f}.$(date +%m-%d-%y_%T)
         done
 
-	if test -f /etc/kernel/cmdline
+        if test -f /etc/kernel/cmdline
         then
             echo ":: Backing up /etc/kernel/cmdline file..."
             sudo cp -v /etc/kernel/cmdline /etc/kernel/cmdline.backup
@@ -52,8 +52,8 @@ case "${LINUX_DISTRO}" in
         sudo cp -v --target-directory=/etc/systemd rootfs/etc/systemd/zram-generator.conf
         sudo cp -v --target-directory=/etc/ rootfs/etc/environment
         sudo cp -v --target-directory=/etc/ rootfs/etc/locale.conf
-        sudo cp -v --target-directory=${HOME} rootfs/home/.config/modprobed.db
-        sudo cp -v --target-directory=${HOME} rootfs/home/.ssh/config
+        sudo cp -v --target-directory=${HOME}.config rootfs/home/.config/modprobed.db
+        sudo cp -v --target-directory=${HOME}.ssh rootfs/home/.ssh/config
         sudo cp -v --target-directory=${HOME} rootfs/home/.makepkg.conf
     ;;
 esac
