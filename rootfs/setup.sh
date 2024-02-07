@@ -85,7 +85,7 @@ if test -x "$(command -v zsh)"
 then
     if test ! -d "${HOME}/pretty-terminals"
     then
-        git -C "${HOME}" clone https://gitlab.com/gfelipe099/pretty-terminals.git "${HOME}/.cache"
+        git -C "${HOME}" clone https://github.com/mrkenhoo/pretty-terminals.git "${HOME}/.cache"
         cd "${HOME}/pretty-terminals"
         sh pretty-terminals -t kitty
         cd "${HOME}"
@@ -104,7 +104,7 @@ else
 
     if test ! -d "${HOME}/.cache/pretty-terminals"
     then
-        git clone https://gitlab.com/gfelipe099/pretty-terminals.git "${HOME}/.cache/pretty-terminals"
+        git clone https://github.com/mrkenhoo/pretty-terminals.git "${HOME}/.cache/pretty-terminals"
         cd "${HOME}/.cache/pretty-terminals"
         sh pretty-terminals -t kitty
         cd "${HOME}"
