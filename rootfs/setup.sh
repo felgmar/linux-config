@@ -80,38 +80,3 @@ case "${root_device}" in
         exit 1
     ;;
 esac
-
-if test -x "$(command -v zsh)"
-then
-    if test ! -d "${HOME}/pretty-terminals"
-    then
-        git -C "${HOME}" clone https://github.com/mrkenhoo/pretty-terminals.git "${HOME}/.cache"
-        cd "${HOME}/pretty-terminals"
-        sh pretty-terminals -t kitty
-        cd "${HOME}"
-    else
-        cd "${HOME}/pretty-terminals"
-        git pull --rebase
-        sh pretty-terminals -t kitty
-        cd "${HOME}"
-    fi
-else
-    case $LINUX_DISTRO in
-        archlinux|arch) sudo pacman -S zsh --needed --noconfirm;;
-        debian|ubuntu)  sudo apt install -y zsh;;
-        *)              echo "error: $LINUX_DISTRO: unknown distribution"; exit 1;;
-    esac
-
-    if test ! -d "${HOME}/.cache/pretty-terminals"
-    then
-        git clone https://github.com/mrkenhoo/pretty-terminals.git "${HOME}/.cache/pretty-terminals"
-        cd "${HOME}/.cache/pretty-terminals"
-        sh pretty-terminals -t kitty
-        cd "${HOME}"
-    else
-        cd "${HOME}/.cache/pretty-terminals"
-        git pull --rebase
-        sh pretty-terminals -t kitty
-        cd "${HOME}"
-    fi
-fi
