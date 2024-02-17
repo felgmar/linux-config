@@ -25,7 +25,7 @@ case $LINUX_DISTRO in
             desktop_environment="gnome"
             paru -S --needed $(cat packages/gnome_pkglist)
         else
-            case $desktop_environment in
+            case "$desktop_environment" in
                 gnome)      paru -S --needed $(cat packages/gnome_pkglist) && break;;
                 kde|plasma) paru -S --needed $(cat packages/kde_pkglist) && break;;
                 xfce)       paru -S --needed $(cat packages/xfce_pkglist) && break;;
@@ -48,3 +48,4 @@ case $LINUX_DISTRO in
     ;;
     *) echo "error: $LINUX_DISTRO: unknown error" && exit 1;;
 esac
+
