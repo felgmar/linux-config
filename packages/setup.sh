@@ -36,6 +36,8 @@ case $LINUX_DISTRO in
         test -f packages/aur && paru -S --needed $(cat packages/aur) || exit 1
         test -f packages/pkglist && paru -S --needed $(cat packages/pkglist) || exit 1
 
+	desktop_environment="$desktop_environment" ./tools/setup-services.sh || exit 1
+
         if test "$(plymouth-set-default-theme -l | grep archlinux)"
         then
             sudo plymouth-set-default-theme -R archlinux
