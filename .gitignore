@@ -1,4 +1,4 @@
-kernels/linux-tkg
-packages/paru
-tools/linux-utils
-packages/paru
+__pycache__
+modules/kernels/linux-tkg
+modules/packages/paru
+modules/tools/linux-utils
