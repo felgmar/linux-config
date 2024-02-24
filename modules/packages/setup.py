@@ -177,7 +177,7 @@ class PackageManager():
 
             packages = main_packages + " " + user_packages
         else:
-            packages = self.convert_list_to_str(pkglist).replace(" ", "")
+            packages = self.convert_list_to_str(pkglist)
 
         if self.readable_running_distro != "Arch Linux":
             raise NotImplementedError(f"{self.readable_running_distro}: this distro is not implemented yet")
