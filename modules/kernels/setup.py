@@ -43,7 +43,7 @@ class KernelInstaller():
         previous_dir = curdir
 
         match distro:
-            case "arch" | '"Arch Linux"':
+            case "Arch Linux":
                 try:
                     self.clone_repo(self.repo_url, repo_directory)
                 except Exception:
