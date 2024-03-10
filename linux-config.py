@@ -67,6 +67,14 @@ else:
 
                 case "install-packages":
                     pm = PackageManager()
+                    lsb_release_path = pm.readable_lsb_release_path
+
+                    if not lsb_release_path:
+                        raise ValueError("Could not find the file lsb_release.")
+                    else:
+                        if args.verbose:
+                            print(f"lsb_release was found at: {lsb_release_path}")
+
                     pkglist = pm.get_package_list(pm.readable_running_distro)
                     main_pkglist = pm.get_main_packages_list(pm.readable_running_distro)
                     aur_pkglist = pm.get_main_packages_list(pm.readable_running_distro, only_get_aur=True)

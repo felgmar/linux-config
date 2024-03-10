@@ -6,9 +6,12 @@ from xmlrpc.client import Boolean
 
 class PackageManager():
     def __init__(self):
+        self.lsb_release_path = run("which lsb_release", shell=True,
+                                   universal_newlines=True, capture_output=True, text=True)
         self.running_distro = run("lsb_release -ds", shell=True,
                                   universal_newlines=True, capture_output=True, text=True)
         self.readable_running_distro = self.running_distro.stdout.replace("\"", "").removesuffix("\n")
+        self.readable_lsb_release_path = self.lsb_release_path.stdout
 
     def get_package_manager(self, distro: str, overridePackageManager: Boolean = False) -> str:
         package_managers = [
