@@ -176,13 +176,14 @@ class PackageManager():
         return selected_pkglist
 
     def install_packages(self, pkglist: list[str], package_manager: str, current_user: str) -> None:
-        if pkglist == "":
+        if not pkglist:
             user_packages = self.convert_list_to_str(pkglist)
             main_packages = self.convert_list_to_str(self.get_main_packages_list(self.readable_running_distro))
 
             packages = main_packages + " " + user_packages
         else:
-            packages = self.convert_list_to_str(pkglist)
+            main_packages = self.convert_list_to_str(self.get_main_packages_list(self.readable_running_distro))
+            packages = main_packages + " " + self.convert_list_to_str(pkglist)
 
         if self.readable_running_distro != "Arch Linux":
             raise NotImplementedError(f"{self.readable_running_distro}: this distro is not implemented yet")
