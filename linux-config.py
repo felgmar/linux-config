@@ -77,10 +77,9 @@ else:
 
                     pkglist = pm.get_package_list(pm.readable_running_distro)
                     main_pkglist = pm.get_main_packages_list(pm.readable_running_distro)
-                    aur_pkglist = pm.get_main_packages_list(pm.readable_running_distro, only_get_aur=True)
+                    aur_pkglist = pm.get_package_list(pm.readable_running_distro, only_get_aur=True)
 
                     package_manager = pm.get_package_manager(pm.readable_running_distro, overridePackageManager=True)
-
                     if args.verbose:
                         print(f"[*] Package manager to be used: {pm.get_package_manager(pm.readable_running_distro)}")
 
