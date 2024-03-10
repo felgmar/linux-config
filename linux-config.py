@@ -11,8 +11,8 @@ running_os = platform.lower()
 
 actions = [
     "setup-secure-boot", "install-tkg-kernel",
-    "setup-rootfs", "setup-packages",
-    "setup-services", "install-packages"
+    "install-packages", "install-packages",
+    "setup-rootfs", "setup-services"
 ]
 
 parser = ArgumentParser(prog="linux-config")
