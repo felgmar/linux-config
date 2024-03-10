@@ -66,11 +66,20 @@ class KernelInstaller():
                     if environ.get("EDITOR"):
                         run("$EDITOR customization.cfg", shell=True)
                     else:
-                        raise FileNotFoundError("Could not find a valid text editor")
+                        print("Could not find a valid text editor.")
+                        user_text_editor: str = str(input("Specify an alternate text editor:"))
+
+                        if use_text_editor:
+                            if args.verbose:
+                                print(f"The text editor has been set manually to: {user_text_editor}")
+                            run(f"{user_text_editor} customization.cfg", shell=True)
 
                     if path.isfile("PKGBUILD"):
                         run("makepkg -sif", shell=True)
 
                     chdir(previous_dir)
             case _:
-                raise NotImplementedError(f"{distro} is not implemented yet")
+                if distro:
+                    raise NotImplementedError(f"{distro} is not implemented yet")
+                else:
+                    raise ValueError("No distribution was specified.")
