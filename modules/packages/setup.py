@@ -87,7 +87,7 @@ class PackageManager():
         else:
             raise ValueError(f"[!] {distro} is not supported.")
 
-    def get_package_list(self, distro: str, only_get_aur: bool) -> list[str]:
+    def get_package_list(self, distro: str, only_get_aur: bool=False) -> list[str]:
         if distro == "Arch Linux":
             aur = [
                 "ananicy-git",
