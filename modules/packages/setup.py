@@ -76,7 +76,7 @@ class PackageManager():
                 "qemu-desktop",
                 "steam",
                 "swtpm",
-                "ttf-meslo-nerd-font-powerlevel10k"
+                "ttf-meslo-nerd-font-powerlevel10k",
                 "virt-manager",
                 "wget",
                 "xdg-user-dirs",
