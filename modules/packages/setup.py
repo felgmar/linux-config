@@ -105,7 +105,6 @@ class PackageManager():
                 "rate-mirrors",
                 "rpcs3-git",
                 "spotify",
-                "steam-devices-git",
                 "ventoy-bin",
                 "visual-studio-code-bin",
                 "zsh-theme-powerlevel10k-git"
@@ -138,7 +137,6 @@ class PackageManager():
                 "plasma-desktop",
                 "plasma-nm",
                 "plasma-pa",
-                "plasma-wayland-session",
                 "powerdevil"
             ]
 
