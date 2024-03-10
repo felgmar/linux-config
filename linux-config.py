@@ -78,6 +78,7 @@ else:
                     pkglist = pm.get_package_list(pm.readable_running_distro)
                     main_pkglist = pm.get_main_packages_list(pm.readable_running_distro)
                     aur_pkglist = pm.get_main_packages_list(pm.readable_running_distro, only_get_aur=True)
+
                     package_manager = pm.get_package_manager(pm.readable_running_distro, overridePackageManager=True)
 
                     if args.verbose:
@@ -92,7 +93,10 @@ else:
                     raise NotImplementedError("This function is not implemented yet.")
 
                 case _:
-                    raise ValueError("[!] unknown action")
+                    if args.action:
+                        raise ValueError(f"{args.action}: invalid action")
+                    else:
+                        raise ValueError("No action was specified.")
 
         except Exception:
             raise
