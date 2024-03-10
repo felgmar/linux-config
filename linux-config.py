@@ -84,6 +84,8 @@ else:
                         print(f"[*] Package manager to be used: {pm.get_package_manager(pm.readable_running_distro)}")
 
                     pm.install_packages(pkglist, package_manager, getuser())
+                    pm.install_packages(main_pkglist, package_manager, getuser())
+                    pm.install_packages(aur_pkglist, package_manager, getuser())
 
                 case "setup-roofs":
                     raise NotImplementedError("This function is not implemented yet.")
