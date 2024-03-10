@@ -137,7 +137,8 @@ class PackageManager():
                 "plasma-desktop",
                 "plasma-nm",
                 "plasma-pa",
-                "powerdevil"
+                "powerdevil",
+                "sddm"
             ]
 
             arch_xfce = [
