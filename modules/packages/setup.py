@@ -87,7 +87,7 @@ class PackageManager():
         else:
             raise ValueError(f"[!] {distro} is not supported.")
 
-    def get_package_list(self, distro: str) -> list[str]:
+    def get_package_list(self, distro: str, only_get_aur: bool) -> list[str]:
         if distro == "Arch Linux":
             aur = [
                 "ananicy-git",
@@ -142,7 +142,11 @@ class PackageManager():
                 "xfce4"
             ]
 
-            print("Desktop managers available: arch_gnome, arch_kde, arch_xfce")
+            if only_get_aur:
+                selected_pkglist = aur
+                return selected_pkglist
+            else:
+                print("Desktop managers available: arch_gnome, arch_kde, arch_xfce")
         else:
             raise ValueError(f"[!] {distro} is not supported.")
 
@@ -151,8 +155,7 @@ class PackageManager():
         while True:
             match selected_pkglist:
                 case "aur":
-                    selected_pkglist = aur
-                    break
+                    raise ValueError("For selected the AUR package list, use only_get_aur=True instead in linux-config.py.")
                 case "arch_gnome":
                     selected_pkglist = arch_gnome
                     break
