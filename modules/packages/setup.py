@@ -78,6 +78,7 @@ class PackageManager():
                 "swtpm",
                 "ttf-meslo-nerd-font-powerlevel10k",
                 "virt-manager",
+                "wine-staging",
                 "wget",
                 "xdg-user-dirs",
                 "zram-generator",
