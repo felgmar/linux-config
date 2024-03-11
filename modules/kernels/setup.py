@@ -53,6 +53,14 @@ class KernelInstaller():
                     try:
                         if environ.get("EDITOR"):
                             run("$EDITOR customization.cfg", shell=True)
+                        else:
+                            print("Could not find a valid text editor.")
+                            user_text_editor: str = str(input("Specify an alternate text editor: "))
+
+                        if user_text_editor:
+                            print(f"The text editor has been set manually to: {user_text_editor}")
+                            
+                            run(f"{user_text_editor} customization.cfg", shell=True)
                     except Exception:
                         raise
 
@@ -63,16 +71,20 @@ class KernelInstaller():
                 else:
                     self.update_repo(repo_directory)
 
-                    if environ.get("EDITOR"):
-                        run("$EDITOR customization.cfg", shell=True)
-                    else:
-                        print("Could not find a valid text editor.")
-                        user_text_editor: str = str(input("Specify an alternate text editor:"))
+                    if path.isfile("customization.cfg"):
+                        try:
+                            if environ.get("EDITOR"):
+                                run("$EDITOR customization.cfg", shell=True)
+                            else:
+                                print("Could not find a valid text editor.")
+                                user_text_editor: str = str(input("Specify an alternate text editor: "))
 
-                        if use_text_editor:
-                            if args.verbose:
+                            if user_text_editor:
                                 print(f"The text editor has been set manually to: {user_text_editor}")
-                            run(f"{user_text_editor} customization.cfg", shell=True)
+                                
+                                run(f"{user_text_editor} customization.cfg", shell=True)
+                        except Exception:
+                            raise
 
                     if path.isfile("PKGBUILD"):
                         run("makepkg -sif", shell=True)
