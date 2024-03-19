@@ -6,6 +6,7 @@ from sys import platform
 from modules.kernels.setup import KernelInstaller
 from modules.packages.setup import PackageManager
 from modules.tools.secure_boot.setup import SecureBootManager
+from modules.tools.services_manager.setup import ServicesManager
 
 running_os = platform.lower()
 
@@ -67,6 +68,7 @@ else:
 
                 case "install-packages":
                     pm = PackageManager()
+                    distro = pm.readable_running_distro
                     lsb_release_path = pm.readable_lsb_release_path
 
                     if not lsb_release_path:
@@ -75,13 +77,14 @@ else:
                         if args.verbose:
                             print(f"lsb_release was found at: {lsb_release_path}")
 
-                    pkglist = pm.get_package_list(pm.readable_running_distro)
-                    main_pkglist = pm.get_main_packages_list(pm.readable_running_distro)
-                    aur_pkglist = pm.get_package_list(pm.readable_running_distro, only_get_aur=True)
+                    pkglist = pm.get_package_list(distro)
+                    main_pkglist = pm.get_main_packages_list(distro)
+                    aur_pkglist = pm.get_package_list(distro, only_get_aur=True)
 
-                    package_manager = pm.get_package_manager(pm.readable_running_distro, overridePackageManager=True)
+                    package_manager = pm.get_package_manager(distro, overridePackageManager=True)
+
                     if args.verbose:
-                        print(f"[*] Package manager to be used: {pm.get_package_manager(pm.readable_running_distro)}")
+                        print(f"[*] Package manager to be used: {package_manager}")
 
                     pm.install_packages(pkglist, package_manager, getuser())
                     pm.install_packages(main_pkglist, package_manager, getuser())
@@ -91,7 +94,13 @@ else:
                     raise NotImplementedError("This function is not implemented yet.")
 
                 case "setup-services":
-                    raise NotImplementedError("This function is not implemented yet.")
+                    pm = PackageManager()
+                    sm = ServicesManager()
+
+                    pkglist = pm.get_package_list(pm.readable_running_distro)
+                    services = sm.get_services_list(pkglist)
+
+                    sm.enable_services(services, getuser())
 
                 case _:
                     if args.action:
