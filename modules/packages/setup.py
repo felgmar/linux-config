@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import shutil
-from struct import pack
 from subprocess import run
-from xmlrpc.client import Boolean
 
 class PackageManager():
     def __init__(self):
@@ -13,7 +11,7 @@ class PackageManager():
         self.readable_running_distro = self.running_distro.stdout.replace("\"", "").removesuffix("\n")
         self.readable_lsb_release_path = self.lsb_release_path.stdout
 
-    def get_package_manager(self, distro: str, overridePackageManager: Boolean = False) -> str:
+    def get_package_manager(self, distro: str, overridePackageManager: bool = False) -> str:
         package_managers = [
             "apt",
             "dnf",
