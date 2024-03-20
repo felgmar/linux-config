@@ -90,7 +90,7 @@ else:
                     pm.install_packages(main_pkglist, package_manager, getuser())
                     pm.install_packages(aur_pkglist, package_manager, getuser())
 
-                case "setup-roofs":
+                case "setup-rootfs":
                     raise NotImplementedError("This function is not implemented yet.")
 
                 case "setup-services":
