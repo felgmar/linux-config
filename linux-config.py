@@ -23,7 +23,8 @@ parser.add_argument("-a", "--action", choices=actions, type=str,
                     help=f"Runs the specified script. Available options are " + ", ".join(actions),
                     metavar="")
 
-group.add_argument("-d", "--distro", type=str, help="Specifies which distro is going to be modified." +
+group.add_argument("-d", "--distro", type=str,
+                   help="Specifies which distro is going to be modified." +
                    " (e.g. arch, fedora, debian)", metavar="")
 
 group.add_argument("-v", "--verbose", action="store_true", help="Print more messages")
@@ -33,7 +34,7 @@ group.add_argument("--version", action="version", version="%(prog)s 1.0")
 args = parser.parse_args()
 
 if running_os != "linux":
-    raise RuntimeError(f"{platform.lower()}: OS not supported")
+    raise RuntimeError(f"{platform.lower()}: platform not supported")
 else:
     if __name__ == "__main__":
         if args.verbose:
