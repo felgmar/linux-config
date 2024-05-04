@@ -48,7 +48,6 @@ class PackageManager():
                 "apparmor",
                 "archlinux-wallpaper",
                 "bridge-utils",
-                "bitwarden",
                 "chezmoi",
                 "clamtk",
                 "curl",
@@ -61,6 +60,7 @@ class PackageManager():
                 "github-cli",
                 "git-lfs",
                 "intel-ucode",
+                "keepassxc",
                 "kitty",
                 "lib32-vulkan-mesa-layers",
                 "linux",
@@ -103,6 +103,7 @@ class PackageManager():
                 "ananicy-git",
                 "archlinux-artwork",
                 "duckstation-git",
+                "github-desktop",
                 "google-chrome",
                 "mangohud-git",
                 "pcsx2-git",
@@ -112,7 +113,7 @@ class PackageManager():
                 "rate-mirrors",
                 "rpcs3-git",
                 "spotify",
-                "ventoy-bin",
+                "ventoy",
                 "visual-studio-code-bin",
                 "zsh-theme-powerlevel10k-git"
             ]
