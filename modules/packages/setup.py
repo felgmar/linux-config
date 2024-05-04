@@ -4,12 +4,14 @@ from subprocess import run
 
 class PackageManager():
     def __init__(self):
-        self.lsb_release_path = run("which lsb_release", shell=True,
-                                   universal_newlines=True, capture_output=True, text=True)
+        self.lsb_release_path = shutil.which("lsb_release")
+
+        if not self.lsb_release_path:
+            raise ValueError("could not find the file lsb_release.")
+
         self.running_distro = run("lsb_release -ds", shell=True,
                                   universal_newlines=True, capture_output=True, text=True)
         self.readable_running_distro = self.running_distro.stdout.replace("\"", "").removesuffix("\n")
-        self.readable_lsb_release_path = self.lsb_release_path.stdout
 
     def get_package_manager(self, distro: str, overridePackageManager: bool = False) -> str:
         package_managers = [
@@ -19,14 +21,21 @@ class PackageManager():
             "zypper"
         ]
 
-        for f in package_managers:
-            if shutil.which(f):
-                pm_bin = f
-                break
+        aur_helpers = [
+            "paru",
+            "yay"
+        ]
 
         if overridePackageManager:
-            if distro == "Arch Linux" or pm_bin == "pacman":
-                pm_bin = "paru"
+            for pm in aur_helpers:
+                if shutil.which(pm):
+                    pm_bin = pm
+                    break
+        else:
+            for pm in package_managers:
+                if shutil.which(pm):
+                    pm_bin = pm
+                    break
 
         return pm_bin
 
@@ -63,6 +72,7 @@ class PackageManager():
                 "keepassxc",
                 "kitty",
                 "lib32-vulkan-mesa-layers",
+                "less",
                 "linux",
                 "linux-hardened",
                 "linux-hardened-headers",
@@ -78,6 +88,8 @@ class PackageManager():
                 "pipewire-pulse",
                 "power-profiles-daemon",
                 "qemu-desktop",
+                "qt5-wayland",
+                "qt6-wayland",
                 "steam",
                 "swtpm",
                 "ttf-meslo-nerd-font-powerlevel10k",
@@ -92,12 +104,11 @@ class PackageManager():
                 "zsh-completions",
                 "zsh-syntax-highlighting"
             ]
-
             return arch_main
         else:
             raise ValueError(f"[!] {distro} is not supported.")
 
-    def get_package_list(self, distro: str, only_get_aur: bool=False) -> list[str]:
+    def get_package_list(self, distro: str, only_get_aur: bool = False) -> list[str]:
         if distro == "Arch Linux":
             aur = [
                 "ananicy-git",
@@ -159,23 +170,19 @@ class PackageManager():
                 selected_pkglist = aur
                 return selected_pkglist
             else:
-                print("Desktop managers available: arch_gnome, arch_kde, arch_xfce")
+                selected_pkglist = input("Choose a desktop environment [gnome/kde/xfce]: ")
         else:
             raise ValueError(f"[!] {distro} is not supported.")
 
-        selected_pkglist = input("Select a list: ")
-
         while True:
             match selected_pkglist:
-                case "aur":
-                    raise ValueError("For selected the AUR package list, use only_get_aur=True instead in linux-config.py.")
-                case "arch_gnome":
+                case "gnome":
                     selected_pkglist = arch_gnome
                     break
-                case "arch_kde" | "arch_plasma":
+                case "kde" | "plasma":
                     selected_pkglist = arch_kde
                     break
-                case "arch_xfce":
+                case "xfce":
                     selected_pkglist = arch_xfce
                     break
                 case _:
@@ -187,17 +194,10 @@ class PackageManager():
         return selected_pkglist
 
     def install_packages(self, pkglist: list[str], package_manager: str, current_user: str) -> None:
-        if not pkglist:
-            user_packages = self.convert_list_to_str(pkglist)
-            main_packages = self.convert_list_to_str(self.get_main_packages_list(self.readable_running_distro))
-
-            packages = main_packages + " " + user_packages
-        else:
-            main_packages = self.convert_list_to_str(self.get_main_packages_list(self.readable_running_distro))
-            packages = main_packages + " " + self.convert_list_to_str(pkglist)
+        packages = self.convert_list_to_str(pkglist)
 
         if self.readable_running_distro != "Arch Linux":
-            raise NotImplementedError(f"{self.readable_running_distro}: this distro is not implemented yet")
+            raise NotImplementedError(f"{self.readable_running_distro}: such distro is not implemented yet")
         else:
             if current_user != "root":
                 match package_manager:

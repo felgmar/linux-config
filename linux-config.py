@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from argparse import ArgumentParser
+from ast import main
 from getpass import getuser
 from sys import platform
 from modules.kernels.setup import KernelInstaller
@@ -27,7 +28,7 @@ group.add_argument("-d", "--distro", type=str,
                    help="Specifies which distro is going to be modified." +
                    " (e.g. arch, fedora, debian)", metavar="")
 
-group.add_argument("-v", "--verbose", action="store_true", help="Print more messages")
+parser.add_argument("-v", "--verbose", action="store_true", help="Print more messages")
 
 group.add_argument("--version", action="version", version="%(prog)s 1.0")
 
@@ -38,28 +39,26 @@ if running_os != "linux":
 else:
     if __name__ == "__main__":
         if args.verbose:
-            print(f"""
-                  action is set to {args.action}
-                  distro to be modified is {args.distro}
-                  """)
-
-        input(f"[*] {parser.prog} is ready. Press any key to continue.\n")
+            print(f"[i] Action set to: {args.action}\n[i] Distribution set to: {args.distro}\n")
+            input(f"Press any key to continue.\n")
 
         try:
             match args.action:
                 case "setup-secure-boot":
                     pm = PackageManager()
                     sbm = SecureBootManager()
+                    current_user = getuser()
+
                     package_manager = pm.get_package_manager(pm.readable_running_distro)
 
                     if args.verbose:
                         sbm.install_dependencies("preloader-signed", package_manager, verbose=True)
                         sbm.backup_boot_files(verbose=True)
-                        sbm.install_shim(getuser(), verbose=True)
+                        sbm.install_shim(current_user, verbose=True)
                     else:
                         sbm.install_dependencies("preloader-signed", package_manager)
                         sbm.backup_boot_files()
-                        sbm.install_shim(getuser())
+                        sbm.install_shim(current_user)
 
                 case "install-tkg-kernel":
                     pm = PackageManager()
@@ -70,26 +69,21 @@ else:
                 case "install-packages":
                     pm = PackageManager()
                     distro = pm.readable_running_distro
-                    lsb_release_path = pm.readable_lsb_release_path
-
-                    if not lsb_release_path:
-                        raise ValueError("Could not find the file lsb_release.")
-                    else:
-                        if args.verbose:
-                            print(f"lsb_release was found at: {lsb_release_path}")
-
-                    pkglist = pm.get_package_list(distro)
-                    main_pkglist = pm.get_main_packages_list(distro)
-                    aur_pkglist = pm.get_package_list(distro, only_get_aur=True)
+                    lsb_release_path = pm.lsb_release_path
+                    current_user = getuser()
 
                     package_manager = pm.get_package_manager(distro, overridePackageManager=True)
 
-                    if args.verbose:
-                        print(f"[*] Package manager to be used: {package_manager}")
+                    main_pkglist = pm.get_main_packages_list(distro)
+                    pkglist = pm.get_package_list(distro)
+                    aur_pkglist = pm.get_package_list(distro, only_get_aur=True)
 
-                    pm.install_packages(pkglist, package_manager, getuser())
-                    pm.install_packages(main_pkglist, package_manager, getuser())
-                    pm.install_packages(aur_pkglist, package_manager, getuser())
+                    if args.verbose:
+                        print(f"[i] Package manager to be used: {package_manager}")
+
+                    pm.install_packages(main_pkglist, package_manager, current_user)
+                    pm.install_packages(pkglist, package_manager, current_user)
+                    pm.install_packages(aur_pkglist, package_manager, current_user)
 
                 case "setup-rootfs":
                     raise NotImplementedError("This function is not implemented yet.")
@@ -98,10 +92,12 @@ else:
                     pm = PackageManager()
                     sm = ServicesManager()
 
+                    current_user = getuser()
+
                     pkglist = pm.get_package_list(pm.readable_running_distro)
                     services = sm.get_services_list(pkglist)
 
-                    sm.enable_services(services, getuser())
+                    sm.enable_services(services, current_user)
 
                 case _:
                     if args.action:

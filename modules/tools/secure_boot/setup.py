@@ -8,6 +8,8 @@ class SecureBootManager():
     def install_dependencies(self, dependencies: str, package_manager: str, verbose=False):
         pm = PackageManager()
 
+        current_user = getuser()
+
         if package_manager != "paru" or "yay":
             for pm_override in "yay", "paru":
                 if pm_override == "paru" or "yay":
@@ -22,11 +24,11 @@ class SecureBootManager():
         for i in dependencies:
             dependency_list.append(i)
 
-        pm.install_packages(dependency_list, package_manager, getuser())
+        pm.install_packages(dependency_list, package_manager, current_user)
 
     def backup_boot_files(self, verbose=False) -> None:
-        is_root: bool = False
-
+        current_user = getuser()
+ 
         boot_files = [
             "/boot/EFI/BOOT/BOOTX64.EFI",
         ]
@@ -37,14 +39,14 @@ class SecureBootManager():
                     case "/boot/EFI/BOOT/BOOTX64.EFI":
                         try:
                             if verbose:
-                                if is_root:
+                                if current_user == "root":
                                     run(f"cp -v {file} {file}.backup",
                                                  shell=True, universal_newlines=True, text=True)
                                 else:
                                     run(f"sudo cp -v {file} {file}.backup",
                                                  shell=True, universal_newlines=True, text=True)
                             else:
-                                if is_root:
+                                if current_user == "root":
                                     run(f"cp {file} {file}.backup",
                                                  shell=True, universal_newlines=True, text=True)
                                 else:
@@ -55,7 +57,7 @@ class SecureBootManager():
             except Exception:
                 raise
 
-    def install_shim(self, current_user, verbose=False):
+    def install_shim(self, current_user, verbose: bool = False):
         try:
             preloader_files = [
                 "/usr/share/preloader-signed/HashTool.efi",
@@ -85,8 +87,7 @@ class SecureBootManager():
                             break
 
                 is_installed = run("sudo bootctl is-installed",
-                                   shell=True, universal_newlines=True,
-                                   capture_output=True, text=True)
+                                   shell=True, universal_newlines=True, capture_output=True, text=True)
 
                 if is_installed.stdout.replace("\n", "") == "yes":
                     if verbose:
@@ -124,7 +125,7 @@ class SecureBootManager():
                                 run(f"cp {file} /boot/EFI/BOOT/BOOTX64.EFI",
                                     shell=True, universal_newlines=True, text=True)
 
-                is_installed = run("sudo bootctl is-installed",
+                is_installed = run("bootctl is-installed",
                                    shell=True, universal_newlines=True,
                                    capture_output=True, text=True)
 
