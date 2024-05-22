@@ -24,7 +24,7 @@ class SecureBootManager():
         for i in dependencies:
             dependency_list.append(i)
 
-        pm.install_packages(dependency_list, package_manager, current_user)
+        pm.install_packages(package_manager, current_user, dependency_list)
 
     def backup_boot_files(self, verbose=False) -> None:
         current_user = getuser()
