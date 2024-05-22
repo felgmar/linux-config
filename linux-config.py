@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from argparse import ArgumentParser
-from ast import main
 from getpass import getuser
 from sys import platform
 from modules.kernels.setup import KernelInstaller
