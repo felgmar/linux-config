@@ -218,7 +218,7 @@ class PackageManager():
                     case "dnf":
                         cmd = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
                     case "paru":
-                        cmd = f"{package_manager} -Syu --needed {packages}"
+                        cmd = f"{package_manager} -Syu --needed --sudoloop {packages}"
                     case "yay":
                         cmd = f"{package_manager} -Syu --needed {packages}"
                     case _:
