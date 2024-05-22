@@ -74,16 +74,10 @@ else:
 
                     package_manager = pm.get_package_manager(distro, overridePackageManager=True)
 
-                    main_pkglist = pm.get_main_packages_list(distro)
-                    pkglist = pm.get_package_list(distro)
-                    aur_pkglist = pm.get_package_list(distro, only_get_aur=True)
-
                     if args.verbose:
                         print(f"[i] Package manager to be used: {package_manager}")
 
-                    pm.install_packages(main_pkglist, package_manager, current_user)
-                    pm.install_packages(pkglist, package_manager, current_user)
-                    pm.install_packages(aur_pkglist, package_manager, current_user)
+                    pm.install_packages(package_manager, current_user)
 
                 case "setup-rootfs":
                     raise NotImplementedError("This function is not implemented yet.")
