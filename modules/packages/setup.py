@@ -166,7 +166,7 @@ class PackageManager():
                 "xfce4"
             ]
 
-            if only_get_aur:
+            if only_get_aur and self.readable_running_distro == "Arch Linux":
                 selected_pkglist = aur
                 return selected_pkglist
             else:
@@ -236,7 +236,6 @@ class PackageManager():
                                              " as {current_user}.")
                         else:
                             raise NotImplementedError(f"{package_manager}: unknown package manager.")
-
         try:
             run(cmd, shell=True, universal_newlines=True, text=True)
         except Exception:
