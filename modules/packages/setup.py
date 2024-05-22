@@ -193,8 +193,17 @@ class PackageManager():
 
         return selected_pkglist
 
-    def install_packages(self, pkglist: list[str], package_manager: str, current_user: str) -> None:
-        packages = self.convert_list_to_str(pkglist)
+    def install_packages(self, package_manager: str, current_user: str) -> None:
+        main_packages = self.get_main_packages_list(self.readable_running_distro)
+        main_pkglist = self.convert_list_to_str(main_packages)
+
+        extra_packages = self.get_package_list(self.readable_running_distro)
+        pkglist = self.convert_list_to_str(extra_packages)
+
+        aur_packages = self.get_package_list(self.readable_running_distro, only_get_aur=True)
+        aurlist = self.convert_list_to_str(aur_packages)
+
+        packages = main_pkglist + " " + pkglist + " " + aurlist
 
         if self.readable_running_distro != "Arch Linux":
             raise NotImplementedError(f"{self.readable_running_distro}: such distro is not implemented yet")
