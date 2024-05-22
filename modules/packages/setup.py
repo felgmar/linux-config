@@ -117,6 +117,7 @@ class PackageManager():
                 "github-desktop",
                 "google-chrome",
                 "mangohud-git",
+                "mkinitcpio-firmware",
                 "pcsx2-git",
                 "plymouth-theme-archlinux",
                 "ppsspp-git",
