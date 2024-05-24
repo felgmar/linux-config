@@ -1,3 +1,4 @@
 EDITOR=nvim
 QT_QPA_PLATFORM=wayland
+QT_QPA_PLATFORMTHEME=gnome
 QT_PLUGIN_PATH=/usr/lib/qt/plugins
