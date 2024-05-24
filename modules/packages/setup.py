@@ -116,6 +116,7 @@ class PackageManager():
                 "duckstation-git",
                 "github-desktop",
                 "google-chrome",
+                "lib32-mangohud-git",
                 "mangohud-git",
                 "mkinitcpio-firmware",
                 "pcsx2-git",
