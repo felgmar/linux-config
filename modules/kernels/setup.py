@@ -59,7 +59,7 @@ class KernelInstaller():
 
                             if user_text_editor:
                                 print(f"The text editor has been set manually to: {user_text_editor}")
-                            
+
                             run(f"{user_text_editor} customization.cfg", shell=True)
                     except Exception:
                         raise
@@ -81,7 +81,7 @@ class KernelInstaller():
 
                             if user_text_editor:
                                 print(f"The text editor has been set manually to: {user_text_editor}")
-                                
+
                                 run(f"{user_text_editor} customization.cfg", shell=True)
                         except Exception:
                             raise
