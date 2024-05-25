@@ -75,7 +75,6 @@ else:
 
                     if args.verbose:
                         print(f"[i] Package manager to be used: {package_manager}")
-
                     pm.install_packages(package_manager, current_user)
 
                 case "setup-rootfs":
