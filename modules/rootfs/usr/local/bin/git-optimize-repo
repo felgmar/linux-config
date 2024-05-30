@@ -1,0 +1,21 @@
+#!/bin/sh
+
+while getopts "d:" arg
+do
+    case "$arg" in
+        d) repo_dir="${OPTARG}"; break;;
+	?) test ! -z $arg && echo "$arg: invalid argument" && exit 1;;
+    esac
+done
+
+if test -z "${repo_dir}"
+then
+    echo "[!] No repo directory was specified. Optimizing '$(pwd)'..."
+    git repack -a -d -f --depth=250 --window=250
+else
+    previous_dir="$(pwd)"
+    cd "${repo_dir}" && \
+        git repack -a -d -f --depth=250 --window=250 && \
+        cd "${previous_dir}"
+fi
+
