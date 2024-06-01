@@ -10,9 +10,22 @@ else
     cd "${dotfiles_dir}"
 fi
 
+update_alacritty_files()
+{
+    if test "$(git status | grep private_dot_config/alacritty)"
+    then
+        git add "private_dot_config/alacritty"
+        git commit -S -m "Update Alacritty config files"
+    else
+        echo "[!] No changes were made for Alacritty!"
+    fi
+
+    return $?
+}
+
 update_pcsx2_files()
 {
-    if test ! $(git status | grep PCSX2)
+    if test "$(git status | grep -o private_dot_config/PCSX2)"
     then
         git add "private_dot_config/PCSX2"
         git commit -S -m "Update PCSX2 config files"
@@ -25,7 +38,7 @@ update_pcsx2_files()
 
 update_duckstation_files()
 {
-    if test ! $(git status | grep duckstation)
+    if test "$(git status | grep -o private_dot_local/private_share/duckstation)"
     then
         git add "private_dot_local/private_share/duckstation"
         git commit -S -m "Update DuckStation config files"
@@ -38,7 +51,7 @@ update_duckstation_files()
 
 update_ppsspp_files()
 {
-    if test "$(git status | grep PPSSPP)"
+    if test "$(git status | grep private_dot_config/ppsspp)"
     then
         git add "private_dot_config/ppsspp"
         git commit -S -m "Update PPSSPP config files"
@@ -51,13 +64,12 @@ update_ppsspp_files()
 
 update_mangohud_files()
 {
-    if test "$(git status | grep MangoHud)"
+    if test "$(git status | grep private_dot_config/MangoHud)"
     then
         git add "private_dot_config/MangoHud"
         git commit -S -m "Update MangoHud config files"
     else
-        echo "[!] No changes were made to MangoHud config files"
-        return 2
+        echo "[!] No changes were made for MangoHud"
     fi
 
     return $?
@@ -70,8 +82,7 @@ update_mozilla_files()
         git add "dot_mozilla"
         git commit -S -m "Update Mozilla config files"
     else
-        echo "[!] No changes were made to Mozilla config files"
-        return 2
+        echo "[!] No changes were made for Mozilla"
     fi
 
     return $?
@@ -79,7 +90,11 @@ update_mozilla_files()
 
 upload_changes()
 {
-    cd "${dotfiles_dir}"
+    if test "$(pwd)" != "${dotfiles_dir}"
+    then
+        cd "${dotfiles_dir}"
+    fi
+
     git push
 
     return $?
@@ -88,16 +103,16 @@ upload_changes()
 update_dotfiles()
 {
     chezmoi re-add
-    cd "${dotfiles_dir}"
 
     return $?
 }
 
-update_dotfiles
-update_pcsx2_files
-update_duckstation_files
-update_ppsspp_files
-update_mangohud_files
-update_mozilla_files
-upload_changes
+update_dotfiles || exit 1
+update_alacritty_files || exit 1
+update_pcsx2_files || exit 1
+update_duckstation_files || exit 1
+update_ppsspp_files || exit 1
+update_mangohud_files || exit 1
+update_mozilla_files || exit 1
+upload_changes || exit 1
 
