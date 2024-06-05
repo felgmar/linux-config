@@ -1,0 +1,12 @@
+#!/bin/sh
+
+paru_bin="$(command -v paru)"
+paru_args="-Syuu --needed --sudoloop --aur"
+
+if test -x "${paru_bin}"
+then
+    eval ${paru_bin} ${paru_args}
+else
+    echo "error: paru: file not found"
+fi
+
