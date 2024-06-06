@@ -133,17 +133,17 @@ class SecureBootManager():
                     if verbose:
                         print("[*] systemd-boot is installed")
                         run("bootctl update",
-                                   shell=True, universal_newlines=True, text=True)
+                            shell=True, universal_newlines=True, text=True)
                     else:
                         run("bootctl update",
-                                   shell=True, universal_newlines=True, text=True)
+                            shell=True, universal_newlines=True, text=True)
                 elif is_installed.stdout.replace("\n", "") == "no":
                     if verbose:
                         print("[!] systemd-boot is not installed")
                         run("bootctl install --no-variables",
-                                   shell=True, universal_newlines=True, text=True)
+                            shell=True, universal_newlines=True, text=True)
                     else:
                         run("bootctl install --no-variables",
-                                   shell=True, universal_newlines=True, text=True)
+                            shell=True, universal_newlines=True, text=True)
         except Exception:
             raise
