@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-from gc import disable
-from http import server
-from operator import is_
-from re import S
 from subprocess import run
 
 class ServicesManager():
