@@ -4,13 +4,13 @@ from subprocess import run
 
 class KernelInstaller():
     def __init__(self):
-        self.current_dir = getcwd()
-        self.kernels_directory = self.current_dir + "/modules/kernels/"
-        self.repo_url = ""
+        self.current_dir: str = getcwd()
+        self.kernels_directory: str = self.current_dir + "/modules/kernels/"
+        self.repo_url: str = ""
 
     def clone_repo(self, repo_url, repo_directory) -> None:
-        previous_dir = curdir
-        command = f"git clone {repo_url}"
+        previous_dir: str = curdir
+        command: str = f"git clone {repo_url}"
 
         try:
             if not path.isdir(self.kernels_directory + repo_directory):
@@ -25,8 +25,8 @@ class KernelInstaller():
             raise
 
     def update_repo(self, repo_directory) -> None:
-        previous_dir = curdir
-        command = f"git pull"
+        previous_dir: str = curdir
+        command: str = f"git pull"
 
         try:
             chdir(self.kernels_directory + repo_directory)
@@ -40,7 +40,7 @@ class KernelInstaller():
         if not distro:
             raise ValueError("No distro was specified.")
 
-        previous_dir = curdir
+        previous_dir: str = curdir
 
         match distro:
             case "Arch Linux":

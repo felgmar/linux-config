@@ -8,7 +8,7 @@ class SecureBootManager():
     def install_dependencies(self, dependencies: str, package_manager: str, verbose=False):
         pm = PackageManager()
 
-        current_user = getuser()
+        current_user: str = getuser()
 
         if package_manager != "paru" or "yay":
             for pm_override in "yay", "paru":
@@ -19,7 +19,7 @@ class SecureBootManager():
                 if package_manager != pm_override:
                     print(f"[!] The package manager has been overriden to: {pm_override}")
 
-        dependency_list = []
+        dependency_list: list[str] = []
 
         for i in dependencies:
             dependency_list.append(i)
@@ -27,9 +27,9 @@ class SecureBootManager():
         pm.install_packages(package_manager, current_user, dependency_list)
 
     def backup_boot_files(self, verbose=False) -> None:
-        current_user = getuser()
+        current_user: str = getuser()
  
-        boot_files = [
+        boot_files: list[str] = [
             "/boot/EFI/BOOT/BOOTX64.EFI",
         ]
 
@@ -41,17 +41,17 @@ class SecureBootManager():
                             if verbose:
                                 if current_user == "root":
                                     run(f"cp -v {file} {file}.backup",
-                                                 shell=True, universal_newlines=True, text=True)
+                                        shell=True, universal_newlines=True, text=True)
                                 else:
                                     run(f"sudo cp -v {file} {file}.backup",
-                                                 shell=True, universal_newlines=True, text=True)
+                                        shell=True, universal_newlines=True, text=True)
                             else:
                                 if current_user == "root":
                                     run(f"cp {file} {file}.backup",
-                                                 shell=True, universal_newlines=True, text=True)
+                                        shell=True, universal_newlines=True, text=True)
                                 else:
                                     run(f"sudo cp {file} {file}.backup",
-                                                 shell=True, universal_newlines=True, text=True)
+                                        shell=True, universal_newlines=True, text=True)
                         except Exception:
                             raise
             except Exception:
@@ -59,7 +59,7 @@ class SecureBootManager():
 
     def install_shim(self, current_user, verbose: bool = False):
         try:
-            preloader_files = [
+            preloader_files: list[str] = [
                 "/usr/share/preloader-signed/HashTool.efi",
                 "/usr/share/preloader-signed/PreLoader.efi",
             ]
@@ -86,10 +86,10 @@ class SecureBootManager():
                                     shell=True, universal_newlines=True, text=True)
                             break
 
-                is_installed = run("sudo bootctl is-installed",
-                                   shell=True, universal_newlines=True, capture_output=True, text=True)
+                is_installed: str = run("sudo bootctl is-installed", shell=True, universal_newlines=True, capture_output=True, text=True)
+                is_installed_readable: str = is_installed.replace("\n", "")
 
-                if is_installed.stdout.replace("\n", "") == "yes":
+                if is_installed_readable == "yes":
                     if verbose:
                         print(f"[*] systemd-boot is already installed")
                         run("sudo bootctl update",
@@ -97,7 +97,7 @@ class SecureBootManager():
                     else:
                         run("sudo bootctl update",
                             shell=True, universal_newlines=True, text=True)
-                elif is_installed.stdout.replace("\n", "") == "no":
+                elif is_installed_readable == "no":
                     if verbose:
                         print(f"[!] systemd-boot is not installed")
                         run("sudo bootctl install --no-variables",
@@ -128,8 +128,9 @@ class SecureBootManager():
                 is_installed = run("bootctl is-installed",
                                    shell=True, universal_newlines=True,
                                    capture_output=True, text=True)
+                is_installed_readable: str = is_installed.replace("\n", "")
 
-                if is_installed.stdout.replace("\n", "") == "yes":
+                if is_installed_readable == "yes":
                     if verbose:
                         print("[*] systemd-boot is installed")
                         run("bootctl update",
@@ -137,7 +138,7 @@ class SecureBootManager():
                     else:
                         run("bootctl update",
                             shell=True, universal_newlines=True, text=True)
-                elif is_installed.stdout.replace("\n", "") == "no":
+                elif is_installed_readable == "no":
                     if verbose:
                         print("[!] systemd-boot is not installed")
                         run("bootctl install --no-variables",

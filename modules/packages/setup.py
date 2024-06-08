@@ -169,23 +169,23 @@ class PackageManager():
             ]
 
             if only_get_aur and self.readable_running_distro == "Arch Linux":
-                selected_pkglist = aur
+                selected_pkglist: str = aur
                 return selected_pkglist
             else:
-                selected_pkglist = input("Choose a desktop environment [gnome/kde/xfce]: ")
+                selected_pkglist: str = str(input("Choose a desktop environment [gnome/kde/xfce]: "))
         else:
             raise ValueError(f"[!] {distro} is not supported.")
 
         while True:
             match selected_pkglist:
                 case "gnome":
-                    selected_pkglist = arch_gnome
+                    selected_pkglist: str = arch_gnome
                     break
                 case "kde" | "plasma":
-                    selected_pkglist = arch_kde
+                    selected_pkglist: str =  arch_kde
                     break
                 case "xfce":
-                    selected_pkglist = arch_xfce
+                    selected_pkglist: str =  arch_xfce
                     break
                 case _:
                     if selected_pkglist != "":
@@ -196,20 +196,20 @@ class PackageManager():
         return selected_pkglist
 
     def install_packages(self, package_manager: str, current_user: str, additional_pkglist: list[str] = []) -> None:
-        main_packages = self.get_main_packages_list(self.readable_running_distro)
-        main_pkglist = self.convert_list_to_str(main_packages)
+        main_packages: str = self.get_main_packages_list(self.readable_running_distro)
+        main_pkglist: str = self.convert_list_to_str(main_packages)
 
-        extra_packages = self.get_package_list(self.readable_running_distro)
-        pkglist = self.convert_list_to_str(extra_packages)
+        extra_packages: str = self.get_package_list(self.readable_running_distro)
+        pkglist: str = self.convert_list_to_str(extra_packages)
 
-        aur_packages = self.get_package_list(self.readable_running_distro, only_get_aur=True)
-        aurlist = self.convert_list_to_str(aur_packages)
+        aur_packages: str = self.get_package_list(self.readable_running_distro, only_get_aur=True)
+        aurlist: str = self.convert_list_to_str(aur_packages)
 
         if additional_pkglist:
-            aux_pkglist = self.convert_list_to_str(additional_pkglist)
-            packages = aux_pkglist
+            aux_pkglist: str = self.convert_list_to_str(additional_pkglist)
+            packages: str = aux_pkglist
         else:
-            packages = main_pkglist + " " + pkglist + " " + aurlist
+            packages: str = main_pkglist + " " + pkglist + " " + aurlist
 
         if self.readable_running_distro != "Arch Linux":
             raise NotImplementedError(f"{self.readable_running_distro}: such distro is not implemented yet")
@@ -217,25 +217,25 @@ class PackageManager():
             if current_user != "root":
                 match package_manager:
                     case "apt":
-                        cmd = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
+                        cmd: str = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
                     case "pacman":
-                        cmd = f"sudo {package_manager} -Syu --needed {packages}"
+                        cmd: str = f"sudo {package_manager} -Syu --needed {packages}"
                     case "dnf":
-                        cmd = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
+                        cmd: str = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
                     case "paru":
-                        cmd = f"{package_manager} -Syu --needed --sudoloop {packages}"
+                        cmd: str = f"{package_manager} -Syu --needed --sudoloop {packages}"
                     case "yay":
-                        cmd = f"{package_manager} -Syu --needed {packages}"
+                        cmd: str = f"{package_manager} -Syu --needed {packages}"
                     case _:
                         raise NotImplementedError(f"{package_manager}: unknown package manager.")
             else:
                 match package_manager:
                     case "apt":
-                        cmd = f"{package_manager} update && sudo {package_manager} install {packages}"
+                        cmd: str = f"{package_manager} update && sudo {package_manager} install {packages}"
                     case "pacman":
-                        cmd = f"{package_manager} -Syu --needed {packages}"
+                        cmd: str = f"{package_manager} -Syu --needed {packages}"
                     case "dnf":
-                        cmd = f"{package_manager} update && sudo {package_manager} install {packages}"
+                        cmd: str = f"{package_manager} update && sudo {package_manager} install {packages}"
                     case _:
                         if package_manager == "paru" or package_manager == "yay":
                             raise ValueError(f"[!] AUR helpers like {package_manager} cannot be ran" +
