@@ -13,7 +13,7 @@ upgrade_all()
     paru_bin="$(command -v paru)"
     paru_args="-Syuu --needed --sudoloop"
 
-     $paru_bin $paru_args
+    eval $paru_bin $paru_args
 }
 
 # apt-like pacman wrapper
