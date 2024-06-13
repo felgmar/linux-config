@@ -14,6 +14,8 @@ class PackageManager():
         self.readable_running_distro = self.running_distro.stdout.replace("\"", "").removesuffix("\n")
 
     def get_package_manager(self, distro: str, overridePackageManager: bool = False) -> str:
+        pm_bin: str = None
+
         package_managers = [
             "apt",
             "dnf",
@@ -31,13 +33,13 @@ class PackageManager():
                 if shutil.which(pm):
                     pm_bin = pm
                     break
+            return pm_bin
         else:
             for pm in package_managers:
                 if shutil.which(pm):
                     pm_bin = pm
                     break
-
-        return pm_bin
+            return pm_bin
 
     def install_aur_helper(self, distro: str, package_manager: str):
         if distro == "Arch Linux":
@@ -124,7 +126,7 @@ class PackageManager():
                 "ppsspp-git",
                 "preloader-signed",
                 "rate-mirrors",
-                "rpcs3-git",
+#                "rpcs3-git",
                 "spotify",
                 "ventoy",
                 "visual-studio-code-bin",
