@@ -56,6 +56,7 @@ class PackageManager():
     def get_main_packages_list(self, distro: str) -> list[str]:
         if distro == "Arch Linux":
             arch_main = [
+                "alacritty",
                 "apparmor",
                 "archlinux-wallpaper",
                 "bridge-utils",
@@ -73,7 +74,6 @@ class PackageManager():
                 "git-lfs",
                 "intel-ucode",
                 "keepassxc",
-                "kitty",
                 "lib32-vulkan-mesa-layers",
                 "less",
                 "linux",
@@ -126,7 +126,7 @@ class PackageManager():
                 "ppsspp-git",
                 "preloader-signed",
                 "rate-mirrors",
-#                "rpcs3-git",
+                "rpcs3-git",
                 "spotify",
                 "ventoy",
                 "visual-studio-code-bin",
