@@ -1,4 +1,9 @@
-EDITOR=nvim
+#
+# This file is parsed by pam_env module
+#
+# Syntax: simple "KEY=VAL" pairs on separate lines
+#
+EDITOR=vim
 QT_QPA_PLATFORM=wayland
 QT_QPA_PLATFORMTHEME=gnome
 QT_PLUGIN_PATH=/usr/lib/qt/plugins
