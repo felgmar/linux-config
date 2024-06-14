@@ -60,6 +60,7 @@ class PackageManager():
                 "apparmor",
                 "archlinux-wallpaper",
                 "bridge-utils",
+                "ccache",
                 "chezmoi",
                 "clamtk",
                 "curl",
@@ -144,6 +145,7 @@ class PackageManager():
                 "gvfs",
                 "gvfs-mtp",
                 "gvfs-nfs",
+                "gvfs-google",
                 "libappindicator-gtk3",
                 "malcontent",
                 "nautilus"
