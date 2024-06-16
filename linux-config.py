@@ -3,12 +3,13 @@
 from argparse import ArgumentParser
 from getpass import getuser
 from sys import platform
+
 from modules.kernels.setup import KernelInstaller
 from modules.packages.setup import PackageManager
 from modules.tools.secure_boot.setup import SecureBootManager
 from modules.tools.services_manager.setup import ServicesManager
 
-running_os = platform.lower()
+current_platform = platform.lower()
 
 actions = [
     "setup-secure-boot", "install-tkg-kernel",
@@ -33,8 +34,8 @@ group.add_argument("--version", action="version", version="%(prog)s 1.0")
 
 args = parser.parse_args()
 
-if running_os != "linux":
-    raise RuntimeError(f"{platform.lower()}: platform not supported")
+if current_platform != "linux":
+    raise RuntimeError(f"{current_platform}: platform not supported")
 else:
     if __name__ == "__main__":
         if args.verbose:
@@ -62,8 +63,10 @@ else:
                 case "install-tkg-kernel":
                     pm = PackageManager()
                     ki = KernelInstaller()
+                    distro = pm.readable_running_distro
+
                     ki.clone_repo("https://github.com/frogging-family/linux-tkg.git", "linux-tkg")
-                    ki.install_kernel("linux-tkg", pm.readable_running_distro)
+                    ki.install_kernel("linux-tkg", distro)
 
                 case "install-packages":
                     pm = PackageManager()
@@ -84,9 +87,10 @@ else:
                     pm = PackageManager()
                     sm = ServicesManager()
 
+                    distro = pm.readable_running_distro
                     current_user = getuser()
 
-                    pkglist = pm.get_package_list(pm.readable_running_distro)
+                    pkglist = pm.get_package_list(distro)
                     services = sm.get_services_list(pkglist)
 
                     sm.enable_services(services, current_user)
@@ -96,6 +100,6 @@ else:
                         raise ValueError(f"{args.action}: invalid action")
                     else:
                         raise ValueError("No action was specified.")
-
         except Exception:
             raise
+
