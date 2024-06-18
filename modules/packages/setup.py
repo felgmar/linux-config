@@ -96,6 +96,7 @@ class PackageManager():
                 "qt6-wayland",
                 "steam",
                 "swtpm",
+                "telegram-desktop",
                 "ttf-meslo-nerd-font-powerlevel10k",
                 "virt-manager",
                 "vulkan-mesa-layers",
