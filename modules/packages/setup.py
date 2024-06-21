@@ -119,6 +119,7 @@ class PackageManager():
                 "ananicy-git",
                 "archlinux-artwork",
                 "duckstation-git",
+                "ckb-next-git",
                 "github-desktop",
                 "lib32-mangohud-git",
                 "mangohud-git",
@@ -154,6 +155,7 @@ class PackageManager():
 
             arch_kde = [
                 "bluedevil",
+                "breeze-gtk",
                 "dolphin",
                 "gnome-keyring",
                 "kdeconnect",
