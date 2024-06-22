@@ -48,8 +48,7 @@ else:
                     pm = PackageManager()
                     sbm = SecureBootManager()
                     current_user = getuser()
-
-                    package_manager = pm.get_package_manager(pm.readable_running_distro)
+                    package_manager = pm.get_package_manager()
 
                     if args.verbose:
                         sbm.install_dependencies("preloader-signed", package_manager, verbose=True)
@@ -63,22 +62,18 @@ else:
                 case "install-tkg-kernel":
                     pm = PackageManager()
                     ki = KernelInstaller()
-                    distro = pm.readable_running_distro
+                    distro = pm.current_distro
 
                     ki.clone_repo("https://github.com/frogging-family/linux-tkg.git", "linux-tkg")
                     ki.install_kernel("linux-tkg", distro)
 
                 case "install-packages":
                     pm = PackageManager()
-                    distro = pm.readable_running_distro
-                    lsb_release_path = pm.lsb_release_path
-                    current_user = getuser()
-
-                    package_manager = pm.get_package_manager(distro, overridePackageManager=True)
+                    package_manager = pm.get_package_manager(overridePackageManager=True)
 
                     if args.verbose:
                         print(f"[i] Package manager to be used: {package_manager}")
-                    pm.install_packages(package_manager, current_user)
+                    pm.install_packages(package_manager)
 
                 case "setup-rootfs":
                     raise NotImplementedError("This function is not implemented yet.")
@@ -87,13 +82,10 @@ else:
                     pm = PackageManager()
                     sm = ServicesManager()
 
-                    distro = pm.readable_running_distro
-                    current_user = getuser()
-
-                    pkglist = pm.get_package_list(distro)
+                    pkglist = pm.get_package_list()
                     services = sm.get_services_list(pkglist)
 
-                    sm.enable_services(services, current_user)
+                    sm.enable_services(services)
 
                 case _:
                     if args.action:
