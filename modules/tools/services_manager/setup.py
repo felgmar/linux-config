@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
-from subprocess import run
+import getpass, subprocess
 
 class ServicesManager():
+    def __init__(self):
+        self.current_user = getpass.getuser()
+    
     def get_services_list(self, pkglist: list[str]) -> list[str]:
         services: list[str] = [
             "systemd-oomd.socket",
@@ -33,18 +36,24 @@ class ServicesManager():
 
         return services
 
-    def enable_service(self, services: str) -> None:
-        for service in services:
-            cmd: str = f"systemctl enable {service}"
+    def enable_service(self, service: str) -> None:
+        cmd: str
 
-            run(cmd, shell=True)
+        if self.current_user == "root":
+            cmd = f"systemctl enable {service}"
+        else:
+            cmd = f"sudo systemctl enable {service}"
+
+        try:
+            subprocess.run(cmd, shell=True)
+        except:
+            raise
     
-    def enable_services(self, services: list[str], user: str, verbose: bool = False) -> None:
+    def enable_services(self, services: list[str], verbose: bool = False) -> None:
         disabled_services: list[str] = []
 
         for service_name in services:
-            service_status: str = run(f"systemctl is-enabled {service_name}", shell=True,
-                                 universal_newlines=True, capture_output=True, text=True)
+            service_status: subprocess.CompletedProcess[str] = subprocess.run(f"systemctl is-enabled {service_name}", shell=True, universal_newlines=True, capture_output=True, text=True)
             readable_service_status: str = service_status.stdout.removesuffix("\n")
 
             if readable_service_status == "disabled":
@@ -53,12 +62,10 @@ class ServicesManager():
 
                 disabled_services.append(service_name)
             else:
-                raise Exception("There are no services left to enable from the list you specified.")
+                print(f"{service_name} is already {readable_service_status}")
 
         for disabled_service in disabled_services:
-            if user == "root":
-                cmd = f"systemctl enable {disabled_service}"
-            else:
-                cmd = f"sudo systemctl enable {disabled_service}"
-            
-            run(cmd, shell=True)
+            try:
+                self.enable_service(disabled_service)
+            except:
+                raise
