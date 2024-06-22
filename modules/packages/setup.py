@@ -100,7 +100,7 @@ class PackageManager():
                 "ttf-meslo-nerd-font-powerlevel10k",
                 "virt-manager",
                 "vulkan-mesa-layers",
-                "wine-staging",
+                "wine",
                 "wget",
                 "xdg-user-dirs",
                 "zram-generator",
