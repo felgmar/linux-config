@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
-import shutil
-from subprocess import run
+
+import subprocess, shutil, getpass
 
 class PackageManager():
     def __init__(self):
-        self.lsb_release_path = shutil.which("lsb_release")
+        self.lsb_release_bin: str | None = shutil.which("lsb_release")
+        current_distro_cmd: subprocess.CompletedProcess[str] = \
+            subprocess.run("lsb_release -ds", shell=True, universal_newlines=True, capture_output=True, text=True)
+        self.current_distro = current_distro_cmd.stdout.replace("\"", "").removesuffix("\n")
+        self.current_user = getpass.getuser()
+        
+        if not self.lsb_release_bin:
+            raise IOError("lsb_release: binary not found")
 
-        if not self.lsb_release_path:
-            raise ValueError("could not find the file lsb_release.")
-
-        self.running_distro = run("lsb_release -ds", shell=True,
-                                  universal_newlines=True, capture_output=True, text=True)
-        self.readable_running_distro = self.running_distro.stdout.replace("\"", "").removesuffix("\n")
-
-    def get_package_manager(self, distro: str, overridePackageManager: bool = False) -> str:
-        pm_bin: str = None
+    def get_package_manager(self, overridePackageManager: bool = False) -> str:
+        pm_bin: str
 
         package_managers = [
             "apt",
@@ -33,29 +33,29 @@ class PackageManager():
                 if shutil.which(pm):
                     pm_bin = pm
                     break
-            return pm_bin
         else:
             for pm in package_managers:
                 if shutil.which(pm):
                     pm_bin = pm
                     break
-            return pm_bin
+ 
+        return pm_bin
 
     def install_aur_helper(self, distro: str, package_manager: str):
         if distro == "Arch Linux":
             if package_manager != "yay" or package_manager != "paru":
-                raise ValueError(f"[!] {package_manager} is not an AUR helper.")
+                raise ValueError(f"{package_manager} is not an AUR helper.")
         else:
-            raise ValueError(f"[!] {distro}: unsupported distribution.")
+            raise ValueError(f"{distro}: unsupported distribution.")
 
     def convert_list_to_str(self, list: list[str]) -> str:
         newlist = ' '.join(list)
 
         return newlist
 
-    def get_main_packages_list(self, distro: str) -> list[str]:
-        if distro == "Arch Linux":
-            arch_main = [
+    def get_main_packages_list(self) -> list[str]:
+        if self.current_distro == "Arch Linux":
+            arch_main: list[str] = [
                 "alacritty",
                 "apparmor",
                 "archlinux-wallpaper",
@@ -111,11 +111,13 @@ class PackageManager():
             ]
             return arch_main
         else:
-            raise ValueError(f"[!] {distro} is not supported.")
+            raise ValueError(f"{self.current_distro} is not supported.")
 
-    def get_package_list(self, distro: str, only_get_aur: bool = False) -> list[str]:
-        if distro == "Arch Linux":
-            aur = [
+    def get_package_list(self, only_get_aur: bool = False) -> list[str]:
+        selected_pkglist: list[str]
+
+        if self.current_distro == "Arch Linux":
+            aur: list[str] = [
                 "ananicy-git",
                 "archlinux-artwork",
                 "duckstation-git",
@@ -136,7 +138,7 @@ class PackageManager():
                 "zsh-theme-powerlevel10k-git"
             ]
 
-            arch_gnome = [
+            arch_gnome: list[str] = [
                 "gdm",
                 "gnome-backgrounds",
                 "gnome-browser-connector",
@@ -153,7 +155,7 @@ class PackageManager():
                 "nautilus"
             ]
 
-            arch_kde = [
+            arch_kde: list[str] = [
                 "bluedevil",
                 "breeze-gtk",
                 "dolphin",
@@ -171,45 +173,42 @@ class PackageManager():
                 "sddm"
             ]
 
-            arch_xfce = [
+            arch_xfce: list[str] = [
                 "xfce4"
             ]
 
-            if only_get_aur and self.readable_running_distro == "Arch Linux":
-                selected_pkglist: str = aur
-                return selected_pkglist
+            if only_get_aur and self.current_distro == "Arch Linux":
+                return aur
             else:
-                selected_pkglist: str = str(input("Choose a desktop environment [gnome/kde/xfce]: "))
-        else:
-            raise ValueError(f"[!] {distro} is not supported.")
+                user_choice: str = input("Choose a desktop environment [gnome/kde/xfce]: ")
 
-        while True:
-            match selected_pkglist:
-                case "gnome":
-                    selected_pkglist: str = arch_gnome
-                    break
-                case "kde" | "plasma":
-                    selected_pkglist: str =  arch_kde
-                    break
-                case "xfce":
-                    selected_pkglist: str =  arch_xfce
-                    break
-                case _:
-                    if selected_pkglist != "":
-                        raise ValueError(f"{selected_pkglist}: invalid list specified.")
-                    else:
-                        raise EOFError("no output was detected.")
+            while True:
+                match user_choice:
+                    case "gnome":
+                        selected_pkglist = arch_gnome
+                        break
+                    case "kde" | "plasma":
+                        selected_pkglist =  arch_kde
+                        break
+                    case "xfce":
+                        selected_pkglist =  arch_xfce
+                        break
+                    case _:
+                        if user_choice.isalpha:
+                            raise ValueError(f"{user_choice}: invalid desktop environment specified.")
+                        else:
+                            raise EOFError("no desktop environment was detected.")
 
         return selected_pkglist
 
-    def install_packages(self, package_manager: str, current_user: str, additional_pkglist: list[str] = []) -> None:
-        main_packages: str = self.get_main_packages_list(self.readable_running_distro)
+    def install_packages(self, package_manager: str, additional_pkglist: list[str] = []) -> None:
+        main_packages: list[str] = self.get_main_packages_list()
         main_pkglist: str = self.convert_list_to_str(main_packages)
 
-        extra_packages: str = self.get_package_list(self.readable_running_distro)
+        extra_packages: list[str] = self.get_package_list()
         pkglist: str = self.convert_list_to_str(extra_packages)
 
-        aur_packages: str = self.get_package_list(self.readable_running_distro, only_get_aur=True)
+        aur_packages: list[str] = self.get_package_list(only_get_aur=True)
         aurlist: str = self.convert_list_to_str(aur_packages)
 
         if additional_pkglist:
@@ -218,10 +217,10 @@ class PackageManager():
         else:
             packages: str = main_pkglist + " " + pkglist + " " + aurlist
 
-        if self.readable_running_distro != "Arch Linux":
-            raise NotImplementedError(f"{self.readable_running_distro}: such distro is not implemented yet")
+        if self.current_distro != "Arch Linux":
+            raise NotImplementedError(f"{self.current_distro}: such distro is not implemented yet")
         else:
-            if current_user != "root":
+            if self.current_user != "root":
                 match package_manager:
                     case "apt":
                         cmd: str = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
@@ -250,6 +249,6 @@ class PackageManager():
                         else:
                             raise NotImplementedError(f"{package_manager}: unknown package manager.")
         try:
-            run(cmd, shell=True, universal_newlines=True, text=True)
+            subprocess.run(cmd, shell=True, universal_newlines=True, text=True)
         except Exception:
             raise
