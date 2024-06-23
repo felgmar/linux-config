@@ -97,7 +97,6 @@ class PackageManager():
                 "steam",
                 "swtpm",
                 "telegram-desktop",
-                "ttf-meslo-nerd-font-powerlevel10k",
                 "virt-manager",
                 "vulkan-mesa-layers",
                 "wine",
@@ -133,6 +132,7 @@ class PackageManager():
                 "rate-mirrors",
                 "rpcs3-git",
                 "spotify",
+                "ttf-meslo-nerd-font-powerlevel10k",
                 "ventoy",
                 "visual-studio-code-bin",
                 "zsh-theme-powerlevel10k-git"
