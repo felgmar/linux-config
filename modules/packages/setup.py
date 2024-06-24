@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
+from logging import log
+import logging
 import subprocess, shutil, getpass
 
 class PackageManager():
     def __init__(self):
         self.lsb_release_bin: str | None = shutil.which("lsb_release")
-        current_distro_cmd: subprocess.CompletedProcess[str] = \
-            subprocess.run("lsb_release -ds", shell=True, universal_newlines=True, capture_output=True, text=True)
+        current_distro_cmd: subprocess.CompletedProcess[str] = subprocess.run("lsb_release -ds", shell=True, universal_newlines=True, capture_output=True, text=True)
         self.current_distro = current_distro_cmd.stdout.replace("\"", "").removesuffix("\n")
         self.current_user = getpass.getuser()
         
@@ -201,20 +202,20 @@ class PackageManager():
 
         return selected_pkglist
 
-    def install_packages(self, package_manager: str, additional_pkglist: list[str] = []) -> None:
-        main_packages: list[str] = self.get_main_packages_list()
-        main_pkglist: str = self.convert_list_to_str(main_packages)
-
-        extra_packages: list[str] = self.get_package_list()
-        pkglist: str = self.convert_list_to_str(extra_packages)
-
-        aur_packages: list[str] = self.get_package_list(only_get_aur=True)
-        aurlist: str = self.convert_list_to_str(aur_packages)
-
-        if additional_pkglist:
-            aux_pkglist: str = self.convert_list_to_str(additional_pkglist)
-            packages: str = aux_pkglist
+    def install_packages(self, package_manager: str, custom_pkglist: list[str] = []) -> None:
+        if custom_pkglist:
+            pkglist: str = self.convert_list_to_str(custom_pkglist)
+            packages: str = pkglist
         else:
+            main_packages: list[str] = self.get_main_packages_list()
+            main_pkglist: str = self.convert_list_to_str(main_packages)
+
+            extra_packages: list[str] = self.get_package_list()
+            pkglist: str = self.convert_list_to_str(extra_packages)
+
+            aur_packages: list[str] = self.get_package_list(only_get_aur=True)
+            aurlist: str = self.convert_list_to_str(aur_packages)
+
             packages: str = main_pkglist + " " + pkglist + " " + aurlist
 
         if self.current_distro != "Arch Linux":
@@ -229,9 +230,15 @@ class PackageManager():
                     case "dnf":
                         cmd: str = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
                     case "paru":
-                        cmd: str = f"{package_manager} -Syu --needed --sudoloop {packages}"
+                        if custom_pkglist:
+                            cmd: str = f"{package_manager} -S --needed --sudoloop {packages}"
+                        else:
+                            cmd: str = f"{package_manager} -Syu --needed --sudoloop {packages}"
                     case "yay":
-                        cmd: str = f"{package_manager} -Syu --needed {packages}"
+                        if custom_pkglist:
+                            cmd: str = f"{package_manager} -S --needed --sudoloop {packages}"
+                        else:
+                            cmd: str = f"{package_manager} -Syu --needed --sudoloop {packages}"
                     case _:
                         raise NotImplementedError(f"{package_manager}: unknown package manager.")
             else:
@@ -244,8 +251,8 @@ class PackageManager():
                         cmd: str = f"{package_manager} update && sudo {package_manager} install {packages}"
                     case _:
                         if package_manager == "paru" or package_manager == "yay":
-                            raise ValueError(f"[!] AUR helpers like {package_manager} cannot be ran" +
-                                             " as {current_user}.")
+                            raise PermissionError(f"{package_manager} is an AUR helper and it cannot be ran as "
+                                                  + self.current_user)
                         else:
                             raise NotImplementedError(f"{package_manager}: unknown package manager.")
         try:
