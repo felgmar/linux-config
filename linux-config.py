@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
-from argparse import ArgumentParser
-from getpass import getuser
-from sys import platform
+from struct import pack
+import sys, argparse
+from tabnanny import verbose
 
 from modules.kernels.setup import KernelInstaller
 from modules.packages.setup import PackageManager
 from modules.tools.secure_boot.setup import SecureBootManager
 from modules.tools.services_manager.setup import ServicesManager
 
-current_platform = platform.lower()
+current_platform = sys.platform.lower()
 
 actions = [
     "setup-secure-boot", "install-tkg-kernel",
@@ -17,7 +17,7 @@ actions = [
     "setup-rootfs", "setup-services"
 ]
 
-parser = ArgumentParser(prog="linux-config")
+parser = argparse.ArgumentParser(prog="linux-config")
 group = parser.add_mutually_exclusive_group()
 
 parser.add_argument("-a", "--action", choices=actions, type=str,
@@ -45,27 +45,23 @@ else:
         try:
             match args.action:
                 case "setup-secure-boot":
-                    pm = PackageManager()
                     sbm = SecureBootManager()
-                    current_user = getuser()
-                    package_manager = pm.get_package_manager()
 
                     if args.verbose:
-                        sbm.install_dependencies("preloader-signed", package_manager, verbose=True)
+                        sbm.install_dependencies(verbose=True)
                         sbm.backup_boot_files(verbose=True)
-                        sbm.install_shim(current_user, verbose=True)
+                        sbm.install_shim(verbose=True)
                     else:
-                        sbm.install_dependencies("preloader-signed", package_manager)
+                        sbm.install_dependencies()
                         sbm.backup_boot_files()
-                        sbm.install_shim(current_user)
+                        sbm.install_shim()
 
                 case "install-tkg-kernel":
                     pm = PackageManager()
                     ki = KernelInstaller()
-                    distro = pm.current_distro
 
                     ki.clone_repo("https://github.com/frogging-family/linux-tkg.git", "linux-tkg")
-                    ki.install_kernel("linux-tkg", distro)
+                    ki.install_kernel("linux-tkg")
 
                 case "install-packages":
                     pm = PackageManager()
@@ -73,6 +69,7 @@ else:
 
                     if args.verbose:
                         print(f"[i] Package manager to be used: {package_manager}")
+
                     pm.install_packages(package_manager)
 
                 case "setup-rootfs":
