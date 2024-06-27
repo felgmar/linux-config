@@ -133,6 +133,7 @@ class PackageManager():
                 "rate-mirrors",
                 "rpcs3-git",
                 "spotify",
+                "ttf-ubuntu-font-family"
                 "ttf-meslo-nerd-font-powerlevel10k",
                 "ventoy",
                 "visual-studio-code-bin",
