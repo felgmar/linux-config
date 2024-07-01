@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-from struct import pack
 import sys, argparse
-from tabnanny import verbose
 
 from modules.kernels.setup import KernelInstaller
 from modules.packages.setup import PackageManager
