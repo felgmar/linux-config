@@ -67,7 +67,7 @@ class KernelInstaller():
                         raise
 
                 if os.path.isfile("PKGBUILD"):
-                    subprocess.run("makepkg -si", shell=True)
+                    subprocess.run("makepkg -sir", shell=True)
 
                     os.chdir(previous_dir)
                 else:
