@@ -100,6 +100,7 @@ class PackageManager():
                 "steam",
                 "swtpm",
                 "telegram-desktop",
+                "trash-cli",
                 "virt-manager",
                 "vulkan-mesa-layers",
                 "wine",
