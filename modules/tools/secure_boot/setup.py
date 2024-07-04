@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
-import getpass, subprocess
+import getpass, subprocess, os
+
 from modules.packages.setup import PackageManager
 
 class SecureBootManager():
     def __init__(self):
         self.current_user: str = getpass.getuser()
 
-    def install_dependencies(self, verbose=False):
+    def install_dependencies(self, verbose: bool = False):
         pkglist: list[str] = [
             "preloader-signed"
         ]
@@ -26,7 +27,7 @@ class SecureBootManager():
 
         pm.install_packages(package_manager, custom_pkglist=pkglist)
 
-    def backup_boot_files(self, verbose=False) -> None:
+    def backup_boot_files(self, verbose: bool = False) -> None:
         boot_files: list[str] = [
             "/boot/EFI/BOOT/BOOTX64.EFI",
         ]
@@ -64,14 +65,15 @@ class SecureBootManager():
 
             if self.current_user != "root":
                 for file in preloader_files:
-                    #if not access(file, R_OK):
-                    #    raise PermissionError(f"The file {file} is not accessible.")
+                    if not os.access(file, os.R_OK):
+                        raise FileNotFoundError(file + " is not accessible.")
                     match file:
                         case "/usr/share/preloader-signed/HashTool.efi":
                             if verbose:
                                 subprocess.run(f"sudo cp -v {file} /boot/EFI/BOOT",
                                     shell=True, universal_newlines=True, text=True)
                             else:
+                                print("Copying '{0}' to /boot/EFI/BOOT".format(file))
                                 subprocess.run(f"sudo cp {file} /boot/EFI/BOOT",
                                     shell=True, universal_newlines=True, text=True)
                             continue
@@ -80,6 +82,7 @@ class SecureBootManager():
                                 subprocess.run(f"sudo cp -v {file} /boot/EFI/BOOT/BOOTX64.EFI",
                                     shell=True, universal_newlines=True, text=True)
                             else:
+                                print("Copying '{0}' to /boot/EFI/BOOT/BOOTX64.EFI".format(file))
                                 subprocess.run(f"sudo cp {file} /boot/EFI/BOOT/BOOTX64.EFI",
                                     shell=True, universal_newlines=True, text=True)
                             break
@@ -89,30 +92,33 @@ class SecureBootManager():
 
                 if is_installed_readable == "yes":
                     if verbose:
-                        print(f"[*] systemd-boot is already installed")
+                        print("systemd-boot is already installed")
                         subprocess.run("sudo bootctl update",
                             shell=True, universal_newlines=True, text=True)
                     else:
+                        print("Updating systemd-boot files...")
                         subprocess.run("sudo bootctl update",
                             shell=True, universal_newlines=True, text=True)
                 elif is_installed_readable == "no":
                     if verbose:
-                        print(f"[!] systemd-boot is not installed")
+                        print("systemd-boot is not installed")
                         subprocess.run("sudo bootctl install --no-variables",
                             shell=True, universal_newlines=True, text=True)
                     else:
+                        print("Installing systemd-boot bootloader...")
                         subprocess.run("sudo bootctl install --no-variables",
                             shell=True, universal_newlines=True, text=True)
             else:
                 for file in preloader_files:
-                    #if not access(file, R_OK) or access(file, W_OK):
-                    #    raise PermissionError(f"The file {file} is not accessible.")
+                    if not os.access(file, os.R_OK):
+                        raise FileNotFoundError(file + " is not accessible.")
                     match file:
                         case "/usr/share/preloader-signed/HashTool.efi":
                             if verbose:
                                 subprocess.run(f"cp -v {file} /boot/EFI/BOOT",
                                     shell=True, universal_newlines=True, text=True)
                             else:
+                                print("Copying '{0}' to /boot/EFI/BOOT".format(file))
                                 subprocess.run(f"cp {file} /boot/EFI/BOOT",
                                     shell=True, universal_newlines=True, text=True)
                         case "/usr/share/preloader-signed/PreLoader.efi":
@@ -120,6 +126,7 @@ class SecureBootManager():
                                 subprocess.run(f"cp -v {file} /boot/EFI/BOOT/BOOTX64.EFI",
                                     shell=True, universal_newlines=True, text=True)
                             else:
+                                print("Copying '{0}' to /boot/EFI/BOOT/BOOTX64.EFI".format(file))
                                 subprocess.run(f"cp {file} /boot/EFI/BOOT/BOOTX64.EFI",
                                     shell=True, universal_newlines=True, text=True)
 
@@ -130,18 +137,20 @@ class SecureBootManager():
 
                 if is_installed_readable == "yes":
                     if verbose:
-                        print("[*] systemd-boot is installed")
+                        print("systemd-boot is installed")
                         subprocess.run("bootctl update",
                             shell=True, universal_newlines=True, text=True)
                     else:
+                        print("Updating systemd-boot files...")
                         subprocess.run("bootctl update",
                             shell=True, universal_newlines=True, text=True)
                 elif is_installed_readable == "no":
                     if verbose:
-                        print("[!] systemd-boot is not installed")
+                        print("systemd-boot is not installed")
                         subprocess.run("bootctl install --no-variables",
                             shell=True, universal_newlines=True, text=True)
                     else:
+                        print("Installing systemd-boot bootloader...")
                         subprocess.run("bootctl install --no-variables",
                             shell=True, universal_newlines=True, text=True)
         except Exception:
