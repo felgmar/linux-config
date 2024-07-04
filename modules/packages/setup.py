@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from logging import log
-import logging
 import subprocess, shutil, getpass
 
 class PackageManager():
@@ -165,7 +163,6 @@ class PackageManager():
                 "breeze-gtk",
                 "dolphin",
                 "gnome-keyring",
-                "kdeconnect",
                 "kde-gtk-config",
                 "kdialog",
                 "kscreen",
