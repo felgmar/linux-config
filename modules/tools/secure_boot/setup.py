@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
+from locale import currency
 import getpass, subprocess, os
+
+from os import R_OK
 
 from modules.packages.setup import PackageManager
 
@@ -108,6 +111,17 @@ class SecureBootManager():
                         print("Installing systemd-boot bootloader...")
                         subprocess.run("sudo bootctl install --no-variables",
                             shell=True, universal_newlines=True, text=True)
+                        
+                try:
+                    if verbose:
+                        subprocess.run("cp -v /boot/EFI/systemd/systemd-bootx64.efi /boot/EFI/BOOT/loader.efi",
+                                        shell=True,universal_newlines=True, text=True)
+                    else:
+                        print(f"Copying file /boot/EFI/systemd/systemd-bootx64.efi to /boot/EFI/BOOT/loader.efi")
+                        subprocess.run("cp /boot/EFI/systemd/systemd-bootx64.efi /boot/EFI/BOOT/loader.efi",
+                                        shell=True,universal_newlines=True, text=True)
+                except:
+                    raise
             else:
                 for file in preloader_files:
                     if not os.access(file, os.R_OK):
@@ -153,5 +167,17 @@ class SecureBootManager():
                         print("Installing systemd-boot bootloader...")
                         subprocess.run("bootctl install --no-variables",
                             shell=True, universal_newlines=True, text=True)
-        except Exception:
+                
+                try:
+                    if verbose:
+                        subprocess.run("sudo cp -v /boot/EFI/systemd/systemd-bootx64.efi /boot/EFI/BOOT/loader.efi",
+                                        shell=True,universal_newlines=True, text=True)
+                    else:
+                        print(f"Copying file /boot/EFI/systemd/systemd-bootx64.efi to /boot/EFI/BOOT/loader.efi")
+                        subprocess.run("sudo cp /boot/EFI/systemd/systemd-bootx64.efi /boot/EFI/BOOT/loader.efi",
+                                        shell=True,universal_newlines=True, text=True)
+                except:
+                    raise
+
+        except:
             raise
