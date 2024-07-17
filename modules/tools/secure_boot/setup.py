@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
-from locale import currency
 import getpass, subprocess, os
-
-from os import R_OK
 
 from modules.packages.setup import PackageManager
 
