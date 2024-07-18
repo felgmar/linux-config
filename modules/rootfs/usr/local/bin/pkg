@@ -21,4 +21,3 @@ case "$1" in
     clean) shift; sudo pacman -Rncsdu $(pacman -Qqtd); exit $?;;
     *) test ! -z $1 && echo "error: $1: unknown command"; exit $?;;
 esac
-

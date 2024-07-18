@@ -115,4 +115,3 @@ update_ppsspp_files || exit 1
 update_mangohud_files || exit 1
 update_mozilla_files || exit 1
 upload_changes || exit 1
-

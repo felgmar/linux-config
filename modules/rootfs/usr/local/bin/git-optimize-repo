@@ -18,4 +18,3 @@ else
         git repack -a -d -f --depth=250 --window=250 && \
         cd "${previous_dir}"
 fi
-

@@ -9,4 +9,3 @@ then
 else
     echo "error: paru: file not found"
 fi
-

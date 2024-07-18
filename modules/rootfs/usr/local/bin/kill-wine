@@ -13,4 +13,3 @@ else
     echo "Wine is not running!"
     exit 2
 fi
-
