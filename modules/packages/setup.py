@@ -122,6 +122,7 @@ class PackageManager():
                 "ananicy-git",
                 "archlinux-artwork",
                 "duckstation-git",
+                "corectrl-git",
                 "ckb-next-git",
                 "github-desktop",
                 "lib32-mangohud-git",
