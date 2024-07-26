@@ -85,7 +85,6 @@ class PackageManager():
                 "linux-lts-headers",
                 "linux-zen",
                 "linux-zen-headers",
-                "lutris",
                 "mesa-vdpau",
                 "pacman-contrib",
                 "papirus-icon-theme",
@@ -121,6 +120,7 @@ class PackageManager():
             aur: list[str] = [
                 "ananicy-git",
                 "archlinux-artwork",
+                "bottles-git",
                 "duckstation-git",
                 "corectrl-git",
                 "ckb-next-git",
