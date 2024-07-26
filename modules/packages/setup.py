@@ -132,6 +132,7 @@ class PackageManager():
                 "plymouth-theme-archlinux",
                 "ppsspp-git",
                 "preloader-signed",
+                "protonup-rs",
                 "rate-mirrors",
                 "rpcs3-git",
                 "spotify",
