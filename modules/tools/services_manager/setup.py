@@ -37,12 +37,10 @@ class ServicesManager():
         return services
 
     def enable_service(self, service: str) -> None:
-        cmd: str
-
         if self.current_user == "root":
-            cmd = f"systemctl enable {service}"
+            cmd: str = f"systemctl enable {service}"
         else:
-            cmd = f"sudo systemctl enable {service}"
+            cmd: str = f"sudo systemctl enable {service}"
 
         try:
             subprocess.run(cmd, shell=True)
@@ -62,7 +60,7 @@ class ServicesManager():
 
                 disabled_services.append(service_name)
             else:
-                print(f"{service_name} is already {readable_service_status}")
+                print(f"{service_name} is {readable_service_status}")
 
         for disabled_service in disabled_services:
             try:

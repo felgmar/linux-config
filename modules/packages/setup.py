@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
+from multiprocessing import Value
 import subprocess, shutil, getpass
+
+from matplotlib import use
 
 class PackageManager():
     def __init__(self):
@@ -8,9 +11,9 @@ class PackageManager():
         current_distro_cmd: subprocess.CompletedProcess[str] = subprocess.run("lsb_release -ds", shell=True, universal_newlines=True, capture_output=True, text=True)
         self.current_distro = current_distro_cmd.stdout.replace("\"", "").removesuffix("\n")
         self.current_user = getpass.getuser()
-        
+
         if not self.lsb_release_bin:
-            raise IOError("lsb_release: binary not found")
+            raise FileNotFoundError("lsb_release: not found")
 
     def get_package_manager(self, overridePackageManager: bool = False) -> str:
         pm_bin: str
@@ -37,7 +40,7 @@ class PackageManager():
                 if shutil.which(pm):
                     pm_bin = pm
                     break
- 
+
         return pm_bin
 
     def install_aur_helper(self, distro: str, package_manager: str):
@@ -48,9 +51,9 @@ class PackageManager():
             raise ValueError(f"{distro}: unsupported distribution.")
 
     def convert_list_to_str(self, list: list[str]) -> str:
-        newlist = ' '.join(list)
+        new_list: str = ' '.join(list)
 
-        return newlist
+        return new_list
 
     def get_main_packages_list(self) -> list[str]:
         if self.current_distro == "Arch Linux":
@@ -184,25 +187,24 @@ class PackageManager():
             if only_get_aur and self.current_distro == "Arch Linux":
                 return aur
             else:
-                user_choice: str = input("Choose a desktop environment [gnome/kde/xfce]: ")
+                try:
+                    user_choice: str = input("Choose a desktop environment [gnome/kde/xfce]: ")
 
-            while True:
-                match user_choice:
-                    case "gnome":
-                        selected_pkglist = arch_gnome
-                        break
-                    case "kde" | "plasma":
-                        selected_pkglist =  arch_kde
-                        break
-                    case "xfce":
-                        selected_pkglist =  arch_xfce
-                        break
-                    case _:
-                        if user_choice.isalpha:
-                            raise ValueError(f"{user_choice}: invalid desktop environment specified.")
-                        else:
-                            raise EOFError("no desktop environment was detected.")
+                    if not user_choice:
+                        raise ValueError("No desktop environment was chosen.")
+                except:
+                    raise
 
+            match user_choice:
+                case "gnome":
+                    selected_pkglist = arch_gnome
+                case "kde" | "plasma":
+                    selected_pkglist =  arch_kde
+                case "xfce":
+                    selected_pkglist =  arch_xfce
+                case _:
+                    raise ValueError(f"{user_choice}: invalid desktop environment chosen")
+                
         return selected_pkglist
 
     def install_packages(self, package_manager: str, custom_pkglist: list[str] = []) -> None:
