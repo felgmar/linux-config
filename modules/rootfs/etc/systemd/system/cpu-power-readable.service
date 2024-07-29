@@ -1,5 +1,5 @@
 [Unit]
-Description=Allow reading power using on Intel CPUs
+Description=Allow reading power usage using on Intel CPUs
 
 [Service]
 Type=oneshot
