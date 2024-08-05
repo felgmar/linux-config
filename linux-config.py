@@ -2,10 +2,10 @@
 
 import sys, argparse
 
-from modules.kernels.setup import KernelInstaller
-from modules.packages.setup import PackageManager
-from modules.tools.secure_boot.setup import SecureBootManager
-from modules.tools.services_manager.setup import ServicesManager
+from modules.kernels import kernel_manager
+from modules.packages import package_manager
+from modules.secure_boot import secure_boot_manager
+from modules.services import services_manager
 
 current_platform = sys.platform.lower()
 
@@ -32,60 +32,66 @@ group.add_argument("--version", action="version", version="%(prog)s 1.0")
 
 args = parser.parse_args()
 
-if current_platform != "linux":
-    raise RuntimeError(f"{current_platform}: platform not supported")
-else:
-    if __name__ == "__main__":
-        if args.verbose:
-            print(f"[i] Action set to: {args.action}\n[i] Distribution set to: {args.distro}\n")
-            input(f"Press any key to continue.\n")
+if __name__ == "__main__":
+    if current_platform != "linux":
+        raise RuntimeError(f"{current_platform}: platform not supported")
 
-        try:
-            match args.action:
-                case "setup-secure-boot":
-                    sbm = SecureBootManager()
+    if args.verbose:
+        print(f"[i] Action set to: {args.action}\n[i] Distribution set to: {args.distro}\n")
+        input(f"Press any key to continue.\n")
 
-                    if args.verbose:
-                        sbm.install_dependencies(verbose=True)
-                        sbm.backup_boot_files(verbose=True)
-                        sbm.install_shim(verbose=True)
-                    else:
-                        sbm.install_dependencies()
-                        sbm.backup_boot_files()
-                        sbm.install_shim()
+    try:
+        match args.action:
+            case "setup-secure-boot":
+                sbm = secure_boot_manager()
+                pm = package_manager()
 
-                case "install-tkg-kernel":
-                    pm = PackageManager()
-                    ki = KernelInstaller()
+                if args.verbose:
+                    sbm.install_dependencies(verbose=True)
+                    sbm.backup_boot_files(verbose=True)
+                    sbm.install_shim(verbose=True)
+                else:
+                    sbm.install_dependencies()
+                    sbm.backup_boot_files()
+                    sbm.install_shim()
 
-                    ki.clone_repo("https://github.com/frogging-family/linux-tkg.git", "linux-tkg")
-                    ki.install_kernel("linux-tkg")
+            case "install-tkg-kernel":
+                pm = package_manager()
+                km = kernel_manager()
 
-                case "install-packages":
-                    pm = PackageManager()
-                    package_manager = pm.get_package_manager(overridePackageManager=True)
+                km.repo_url = "https://github.com/frogging-family/linux-tkg.git"
+                km.repo_dir = "linux-tkg"
 
-                    if args.verbose:
-                        print(f"[i] Package manager to be used: {package_manager}")
+                if args.verbose:
+                    km.install_kernel(verbose=True)
+                else:
+                    km.install_kernel()
 
-                    pm.install_packages(package_manager)
+            case "install-packages":
+                pm = package_manager()
+                package_manager = pm.get_package_manager(overridePackageManager=True)
 
-                case "setup-rootfs":
-                    raise NotImplementedError("This function is not implemented yet.")
+                if args.verbose:
+                    print(f"[i] Package manager to be used: {package_manager}")
 
-                case "setup-services":
-                    pm = PackageManager()
-                    sm = ServicesManager()
+                pm.install_packages(package_manager)
 
-                    pkglist = pm.get_package_list()
-                    services = sm.get_services_list(pkglist)
+            case "setup-rootfs":
+                raise NotImplementedError("This function is not implemented yet.")
 
-                    sm.enable_services(services)
+            case "setup-services":
+                pm = package_manager()
+                sm = services_manager()
 
-                case _:
-                    if args.action:
-                        raise ValueError(f"{args.action}: invalid action")
-                    else:
-                        raise ValueError("No action was specified.")
-        except Exception:
-            raise
+                pkglist = pm.get_package_list()
+                services = sm.get_services_list(pkglist)
+
+                sm.enable_services(services)
+
+            case _:
+                if args.action:
+                    raise ValueError(f"{args.action}: invalid action")
+                else:
+                    raise ValueError("No action was specified.")
+    except Exception:
+        raise

@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 
-from multiprocessing import Value
 import subprocess, shutil, getpass
 
-from matplotlib import use
-
-class PackageManager():
+class package_manager():
     def __init__(self):
         self.lsb_release_bin: str | None = shutil.which("lsb_release")
         current_distro_cmd: subprocess.CompletedProcess[str] = subprocess.run("lsb_release -ds", shell=True, universal_newlines=True, capture_output=True, text=True)

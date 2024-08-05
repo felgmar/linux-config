@@ -2,9 +2,9 @@
 
 import getpass, subprocess, os
 
-from modules.packages.setup import PackageManager
+from modules.packages import package_manager
 
-class SecureBootManager():
+class secure_boot_manager():
     def __init__(self):
         self.current_user: str = getpass.getuser()
 
@@ -13,19 +13,19 @@ class SecureBootManager():
             "preloader-signed"
         ]
 
-        pm = PackageManager()
+        pm = package_manager()
         pm_bin = pm.get_package_manager()
 
         if pm_bin != "paru" or "yay":
             for pm_override in "yay", "paru":
                 if pm_override == "paru" or "yay":
-                    package_manager = pm_override
+                    pkgmgr = pm_override
 
             if verbose:
                 if pm_bin != pm_override:
                     print(f"The package manager has been set to: {pm_override}")
 
-        pm.install_packages(package_manager, custom_pkglist=pkglist)
+        pm.install_packages(pkgmgr, custom_pkglist=pkglist)
 
     def backup_boot_files(self, verbose: bool = False) -> None:
         boot_files: list[str] = [
