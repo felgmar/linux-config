@@ -18,11 +18,11 @@ class kernel_manager():
 
     def update_repo(self) -> None:
         previous_dir: str = os.curdir
-        command: str = f"git pull {self.repo_dir}"
+        command: str = f"git pull"
 
         try:
             if os.path.isdir(self.kernels_directory + self.repo_dir):
-                os.chdir(self.kernels_directory)
+                os.chdir(self.kernels_directory + self.repo_dir)
                 subprocess.run(command, shell=True)
                 os.chdir(previous_dir)
         except:
@@ -47,7 +47,10 @@ class kernel_manager():
 
         if not self.current_distro:
             raise ValueError("No distro was specified.")
-        
+
+        if not os.path.isdir(self.kernels_directory):
+            os.makedirs(self.kernels_directory)
+
         try:
             self.clone_repo()
         except:
@@ -55,8 +58,7 @@ class kernel_manager():
 
         match self.current_distro:
             case "Arch Linux":
-                if self.repo_dir == "linux-tkg":
-                    os.chdir(self.kernels_directory + self.repo_dir)
+                if os.path.isdir(self.kernels_directory):
                     if os.path.isfile("customization.cfg"):
                         try:
                             if os.environ.get("EDITOR"):
@@ -65,27 +67,23 @@ class kernel_manager():
                                 print("You do not seem to have set a default text editor.")
                                 user_text_editor: str = str(input("Specify an alternate text editor: "))
 
-                            if user_text_editor:
-                                if verbose:
-                                    print(f"The text editor has been set manually to: {user_text_editor}")
+                                if user_text_editor:
+                                    if verbose:
+                                        print(f"The text editor has been set manually to: {user_text_editor}")
 
-                                subprocess.run(f"{user_text_editor} customization.cfg", shell=True)
-                            else:
-                                if verbose:
-                                    print("No text editor was specified, omitting customization.")
+                                    subprocess.run(f"{user_text_editor} customization.cfg", shell=True)
+                                else:
+                                    if verbose:
+                                        print("No text editor was specified, omitting customization.")
                         except Exception:
                             raise
 
-                    if os.path.isfile("PKGBUILD"):
-                        subprocess.run("makepkg -sirf", shell=True)
+                        if os.path.isfile("PKGBUILD"):
+                            subprocess.run("makepkg -sirf", shell=True)
 
-                        os.chdir(previous_dir)
+                            os.chdir(previous_dir)
                     else:
                         raise FileNotFoundError("customization.cfg: file not found")
-                else:
-                    if os.path.isfile("PKGBUILD"):
-                        subprocess.run("makepkg -sirf", shell=True)
-                        os.chdir(previous_dir)
             case _:
                 if self.current_distro:
                     raise NotImplementedError(self.current_distro + " is not implemented yet.")
