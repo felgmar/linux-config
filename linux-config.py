@@ -11,8 +11,7 @@ current_platform = sys.platform.lower()
 
 actions = [
     "setup-secure-boot", "install-tkg-kernel",
-    "install-packages", "install-packages",
-    "setup-rootfs", "setup-services"
+    "install-packages", "setup-rootfs", "setup-services"
 ]
 
 parser = argparse.ArgumentParser(prog="linux-config")
