@@ -77,8 +77,6 @@ class package_manager():
                 "libva-mesa-driver",
                 "less",
                 "linux",
-                "linux-hardened",
-                "linux-hardened-headers",
                 "linux-headers",
                 "linux-lts",
                 "linux-lts-headers",
