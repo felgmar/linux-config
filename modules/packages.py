@@ -107,7 +107,6 @@ class package_manager():
 
         if self.current_distro == "Arch Linux":
             aur: list[str] = [
-                "ananicy-git",
                 "archlinux-artwork",
                 "bottles-git",
                 "duckstation-git",
@@ -117,6 +116,7 @@ class package_manager():
                 "google-chrome",
                 "lib32-mangohud-git",
                 "mangohud-git",
+                "minq-ananicy-git",
                 "mkinitcpio-firmware",
                 "pcsx2-git",
                 "plymouth-theme-archlinux",
