@@ -9,7 +9,7 @@ from modules.services import services_manager
 
 current_platform = sys.platform.lower()
 
-actions = [
+actions: list[str] = [
     "setup-secure-boot", "install-tkg-kernel",
     "install-packages", "setup-rootfs", "setup-services"
 ]
