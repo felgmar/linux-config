@@ -74,8 +74,6 @@ class package_manager():
                 "intel-ucode",
                 "lib32-vulkan-mesa-layers",
                 "libva-mesa-driver",
-                "linux",
-                "linux-headers",
                 "mesa-vdpau",
                 "pacman-contrib",
                 "papirus-icon-theme",
