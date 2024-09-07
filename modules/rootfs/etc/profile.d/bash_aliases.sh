@@ -15,4 +15,3 @@ upgrade_all()
 
     eval $paru_bin $paru_args
 }
-
