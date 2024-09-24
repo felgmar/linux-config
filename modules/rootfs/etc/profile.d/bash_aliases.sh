@@ -7,11 +7,3 @@ alias rm='trash -v'
 alias cp='cp -i'
 alias mv='mv -i'
 alias edit='$(echo ${EDITOR})'
-
-upgrade_all()
-{
-    paru_bin="$(command -v paru)"
-    paru_args="-Syuu --needed --sudoloop"
-
-    eval $paru_bin $paru_args
-}
