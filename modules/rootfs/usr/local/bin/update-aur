@@ -1,11 +1,14 @@
-#!/bin/sh
+#!/usr/bin/env python3
 
-paru_bin="$(command -v paru)"
+import os
+
+paru_bin="/usr/bin/paru"
 paru_args="-Syuu --needed --sudoloop --aur"
 
-if test -x "${paru_bin}"
-then
-    eval ${paru_bin} ${paru_args}
-else
-    echo "error: paru: file not found"
-fi
+if __name__ == "__main__":
+    cmd: str = paru_bin + " " + paru_args
+
+    try:
+        os.system(cmd)
+    except Exception as ex:
+        raise ex
