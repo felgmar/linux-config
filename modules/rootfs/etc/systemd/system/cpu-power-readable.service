@@ -4,8 +4,8 @@ Description=Allow reading power usage on Intel CPUs
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/bin/chmod o+r /sys/class/powercap/intel-rapl:0/energy_uj
-ExecStop=/usr/bin/chmod o-r /sys/class/powercap/intel-rapl:0/energy_uj
+ExecStart=/usr/bin/chmod o+r /sys/class/powercap/intel-rapl\:0/energy_uj
+ExecStop=/usr/bin/chmod o-r /sys/class/powercap/intel-rapl\:0/energy_uj
 
 [Install]
 WantedBy=graphical.target
