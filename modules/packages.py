@@ -111,7 +111,6 @@ class package_manager():
                 "corectrl-git",
                 "ckb-next-git",
                 "github-desktop",
-                "google-chrome",
                 "lib32-mangohud-git",
                 "mangohud-git",
                 "minq-ananicy-git",
