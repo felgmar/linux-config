@@ -32,6 +32,8 @@ class package_manager():
                 if shutil.which(pm):
                     pm_bin = pm
                     break
+                else:
+                    print("{0} was not found", pm)
         else:
             for pm in package_managers:
                 if shutil.which(pm):
