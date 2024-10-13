@@ -126,7 +126,7 @@ class package_manager():
                 "rpcs3-git",
                 "spotify",
                 "ttf-meslo-nerd-font-powerlevel10k",
-                "ventoy",
+                "ventoy-bin",
                 "visual-studio-code-bin",
                 "zsh-theme-powerlevel10k-git"
             ]
