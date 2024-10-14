@@ -5,7 +5,6 @@ import getpass, subprocess
 class services_manager():
     def __init__(self):
         self.current_user = getpass.getuser()
-
     
     def get_services_list(self, pkglist: list[str]) -> list[str]:
         services: list[str] = [
