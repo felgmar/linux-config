@@ -13,7 +13,7 @@ class package_manager():
             raise FileNotFoundError("lsb_release: not found")
 
     def get_package_manager(self, overridePackageManager: bool = False) -> str:
-        pm_bin: str
+        pm_bin: str = ""
 
         package_managers = [
             "apt",
