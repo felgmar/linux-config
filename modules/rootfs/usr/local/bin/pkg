@@ -2,22 +2,32 @@
 
 if ! test -x "$(command -v sudo)"
 then
-    sudo pacman -S --needed base-devel
+    sudo pacman -S --needed sudo
 fi
 
-if test -z "$1"
-then
+help()
+{
     echo "Usage: $(basename $0) [install|update|upgrade|purge|search|clean]"
     exit 1
-fi
+}
+
+test -z "$1" && help || continue
 
 case "$1" in
-    install) shift; sudo pacman -S --needed "$@"; exit $?;;
-    remove) shift; sudo pacman -R "$@"; exit $?;;
-    update) shift; sudo pacman -Sy --needed; exit $?;;
-    upgrade) shift; sudo pacman -Syu --needed; exit $?;;
-    purge) shift; sudo pacman -Rncsdu "$@"; exit $?;;
-    search) shift; pacman -Ss "$@"; exit $?;;
-    clean) shift; sudo pacman -Rncsdu $(pacman -Qqtd); exit $?;;
-    *) test ! -z $1 && echo "error: $1: unknown command"; exit $?;;
+    "install" | "in") shift; sudo pacman -S --needed "$@"; exit $?;;
+    "remove" | "re") shift; sudo pacman -R "$@"; exit $?;;
+    "update" | "up") shift; sudo pacman -Sy --needed; exit $?;;
+    "upgrade" | "ug") shift; sudo pacman -Syu --needed; exit $?;;
+    "purge" | "pu") shift; sudo pacman -Rncsdu "$@"; exit $?;;
+    "search" | "se") shift; pacman -Ss "$@"; exit $?;;
+    "clean" | "cl") shift; sudo pacman -Rncsdu $(pacman -Qqtd); exit $?;;
+    *)
+        if test ! -z "$1"
+        then
+            echo "error: $1: unknown command"
+            exit $?
+        else
+            help
+        fi
+    ;;
 esac
