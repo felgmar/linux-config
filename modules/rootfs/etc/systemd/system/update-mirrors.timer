@@ -1,0 +1,10 @@
+[Unit]
+Description=Update pacman mirrorlist
+
+[Timer]
+OnCalendar=hourly
+OnBootSec=1min
+
+[Install]
+WantedBy=timers.target
+

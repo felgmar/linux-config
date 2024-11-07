@@ -1,0 +1,6 @@
+[Unit]
+Description=Update pacman mirrorlist
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/rate-mirrors --allow-root --save /etc/pacman.d/mirrorlist arch
