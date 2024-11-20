@@ -58,9 +58,6 @@ if __name__ == "__main__":
                 pm = package_manager()
                 km = kernel_manager()
 
-                km.repo_url = "https://github.com/frogging-family/linux-tkg.git"
-                km.repo_dir = "linux-tkg"
-
                 if args.verbose:
                     km.install_kernel(verbose=True)
                 else:
@@ -81,9 +78,9 @@ if __name__ == "__main__":
             case "setup-services":
                 pm = package_manager()
                 sm = services_manager()
+                desktop_environment = pm.desktop_environment
 
-                pkglist = pm.get_package_list()
-                services = sm.get_services_list(pkglist)
+                services = sm.get_services_list(desktop_environment)
 
                 sm.enable_services(services)
 
