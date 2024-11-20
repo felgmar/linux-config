@@ -1,4 +1,3 @@
 __pycache__
-modules/kernels
+modules/repositories
 modules/packages/paru
-modules/tools/linux-utils
