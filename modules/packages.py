@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+import os, subprocess, shutil, getpass
 
-import subprocess, shutil, getpass
+from modules import repository
 
 class package_manager():
     def __init__(self):
@@ -8,6 +9,8 @@ class package_manager():
         current_distro_cmd: subprocess.CompletedProcess[str] = subprocess.run("lsb_release -ds", shell=True, universal_newlines=True, capture_output=True, text=True)
         self.current_distro = current_distro_cmd.stdout.replace("\"", "").removesuffix("\n")
         self.current_user = getpass.getuser()
+
+        self.desktop_environment: str = self.get_desktop_environment()
 
         if not self.lsb_release_bin:
             raise FileNotFoundError("lsb_release: not found")
@@ -28,12 +31,12 @@ class package_manager():
         ]
 
         if overridePackageManager:
-            for pm in aur_helpers:
-                if shutil.which(pm):
-                    pm_bin = pm
+            for helper in aur_helpers:
+                if shutil.which(helper):
+                    pm_bin = helper
                     break
                 else:
-                    print("{0} was not found", pm)
+                    print(helper, "was not found")
         else:
             for pm in package_managers:
                 if shutil.which(pm):
@@ -43,20 +46,29 @@ class package_manager():
         return pm_bin
 
     def install_aur_helper(self, distro: str, package_manager: str):
-        if distro == "Arch Linux":
-            if package_manager != "yay" or package_manager != "paru":
-                raise ValueError(f"{package_manager} is not an AUR helper.")
-        else:
-            raise ValueError(f"{distro}: unsupported distribution.")
+        match distro:
+            case "Arch Linux":
+                match package_manager:
+                    case "paru":
+                        rm = repository.repository_manager()
+                        rm.repo_url = "https://aur.archlinux.org/paru.git"
+                        rm.repo_dir = os.path.join(os.curdir, package_manager)
+                    case "yay":
+                        raise NotImplementedError()
+                    case _:
+                        raise ValueError(package_manager, "invalid package manager")
+            case _:
+                raise ValueError(distro, ": unsupported distribution")
 
     def convert_list_to_str(self, list: list[str]) -> str:
-        new_list: str = ' '.join(list)
+        new_list = ' '.join(list)
 
         return new_list
 
     def get_main_packages_list(self) -> list[str]:
-        if self.current_distro == "Arch Linux":
-            arch_main: list[str] = [
+        match self.current_distro:
+            case "Arch Linux":
+                pkglist = [
                 "alacritty",
                 "apparmor",
                 "archlinux-wallpaper",
@@ -99,114 +111,120 @@ class package_manager():
                 "zsh-completions",
                 "zsh-syntax-highlighting"
             ]
-            return arch_main
-        else:
-            raise ValueError(f"{self.current_distro} is not supported.")
+                return pkglist
+            case _:
+                raise ValueError(self.current_distro, "is not supported.")
 
-    def get_package_list(self, only_get_aur: bool = False) -> list[str]:
-        selected_pkglist: list[str]
+    def get_desktop_environment(self) -> str:
+        desktop_environment = input("Choose a desktop environment [gnome/kde/xfce]: ")
 
-        if self.current_distro == "Arch Linux":
-            aur: list[str] = [
-                "archlinux-artwork",
-                "bottles-git",
-                "duckstation-git",
-                "ckb-next-git",
-                "github-desktop",
-                "lib32-mangohud-git",
-                "mangohud-git",
-                "minq-ananicy-git",
-                "mkinitcpio-firmware",
-                "pcsx2-git",
-                "plymouth-theme-archlinux",
-                "ppsspp-git",
-                "preloader-signed",
-                "protonup-rs",
-                "rate-mirrors",
-                "rpcs3-git",
-                "spotify",
-                "ttf-meslo-nerd-font-powerlevel10k",
-                "ventoy-bin",
-                "visual-studio-code-bin",
-                "zsh-theme-powerlevel10k-git"
-            ]
+        if not desktop_environment:
+            raise ValueError("No desktop environment was chosen.")
 
-            arch_gnome: list[str] = [
-                "gdm",
-                "gnome-backgrounds",
-                "gnome-browser-connector",
-                "gnome-control-center",
-                "gnome-disk-utility",
-                "gnome-keyring",
-                "gnome-themes-extra",
-                "gvfs",
-                "gvfs-mtp",
-                "gvfs-nfs",
-                "gvfs-google",
-                "libappindicator-gtk3",
-                "malcontent",
-                "nautilus"
-            ]
+        match desktop_environment:
+            case "gnome":
+                return "gnome"
+            case "kde" | "plasma":
+                return "kde"
+            case "xfce":
+                return "xfce"
+            case _:
+                raise ValueError(desktop_environment, "invalid desktop environment chosen")
 
-            arch_kde: list[str] = [
-                "bluedevil",
-                "breeze-gtk",
-                "dolphin",
-                "gnome-keyring",
-                "kde-gtk-config",
-                "kdialog",
-                "kscreen",
-                "kwalletmanager",
-                "kwallet-pam",
-                "plasma-desktop",
-                "plasma-nm",
-                "plasma-pa",
-                "powerdevil",
-                "sddm"
-            ]
+    def get_package_list(self, desktop_environment: str, only_get_aur: bool = False) -> list[str]:
+        match self.current_distro:
+            case "Arch Linux":
+                aur = [
+                    "archlinux-artwork",
+                    "bottles-git",
+                    "duckstation-git",
+                    "ckb-next-git",
+                    "github-desktop",
+                    "lib32-mangohud-git",
+                    "mangohud-git",
+                    "minq-ananicy-git",
+                    "mkinitcpio-firmware",
+                    "pcsx2-git",
+                    "plymouth-theme-archlinux",
+                    "ppsspp-git",
+                    "preloader-signed",
+                    "protonup-rs",
+                    "rate-mirrors",
+                    "rpcs3-git",
+                    "spotify",
+                    "ttf-meslo-nerd-font-powerlevel10k",
+                    "ventoy-bin",
+                    "visual-studio-code-bin",
+                    "zsh-theme-powerlevel10k-git"
+                ]
 
-            arch_xfce: list[str] = [
-                "xfce4"
-            ]
+                gnome = [
+                    "gdm",
+                    "gnome-backgrounds",
+                    "gnome-browser-connector",
+                    "gnome-control-center",
+                    "gnome-disk-utility",
+                    "gnome-keyring",
+                    "gnome-themes-extra",
+                    "gvfs",
+                    "gvfs-mtp",
+                    "gvfs-nfs",
+                    "gvfs-google",
+                    "libappindicator-gtk3",
+                    "malcontent",
+                    "nautilus"
+                ]
 
-            if only_get_aur and self.current_distro == "Arch Linux":
-                return aur
-            else:
-                try:
-                    user_choice: str = input("Choose a desktop environment [gnome/kde/xfce]: ")
+                kde = [
+                    "bluedevil",
+                    "breeze-gtk",
+                    "dolphin",
+                    "gnome-keyring",
+                    "kde-gtk-config",
+                    "kdialog",
+                    "kscreen",
+                    "kwalletmanager",
+                    "kwallet-pam",
+                    "plasma-desktop",
+                    "plasma-nm",
+                    "plasma-pa",
+                    "powerdevil",
+                    "sddm"
+                ]
 
-                    if not user_choice:
-                        raise ValueError("No desktop environment was chosen.")
-                except:
-                    raise
+                xfce = [
+                    "xfce4"
+                ]
+            case _:
+                raise ValueError(self.current_distro, "unsupported distro")
 
-            match user_choice:
-                case "gnome":
-                    selected_pkglist = arch_gnome
-                case "kde" | "plasma":
-                    selected_pkglist =  arch_kde
-                case "xfce":
-                    selected_pkglist =  arch_xfce
-                case _:
-                    raise ValueError(f"{user_choice}: invalid desktop environment chosen")
-                
-        return selected_pkglist
+        if only_get_aur and self.current_distro == "Arch Linux":
+            return aur
+    
+        match desktop_environment:
+            case "gnome":
+                return gnome
+            case "kde" | "plasma" | "kdeplasma":
+                return kde
+            case "xfce":
+                return xfce
+            case _:
+                raise ValueError(desktop_environment, "invalid desktop environment")
 
     def install_packages(self, package_manager: str, custom_pkglist: list[str] = []) -> None:
         if custom_pkglist:
-            pkglist: str = self.convert_list_to_str(custom_pkglist)
-            packages: str = pkglist
+            packages = self.convert_list_to_str(custom_pkglist)
         else:
-            main_packages: list[str] = self.get_main_packages_list()
-            main_pkglist: str = self.convert_list_to_str(main_packages)
+            main_packages = self.get_main_packages_list()
+            main_pkglist = self.convert_list_to_str(main_packages)
 
-            extra_packages: list[str] = self.get_package_list()
-            pkglist: str = self.convert_list_to_str(extra_packages)
+            extra_packages = self.get_package_list(self.desktop_environment)
+            extra_pkglist = self.convert_list_to_str(extra_packages)
 
-            aur_packages: list[str] = self.get_package_list(only_get_aur=True)
-            aurlist: str = self.convert_list_to_str(aur_packages)
+            aur_packages = self.get_package_list(self.desktop_environment, only_get_aur=True)
+            aur_pkglist = self.convert_list_to_str(aur_packages)
 
-            packages: str = main_pkglist + " " + pkglist + " " + aurlist
+            packages = main_pkglist + " " + extra_pkglist + " " + aur_pkglist
 
         if self.current_distro != "Arch Linux":
             raise NotImplementedError(f"{self.current_distro}: such distro is not implemented yet")
@@ -214,37 +232,37 @@ class package_manager():
             if self.current_user != "root":
                 match package_manager:
                     case "apt":
-                        cmd: str = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
+                        cmd = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
                     case "pacman":
-                        cmd: str = f"sudo {package_manager} -Syu --needed {packages}"
+                        cmd = f"sudo {package_manager} -Syu --needed {packages}"
                     case "dnf":
-                        cmd: str = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
+                        cmd = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
                     case "paru":
                         if custom_pkglist:
-                            cmd: str = f"{package_manager} -S --needed --sudoloop {packages}"
+                            cmd = f"{package_manager} -S --needed --sudoloop {packages}"
                         else:
-                            cmd: str = f"{package_manager} -Syu --needed --sudoloop {packages}"
+                            cmd = f"{package_manager} -Syu --needed --sudoloop {packages}"
                     case "yay":
                         if custom_pkglist:
-                            cmd: str = f"{package_manager} -S --needed --sudoloop {packages}"
+                            cmd = f"{package_manager} -S --needed --sudoloop {packages}"
                         else:
-                            cmd: str = f"{package_manager} -Syu --needed --sudoloop {packages}"
+                            cmd = f"{package_manager} -Syu --needed --sudoloop {packages}"
                     case _:
-                        raise NotImplementedError(f"{package_manager}: unknown package manager.")
+                        raise NotImplementedError(package_manager, "unknown package manager.")
             else:
                 match package_manager:
                     case "apt":
-                        cmd: str = f"{package_manager} update && sudo {package_manager} install {packages}"
+                        cmd = f"{package_manager} update && sudo {package_manager} install {packages}"
                     case "pacman":
-                        cmd: str = f"{package_manager} -Syu --needed {packages}"
+                        cmd = f"{package_manager} -Syu --needed {packages}"
                     case "dnf":
-                        cmd: str = f"{package_manager} update && sudo {package_manager} install {packages}"
+                        cmd = f"{package_manager} update && sudo {package_manager} install {packages}"
                     case _:
                         if package_manager == "paru" or package_manager == "yay":
-                            raise PermissionError(f"{package_manager} is an AUR helper and it cannot be ran as "
+                            raise PermissionError(package_manager, "is an AUR helper and it cannot be ran as "
                                                   + self.current_user)
                         else:
-                            raise NotImplementedError(f"{package_manager}: unknown package manager.")
+                            raise NotImplementedError(package_manager, "unknown package manager.")
         try:
             subprocess.run(cmd, shell=True, universal_newlines=True, text=True)
         except Exception:

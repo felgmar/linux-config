@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-
 import getpass, subprocess
 
 class services_manager():
     def __init__(self):
         self.current_user = getpass.getuser()
-    
-    def get_services_list(self, pkglist: list[str]) -> list[str]:
+
+    def get_services_list(self, desktop_environment: str) -> list[str]:
         services: list[str] = [
             "systemd-oomd.socket",
             "systemd-boot-update.service",
@@ -24,16 +23,15 @@ class services_manager():
             "clamav-freshclam.service"
         ]
 
-        match pkglist:
-            case "arch_gnome":
+        match desktop_environment:
+            case "gnome":
                 services.append("gdm.service")
-
-            case "arch_kde" | "arch_plasma":
+            case "kde" | "plasma" | "kde_plasma":
                 services.append("sddm.service")
-
-            case "arch_xfce":
+            case "xfce":
                 services.append("lightdm.service")
-
+            case _:
+                raise ValueError(desktop_environment, "unknown desktop environment")
         return services
 
     def enable_service(self, service: str) -> None:
@@ -44,9 +42,9 @@ class services_manager():
 
         try:
             subprocess.run(cmd, shell=True)
-        except:
+        except Exception:
             raise
-    
+
     def enable_services(self, services: list[str], verbose: bool = False) -> None:
         disabled_services: list[str] = []
 

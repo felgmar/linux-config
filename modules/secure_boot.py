@@ -14,18 +14,12 @@ class secure_boot_manager():
         ]
 
         pm = package_manager()
-        pm_bin = pm.get_package_manager()
+        pm_bin = pm.get_package_manager(overridePackageManager=True)
 
-        if pm_bin != "paru" or "yay":
-            for pm_override in "yay", "paru":
-                if pm_override == "paru" or "yay":
-                    pkgmgr = pm_override
+        if verbose:
+            print("The package manager has been set to:", pm_bin)
 
-            if verbose:
-                if pm_bin != pm_override:
-                    print(f"The package manager has been set to: {pm_override}")
-
-        pm.install_packages(pkgmgr, custom_pkglist=pkglist)
+        pm.install_packages(pm_bin, custom_pkglist=pkglist)
 
     def backup_boot_files(self, verbose: bool = False) -> None:
         boot_files: list[str] = [
@@ -41,7 +35,7 @@ class secure_boot_manager():
                                 subprocess.run("sudo cp -v {0} {1}.backup".format(file, file),
                                                 shell=True, universal_newlines=True, text=True)
                             else:
-                                print("Copying '{0}' to '{1}'".format(file, file))
+                                print("Copying '{0}' to '{1}.backup'".format(file, file))
                                 subprocess.run("sudo cp {0} {1}.backup".format(file, file),
                                                 shell=True, universal_newlines=True, text=True)
                         else:
@@ -49,7 +43,7 @@ class secure_boot_manager():
                                 subprocess.run("cp -v {0} {1}.backup".format(file, file),
                                                 shell=True, universal_newlines=True, text=True)
                             else:
-                                print("Copying '{0}' to '{1}'".format(file, file))
+                                print("Copying '{0}' to '{1}.backup'".format(file, file))
                                 subprocess.run("cp {0} {1}.backup".format(file, file),
                                                 shell=True, universal_newlines=True, text=True)
                     case _:
@@ -86,6 +80,8 @@ class secure_boot_manager():
                                 print(f"Copying {file} to /boot/EFI/BOOT/BOOTX64.EFI".format(file))
                                 subprocess.run(f"sudo cp {file} /boot/EFI/BOOT/BOOTX64.EFI".format(file),
                                                shell=True, universal_newlines=True, text=True)
+                        case _:
+                            raise ValueError()
 
                     is_installed: subprocess.CompletedProcess[str] = subprocess.run("sudo bootctl is-installed", shell=True, universal_newlines=True, capture_output=True, text=True)
                     is_installed_readable: str = str(is_installed).replace("\n", "")
@@ -126,6 +122,8 @@ class secure_boot_manager():
                                 print("Copying '{0}' to /boot/EFI/BOOT/BOOTX64.EFI".format(file))
                                 subprocess.run("cp {0} /boot/EFI/BOOT/BOOTX64.EFI".format(file),
                                                 shell=True, universal_newlines=True, text=True)
+                        case _:
+                            raise ValueError()
 
                     is_installed = subprocess.run("bootctl is-installed",
                                                   shell=True, universal_newlines=True, capture_output=True, text=True)
