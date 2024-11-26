@@ -87,6 +87,7 @@ class package_manager():
                 "gamemode",
                 "github-cli",
                 "intel-ucode",
+                "lib32-libpulse",
                 "lib32-vulkan-mesa-layers",
                 "libva-mesa-driver",
                 "mesa-vdpau",
