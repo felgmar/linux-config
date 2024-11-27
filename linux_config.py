@@ -77,11 +77,11 @@ if __name__ == "__main__":
                 raise NotImplementedError("This function is not implemented yet.")
 
             case "setup-services":
-                pm = package_manager()
-                sm = services_manager()
-                desktop_environment = pm.desktop_environment
+                pm = PackageManager()
+                sm = ServicesManager()
+                DESKTOP_ENVIRONMENT = pm.desktop_environment
 
-                services = sm.get_services_list(desktop_environment)
+                services = sm.get_services_list(DESKTOP_ENVIRONMENT)
 
                 sm.enable_services(services)
 

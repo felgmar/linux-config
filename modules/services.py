@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-import getpass, subprocess
+import getpass
+import subprocess
 
-class services_manager():
+class ServicesManager():
     def __init__(self):
         self.current_user = getpass.getuser()
 
@@ -41,15 +42,17 @@ class services_manager():
             cmd: str = f"sudo systemctl enable {service}"
 
         try:
-            subprocess.run(cmd, shell=True)
-        except Exception:
-            raise
+            subprocess.run(cmd, shell=True, check=True)
+        except Exception as e:
+            raise e
 
     def enable_services(self, services: list[str], verbose: bool = False) -> None:
         disabled_services: list[str] = []
 
         for service_name in services:
-            service_status: subprocess.CompletedProcess[str] = subprocess.run(f"systemctl is-enabled {service_name}", shell=True, universal_newlines=True, capture_output=True, text=True)
+            service_status: subprocess.CompletedProcess[str] = \
+                subprocess.run("systemctl is-enabled" + service_name, shell=True,
+                               universal_newlines=True, capture_output=True, check=True, text=True)
             readable_service_status: str = service_status.stdout.removesuffix("\n")
 
             if readable_service_status == "disabled":
@@ -63,5 +66,5 @@ class services_manager():
         for disabled_service in disabled_services:
             try:
                 self.enable_service(disabled_service)
-            except:
-                raise
+            except Exception as e:
+                raise e
