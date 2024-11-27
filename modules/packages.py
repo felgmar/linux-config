@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
-import os, subprocess, shutil, getpass
+import os
+import subprocess
+import shutil
+import getpass
 
 from modules import repository
 
-class package_manager():
+class PackageManager():
     def __init__(self):
         self.lsb_release_bin: str | None = shutil.which("lsb_release")
-        current_distro_cmd: subprocess.CompletedProcess[str] = subprocess.run("lsb_release -ds", shell=True, universal_newlines=True, capture_output=True, text=True)
+        current_distro_cmd: subprocess.CompletedProcess[str] = \
+            subprocess.run("lsb_release -ds", shell=True, universal_newlines=True,
+                           capture_output=True, check=True, text=True)
         self.current_distro = current_distro_cmd.stdout.replace("\"", "").removesuffix("\n")
         self.current_user = getpass.getuser()
 
@@ -15,7 +20,7 @@ class package_manager():
         if not self.lsb_release_bin:
             raise FileNotFoundError("lsb_release: not found")
 
-    def get_package_manager(self, overridePackageManager: bool = False) -> str:
+    def get_package_manager(self, override_package_manager: bool = False) -> str:
         pm_bin: str = ""
 
         package_managers = [
@@ -30,7 +35,7 @@ class package_manager():
             "yay"
         ]
 
-        if overridePackageManager:
+        if override_package_manager:
             for helper in aur_helpers:
                 if shutil.which(helper):
                     pm_bin = helper
@@ -50,7 +55,7 @@ class package_manager():
             case "Arch Linux":
                 match package_manager:
                     case "paru":
-                        rm = repository.repository_manager()
+                        rm = repository.RepositoryManager()
                         rm.repo_url = "https://aur.archlinux.org/paru.git"
                         rm.repo_dir = os.path.join(os.curdir, package_manager)
                     case "yay":
@@ -60,8 +65,8 @@ class package_manager():
             case _:
                 raise ValueError(distro, ": unsupported distribution")
 
-    def convert_list_to_str(self, list: list[str]) -> str:
-        new_list = ' '.join(list)
+    def convert_list_to_str(self, list_to_convert: list[str]) -> str:
+        new_list = ' '.join(list_to_convert)
 
         return new_list
 
@@ -69,48 +74,48 @@ class package_manager():
         match self.current_distro:
             case "Arch Linux":
                 pkglist = [
-                "alacritty",
-                "apparmor",
-                "archlinux-wallpaper",
-                "bridge-utils",
-                "bitwarden",
-                "ccache",
-                "chezmoi",
-                "clamtk",
-                "corectrl",
-                "curl",
-                "dnsmasq",
-                "fail2ban",
-                "fastfetch",
-                "firewalld",
-                "fwupd",
-                "gamemode",
-                "github-cli",
-                "intel-ucode",
-                "lib32-libpulse",
-                "lib32-vulkan-mesa-layers",
-                "libva-mesa-driver",
-                "mesa-vdpau",
-                "pacman-contrib",
-                "papirus-icon-theme",
-                "pipewire-alsa",
-                "pipewire-pulse",
-                "power-profiles-daemon",
-                "qemu-desktop",
-                "steam",
-                "swtpm",
-                "telegram-desktop",
-                "trash-cli",
-                "virt-manager",
-                "vulkan-mesa-layers",
-                "wine",
-                "wget",
-                "xdg-user-dirs",
-                "zram-generator",
-                "zsh",
-                "zsh-autosuggestions",
-                "zsh-completions",
-                "zsh-syntax-highlighting"
+                    "alacritty",
+                    "apparmor",
+                    "archlinux-wallpaper",
+                    "bridge-utils",
+                    "bitwarden",
+                    "ccache",
+                    "chezmoi",
+                    "clamtk",
+                    "corectrl",
+                    "curl",
+                    "dnsmasq",
+                    "fail2ban",
+                    "fastfetch",
+                    "firewalld",
+                    "fwupd",
+                    "gamemode",
+                    "github-cli",
+                    "intel-ucode",
+                    "lib32-libpulse",
+                    "lib32-vulkan-mesa-layers",
+                    "libva-mesa-driver",
+                    "mesa-vdpau",
+                    "pacman-contrib",
+                    "papirus-icon-theme",
+                    "pipewire-alsa",
+                    "pipewire-pulse",
+                    "power-profiles-daemon",
+                    "qemu-desktop",
+                    "steam",
+                    "swtpm",
+                    "telegram-desktop",
+                    "trash-cli",
+                    "virt-manager",
+                    "vulkan-mesa-layers",
+                    "wine",
+                    "wget",
+                    "xdg-user-dirs",
+                    "zram-generator",
+                    "zsh",
+                    "zsh-autosuggestions",
+                    "zsh-completions",
+                    "zsh-syntax-highlighting"
             ]
                 return pkglist
             case _:
@@ -136,6 +141,7 @@ class package_manager():
         match self.current_distro:
             case "Arch Linux":
                 aur = [
+                    "7-zip-full",
                     "archlinux-artwork",
                     "bottles-git",
                     "duckstation-git",
@@ -201,7 +207,6 @@ class package_manager():
 
         if only_get_aur and self.current_distro == "Arch Linux":
             return aur
-    
         match desktop_environment:
             case "gnome":
                 return gnome
@@ -212,7 +217,10 @@ class package_manager():
             case _:
                 raise ValueError(desktop_environment, "invalid desktop environment")
 
-    def install_packages(self, package_manager: str, custom_pkglist: list[str] = []) -> None:
+    def install_packages(self, package_manager: str, custom_pkglist: list[str]) -> None:
+        if not self.current_distro == "Arch Linux":
+            raise NotImplementedError(f"{self.current_distro}: such distro is not implemented yet")
+
         if custom_pkglist:
             packages = self.convert_list_to_str(custom_pkglist)
         else:
@@ -227,44 +235,45 @@ class package_manager():
 
             packages = main_pkglist + " " + extra_pkglist + " " + aur_pkglist
 
-        if self.current_distro != "Arch Linux":
-            raise NotImplementedError(f"{self.current_distro}: such distro is not implemented yet")
+        cmd: str = ""
+
+        if self.current_user != "root":
+            match package_manager:
+                case "apt":
+                    cmd = f"sudo {package_manager} update &&" + \
+                           "sudo {package_manager} install {packages}"
+                case "pacman":
+                    cmd = f"sudo {package_manager} -Syu --needed {packages}"
+                case "dnf":
+                    cmd = f"sudo {package_manager} update &&" \
+                           "sudo {package_manager} install {packages}"
+                case "paru":
+                    if custom_pkglist:
+                        cmd = f"{package_manager} -S --needed --sudoloop {packages}"
+                    else:
+                        cmd = f"{package_manager} -Syu --needed --sudoloop {packages}"
+                case "yay":
+                    if custom_pkglist:
+                        cmd = f"{package_manager} -S --needed --sudoloop {packages}"
+                    else:
+                        cmd = f"{package_manager} -Syu --needed --sudoloop {packages}"
+                case _:
+                    raise NotImplementedError(package_manager, "unknown package manager.")
         else:
-            if self.current_user != "root":
-                match package_manager:
-                    case "apt":
-                        cmd = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
-                    case "pacman":
-                        cmd = f"sudo {package_manager} -Syu --needed {packages}"
-                    case "dnf":
-                        cmd = f"sudo {package_manager} update && sudo {package_manager} install {packages}"
-                    case "paru":
-                        if custom_pkglist:
-                            cmd = f"{package_manager} -S --needed --sudoloop {packages}"
-                        else:
-                            cmd = f"{package_manager} -Syu --needed --sudoloop {packages}"
-                    case "yay":
-                        if custom_pkglist:
-                            cmd = f"{package_manager} -S --needed --sudoloop {packages}"
-                        else:
-                            cmd = f"{package_manager} -Syu --needed --sudoloop {packages}"
-                    case _:
-                        raise NotImplementedError(package_manager, "unknown package manager.")
-            else:
-                match package_manager:
-                    case "apt":
-                        cmd = f"{package_manager} update && sudo {package_manager} install {packages}"
-                    case "pacman":
-                        cmd = f"{package_manager} -Syu --needed {packages}"
-                    case "dnf":
-                        cmd = f"{package_manager} update && sudo {package_manager} install {packages}"
-                    case _:
-                        if package_manager == "paru" or package_manager == "yay":
-                            raise PermissionError(package_manager, "is an AUR helper and it cannot be ran as "
-                                                  + self.current_user)
-                        else:
-                            raise NotImplementedError(package_manager, "unknown package manager.")
+            match package_manager:
+                case "apt":
+                    cmd = f"{package_manager} update && sudo {package_manager} install {packages}"
+                case "pacman":
+                    cmd = f"{package_manager} -Syu --needed {packages}"
+                case "dnf":
+                    cmd = f"{package_manager} update && sudo {package_manager} install {packages}"
+                case "paru" | "yay":
+                    raise PermissionError(package_manager,
+                                          "is an AUR helper and it cannot be ran as " +
+                                          self.current_user)
+                case _:
+                    raise NotImplementedError(package_manager, "unknown package manager.")
         try:
-            subprocess.run(cmd, shell=True, universal_newlines=True, text=True)
-        except Exception:
-            raise
+            subprocess.run(cmd, shell=True, universal_newlines=True, check=True, text=True)
+        except Exception as e:
+            raise e
