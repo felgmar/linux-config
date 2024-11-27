@@ -217,7 +217,7 @@ class PackageManager():
             case _:
                 raise ValueError(desktop_environment, "invalid desktop environment")
 
-    def install_packages(self, package_manager: str, custom_pkglist: list[str]) -> None:
+    def install_packages(self, package_manager: str, custom_pkglist: list[str] = []) -> None:
         if not self.current_distro == "Arch Linux":
             raise NotImplementedError(f"{self.current_distro}: such distro is not implemented yet")
 
