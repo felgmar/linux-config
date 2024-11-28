@@ -91,7 +91,7 @@ class SecureBootManager():
                                                shell=True, universal_newlines=True,
                                                check=True, text=True)
                         case _:
-                            raise ValueError()
+                            raise ValueError(file)
 
                     is_installed: subprocess.CompletedProcess[str] = \
                         subprocess.run("sudo bootctl is-installed", shell=True,

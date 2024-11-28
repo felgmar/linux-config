@@ -37,11 +37,11 @@ class PackageManager():
 
         if override_package_manager:
             for helper in aur_helpers:
-                if shutil.which(helper):
+                if not shutil.which(helper):
+                    print(helper, "was not found")
+                else:
                     pm_bin = helper
                     break
-                else:
-                    print(helper, "was not found")
         else:
             for pm in package_managers:
                 if shutil.which(pm):

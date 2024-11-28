@@ -86,9 +86,8 @@ if __name__ == "__main__":
                 sm.enable_services(services)
 
             case _:
-                if args.action:
-                    raise ValueError(f"{args.action}: invalid action")
-                else:
+                if not args.action:
                     raise ValueError("No action was specified.")
+                raise ValueError(f"{args.action}: invalid action")
     except Exception as e:
         raise e

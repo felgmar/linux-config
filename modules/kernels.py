@@ -18,6 +18,13 @@ class KernelManager():
 
         self.current_dir: str = os.getcwd()
 
+    def clone_kernel(self) -> None:
+        rm = RepositoryManager()
+        try:
+            rm.clone_repo()
+        except Exception as e:
+            raise e
+
     def install_kernel(self, verbose: bool = False) -> None:
         previous_dir: str = self.current_dir
 
@@ -31,7 +38,7 @@ class KernelManager():
         match self.current_distro:
             case "Arch Linux":
                 try:
-                    rm.clone_repo()
+                    self.clone_kernel()
                 except Exception as e:
                     raise e
 
