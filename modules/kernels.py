@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+Module containing the KernelManager class.
+"""
+
 import os
 import getpass
 import subprocess
@@ -7,6 +11,9 @@ import subprocess
 from modules.repository import RepositoryManager
 
 class KernelManager():
+    """
+    Manages the installation of custom kernels.
+    """
     def __init__(self):
         self.current_distro_cmd: subprocess.CompletedProcess[str] = \
             subprocess.run("lsb_release -ds", shell=True, universal_newlines=True,
@@ -19,6 +26,9 @@ class KernelManager():
         self.current_dir: str = os.getcwd()
 
     def clone_kernel(self) -> None:
+        """
+        Clones the custom kernel repository.
+        """
         rm = RepositoryManager()
         try:
             rm.clone_repo()
@@ -26,6 +36,9 @@ class KernelManager():
             raise e
 
     def install_kernel(self, verbose: bool = False) -> None:
+        """
+        Installs a custom kernel.
+        """
         previous_dir: str = self.current_dir
 
         rm = RepositoryManager()

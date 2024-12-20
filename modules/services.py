@@ -1,12 +1,23 @@
 #!/usr/bin/env python3
+
+"""
+Module containing the ServicesManager class.
+"""
+
 import getpass
 import subprocess
 
 class ServicesManager():
+    """
+    Manages services using systemctl.
+    """
     def __init__(self):
         self.current_user = getpass.getuser()
 
     def get_services_list(self, desktop_environment: str) -> list[str]:
+        """
+        Returns a list of services based on the desktop environment.
+        """
         services: list[str] = [
             "systemd-oomd.socket",
             "systemd-boot-update.service",
@@ -36,6 +47,9 @@ class ServicesManager():
         return services
 
     def enable_service(self, service: str) -> None:
+        """
+        Enable a service using systemctl.
+        """
         if self.current_user == "root":
             cmd: str = f"systemctl enable {service}"
         else:
@@ -47,6 +61,9 @@ class ServicesManager():
             raise e
 
     def enable_services(self, services: list[str], verbose: bool = False) -> None:
+        """
+        Enable a list of services using systemctl.
+        """
         disabled_services: list[str] = []
 
         for service_name in services:

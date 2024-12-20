@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+Main file for the Linux configuration script.
+"""
+
 import sys
 import argparse
 

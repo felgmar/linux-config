@@ -3,10 +3,14 @@ import os
 import subprocess
 import shutil
 import getpass
+from typing import Optional
 
 from modules import repository
 
 class PackageManager():
+    """
+    Manages the installation of packages.
+    """
     def __init__(self):
         self.lsb_release_bin: str | None = shutil.which("lsb_release")
         current_distro_cmd: subprocess.CompletedProcess[str] = \
@@ -21,6 +25,9 @@ class PackageManager():
             raise FileNotFoundError("lsb_release: not found")
 
     def get_package_manager(self, override_package_manager: bool = False) -> str:
+        """
+        Returns the package manager based on the current distribution.
+        """
         pm_bin: str = ""
 
         package_managers = [
@@ -51,6 +58,9 @@ class PackageManager():
         return pm_bin
 
     def install_aur_helper(self, distro: str, package_manager: str):
+        """
+        Installs an AUR helper based on the distribution.
+        """
         match distro:
             case "Arch Linux":
                 match package_manager:
@@ -66,11 +76,17 @@ class PackageManager():
                 raise ValueError(distro, ": unsupported distribution")
 
     def convert_list_to_str(self, list_to_convert: list[str]) -> str:
+        """
+        Converts a list to a string.
+        """
         new_list = ' '.join(list_to_convert)
 
         return new_list
 
     def get_main_packages_list(self) -> list[str]:
+        """
+        Returns a list of main packages based on the current distribution.
+        """
         match self.current_distro:
             case "Arch Linux":
                 pkglist = [
@@ -122,6 +138,9 @@ class PackageManager():
                 raise ValueError(self.current_distro, "is not supported.")
 
     def get_desktop_environment(self) -> str:
+        """
+        Returns the desktop environment based on the user's choice.
+        """
         desktop_environment = input("Choose a desktop environment [gnome/kde/xfce]: ")
 
         if not desktop_environment:
@@ -138,6 +157,9 @@ class PackageManager():
                 raise ValueError(desktop_environment, "invalid desktop environment chosen")
 
     def get_package_list(self, desktop_environment: str, only_get_aur: bool = False) -> list[str]:
+        """
+        Returns a list of packages based on the desktop environment.
+        """
         match self.current_distro:
             case "Arch Linux":
                 aur = [
@@ -217,11 +239,15 @@ class PackageManager():
             case _:
                 raise ValueError(desktop_environment, "invalid desktop environment")
 
-    def install_packages(self, package_manager: str, custom_pkglist: list[str] = []) -> None:
+    def install_packages(self, package_manager: str,
+                         custom_pkglist: Optional[list[str]] = None) -> None:
+        """
+        Installs packages based on the current distribution.
+        """
         if not self.current_distro == "Arch Linux":
             raise NotImplementedError(f"{self.current_distro}: such distro is not implemented yet")
 
-        if custom_pkglist:
+        if custom_pkglist is not None:
             packages = self.convert_list_to_str(custom_pkglist)
         else:
             main_packages = self.get_main_packages_list()
