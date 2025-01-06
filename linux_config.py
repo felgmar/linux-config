@@ -61,7 +61,8 @@ if __name__ == "__main__":
 
             case "install-tkg-kernel":
                 pm = PackageManager()
-                km = KernelManager()
+                km = KernelManager(kernel_url="https://github.com/frogging-family/linux-tkg.git",
+                                   kernel_dir="linux-tkg")
 
                 if args.verbose:
                     km.install_kernel(verbose=True)

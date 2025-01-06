@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
-import os
 import subprocess
 import shutil
 import getpass
 from typing import Optional
-
-from modules import repository
 
 class PackageManager():
     """
@@ -65,9 +62,7 @@ class PackageManager():
             case "Arch Linux":
                 match package_manager:
                     case "paru":
-                        rm = repository.RepositoryManager()
-                        rm.repo_url = "https://aur.archlinux.org/paru.git"
-                        rm.repo_dir = os.path.join(os.curdir, package_manager)
+                        raise NotImplementedError()
                     case "yay":
                         raise NotImplementedError()
                     case _:
@@ -90,6 +85,7 @@ class PackageManager():
         match self.current_distro:
             case "Arch Linux":
                 pkglist = [
+                    "7zip",
                     "alacritty",
                     "apparmor",
                     "archlinux-wallpaper",
@@ -117,6 +113,7 @@ class PackageManager():
                     "pipewire-alsa",
                     "pipewire-pulse",
                     "power-profiles-daemon",
+                    "ppsspp",
                     "qemu-desktop",
                     "steam",
                     "swtpm",
@@ -163,9 +160,8 @@ class PackageManager():
         match self.current_distro:
             case "Arch Linux":
                 aur = [
-                    "7-zip-full",
                     "archlinux-artwork",
-                    "bottles-git",
+                    "bottles",
                     "duckstation-git",
                     "ckb-next-git",
                     "github-desktop",
@@ -175,7 +171,6 @@ class PackageManager():
                     "mkinitcpio-firmware",
                     "pcsx2-git",
                     "plymouth-theme-archlinux",
-                    "ppsspp-git",
                     "preloader-signed",
                     "protonup-rs",
                     "rate-mirrors",
