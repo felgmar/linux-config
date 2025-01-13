@@ -39,7 +39,7 @@ class KernelManager():
             self.repo_manager.clone_repo()
         except Exception as e:
             raise e
-    
+
     def update_kernel(self) -> None:
         """
         Updates the custom kernel repository.
@@ -71,8 +71,9 @@ class KernelManager():
                         self.update_kernel()
                     except Exception as e:
                         raise e
-                
-                os.chdir(os.path.join(self.repo_manager.repositories_dir, self.repo_manager.repo_dir))
+
+                os.chdir(os.path.join(self.repo_manager.repositories_dir,
+                                      self.repo_manager.repo_dir))
 
                 if os.environ.get("EDITOR"):
                     subprocess.run("$EDITOR customization.cfg", shell=True, check=True)

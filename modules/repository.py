@@ -1,15 +1,25 @@
 #!/bin/env python3
 
+"""
+Module containing the RepositoryManager class.
+"""
+
 import subprocess
 import os
 
 class RepositoryManager():
+    """
+    Handles repository tasks such as cloning and updating.
+    """
     def __init__(self, repo_url: str, repo_dir: str):
         self.repo_url: str = repo_url
         self.repo_dir: str = repo_dir
         self.repositories_dir = os.path.join(os.getcwd(), "modules/repositories")
 
     def update_repo(self):
+        """
+        Pulls the latest changes from the repository, if any.
+        """
         previous_dir: str = os.getcwd()
         repo_to_update: str = os.path.join(self.repositories_dir, self.repo_dir)
         command: str = "git pull"
@@ -25,6 +35,9 @@ class RepositoryManager():
         os.chdir(previous_dir)
 
     def clone_repo(self):
+        """
+        Clone a repository if it does not exist.
+        """
         repo_to_clone: str = os.path.join(self.repositories_dir, self.repo_dir)
         command: str = f"git clone {self.repo_url}"
 

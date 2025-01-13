@@ -5,7 +5,6 @@ Module containing the SecureBootManager class.
 """
 
 import getpass
-from multiprocessing import Value
 import subprocess
 import os
 
@@ -26,14 +25,14 @@ class SecureBootManager():
             "preloader-signed"
         ]
 
-        PM = PackageManager()
-        PM_BIN = PM.get_package_manager(override_package_manager=True)
+        pm = PackageManager()
+        pm_bin = pm.get_package_manager(override_package_manager=True)
 
         if verbose:
-            print("The package manager has been set to:", PM_BIN)
+            print("The package manager has been set to:", pm_bin)
 
-        PM.install_packages(PM_BIN, custom_pkglist=pkglist)
-    
+        pm.install_packages(pm_bin, custom_pkglist=pkglist)
+
     def _check_file_access(self, file: str) -> None:
         if not os.access(file, os.R_OK):
             raise FileNotFoundError(file + " is not accessible.")
@@ -56,13 +55,12 @@ class SecureBootManager():
             raise ValueError(command)
 
         try:
-            subprocess.run(command, shell=True,
-                           universal_newlines=True,
+            subprocess.run(command, shell=True, universal_newlines=True,
                            check=True, text=True)
         except Exception as e:
             raise e
 
-    def backup_boot_files(self) -> None:
+    def backup_boot_files(self, verbose: bool = False) -> None:
         """
         Backs up the boot files.
         """
@@ -75,7 +73,10 @@ class SecureBootManager():
                 match file:
                     case "/boot/EFI/BOOT/BOOTX64.EFI":
                         self._check_file_access(file)
-                        self._copy_file(file, f"{file}.backup")
+                        if verbose:
+                            self._copy_file(file, f"{file}.backup", verbose=True)
+                        else:
+                            self._copy_file(file, f"{file}.backup")
                     case _:
                         raise FileNotFoundError(file)
             except Exception as e:
@@ -95,7 +96,10 @@ class SecureBootManager():
                 match file:
                     case "/usr/share/preloader-signed/HashTool.efi":
                         self._check_file_access(file)
-                        self._copy_file(file, "/boot/EFI/BOOT")
+                        if verbose:
+                            self._copy_file(file, "/boot/EFI/BOOT", verbose=True)
+                        else:
+                            self._copy_file(file, "/boot/EFI/BOOT")
                     case "/usr/share/preloader-signed/PreLoader.efi":
                         self._check_file_access(file)
                         self._copy_file(file, "/boot/EFI/BOOT/loader.efi")

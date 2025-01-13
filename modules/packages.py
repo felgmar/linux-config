@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+"""
+Module containing the PackageManager class.
+"""
+
 import subprocess
 import shutil
 import getpass
