@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+Module containing the RootFSManager class.
+"""
+
 import os
 
 class RootFSManager():
@@ -18,6 +22,9 @@ class RootFSManager():
         self.usr_files: list[str] = []
 
     def _check_directory_exists(self, directory: str) -> bool:
+        """
+        Checks if a directory exists.
+        """
         try:
             if os.path.isdir(directory):
                 return True
@@ -25,14 +32,20 @@ class RootFSManager():
         except Exception as e:
             raise e
     def _check_file_exists(self, file: str) -> bool:
+        """
+        Checks if a file exists.
+        """
         try:
             if os.path.isfile(file):
                 return True
             return False
         except Exception as e:
             raise e
-    
+
     def _fill_lists(self, directory: str, verbose: bool = False) -> None:
+        """
+        Fills the lists with the files to be copied.
+        """
         try:
             for path, subdirs, files in os.walk(directory):
                 for file in files:
@@ -54,23 +67,26 @@ class RootFSManager():
                             print(f"[i] ({list}) Added {file} to the list usr_files")
                         self.usr_files.append(file)
                     else:
-                        raise Exception(directory, "invalid directory")
+                        raise IOError(directory, "invalid directory")
         except Exception as e:
             raise e
 
-    def copy_files(self, verbose: bool = False):       
+    def copy_files(self, verbose: bool = False) -> None:
+        """
+        Copies the files to the respective directories.
+        """
         try:
-            for dir in self.boot_dir, self.etc_dir, self.home_dir, self.usr_dir:
+            for directory in self.boot_dir, self.etc_dir, self.home_dir, self.usr_dir:
                 if verbose:
-                    self._fill_lists(dir, verbose)
+                    self._fill_lists(directory, verbose)
                 else:
-                    self._fill_lists(dir)
+                    self._fill_lists(directory)
         except Exception as e:
             raise e
-        
+
         try:
-            for dir in self.boot_dir, self.etc_dir, self.home_dir, self.usr_dir:
-                match dir:
+            for directory in self.boot_dir, self.etc_dir, self.home_dir, self.usr_dir:
+                match directory:
                     case self.boot_dir:
                         for file in self.boot_files:
                             if verbose:
@@ -96,6 +112,6 @@ class RootFSManager():
                             else:
                                 os.system(f"cp --backup {file} /usr")
                     case _:
-                        raise Exception(dir, "invalid directory")
+                        raise Exception(directory, "invalid directory")
         except Exception as e:
             raise e
