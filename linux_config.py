@@ -9,6 +9,7 @@ import argparse
 
 from modules.kernels import KernelManager
 from modules.packages import PackageManager
+from modules.rootfs import RootFSManager
 from modules.secure_boot import SecureBootManager
 from modules.services import ServicesManager
 
@@ -38,11 +39,12 @@ args = parser.parse_args()
 
 if __name__ == "__main__":
     if CURRENT_PLATFORM != "linux":
-        raise RuntimeError(CURRENT_PLATFORM, ": platform not supported")
+        raise RuntimeError(CURRENT_PLATFORM, "platform not supported")
 
     if args.verbose:
         print(f"[i] Action set to: {args.action}\n[i] Distribution set to: {args.distro}\n")
-        input("Press any key to continue.\n")
+        print("Press any key to continue.")
+        input()
 
     try:
         match args.action:
@@ -79,7 +81,12 @@ if __name__ == "__main__":
                 pm.install_packages(PACKAGE_MANAGER)
 
             case "setup-rootfs":
-                raise NotImplementedError("This function is not implemented yet.")
+                rfsm = RootFSManager()
+
+                if args.verbose:
+                    rfsm.copy_files(verbose=True)
+                else:
+                    rfsm.copy_files()
 
             case "setup-services":
                 pm = PackageManager()
