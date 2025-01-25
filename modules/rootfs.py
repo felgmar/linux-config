@@ -47,7 +47,7 @@ class RootFSManager():
         Fills the lists with the files to be copied.
         """
         try:
-            for path, subdirs, files in os.walk(directory):
+            for path, subdirs, files in os.walk(directory): # type: ignore
                 for file in files:
                     file = os.path.join(file, path)
                     if directory == self.boot_dir:
