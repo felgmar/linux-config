@@ -14,7 +14,7 @@ class ServicesManager():
     def __init__(self):
         self.current_user = getpass.getuser()
 
-    def get_services_list(self, desktop_environment: str) -> list[str]:
+    def get_services_list(self, desktop_environment: str | None) -> list[str]:
         """
         Returns a list of services based on the desktop environment.
         """
@@ -43,7 +43,7 @@ class ServicesManager():
             case "xfce":
                 services.append("lightdm.service")
             case _:
-                raise ValueError(desktop_environment, "unknown desktop environment")
+                print("[INFO] No desktop environment was specified.")
         return services
 
     def enable_service(self, service: str) -> None:
