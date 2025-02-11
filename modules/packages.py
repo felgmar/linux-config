@@ -7,7 +7,6 @@ Module containing the PackageManager class.
 import subprocess
 import shutil
 import getpass
-from typing import Optional
 
 class PackageManager():
     """
@@ -16,21 +15,19 @@ class PackageManager():
     def __init__(self):
         self.lsb_release_bin: str | None = shutil.which("lsb_release")
         current_distro_cmd: subprocess.CompletedProcess[str] = \
-            subprocess.run("lsb_release -ds", shell=True, universal_newlines=True,
+            subprocess.run("lsb_release -is", shell=True, universal_newlines=True,
                            capture_output=True, check=True, text=True)
         self.current_distro = current_distro_cmd.stdout.replace("\"", "").removesuffix("\n")
         self.current_user = getpass.getuser()
 
-        self.desktop_environment: str = self.get_desktop_environment()
-
         if not self.lsb_release_bin:
             raise FileNotFoundError("lsb_release: not found")
 
-    def get_package_manager(self, override_package_manager: bool = False) -> str:
+    def get_package_manager(self, get_aur_helper: bool = False) -> str:
         """
         Returns the package manager based on the current distribution.
         """
-        pm_bin: str = ""
+        pm_bin: str | None = None
 
         package_managers = [
             "apt",
@@ -44,7 +41,10 @@ class PackageManager():
             "yay"
         ]
 
-        if override_package_manager:
+        if get_aur_helper and not self.current_distro == "Arch Linux":
+            raise Exception(f"Couldn't find any AUR helpers on {self.current_distro}")
+
+        if get_aur_helper:
             for helper in aur_helpers:
                 if not shutil.which(helper):
                     print(helper, "was not found")
@@ -57,7 +57,10 @@ class PackageManager():
                     pm_bin = pm
                     break
 
-        return pm_bin
+        if not pm_bin == None:
+            return pm_bin
+        else:
+            raise ValueError("No package manager could be set.")
 
     def install_aur_helper(self, distro: str, package_manager: str):
         """
@@ -146,7 +149,7 @@ class PackageManager():
         desktop_environment = input("Choose a desktop environment [gnome/kde/xfce]: ")
 
         if not desktop_environment:
-            raise ValueError("No desktop environment was chosen.")
+            raise ValueError("No desktop environment was specified.")
 
         match desktop_environment:
             case "gnome":
@@ -156,7 +159,7 @@ class PackageManager():
             case "xfce":
                 return "xfce"
             case _:
-                raise ValueError(desktop_environment, "invalid desktop environment chosen")
+                raise ValueError(desktop_environment, "invalid desktop environment")
 
     def get_package_list(self, desktop_environment: str, only_get_aur: bool = False) -> list[str]:
         """
@@ -229,6 +232,7 @@ class PackageManager():
 
         if only_get_aur and self.current_distro == "Arch Linux":
             return aur
+
         match desktop_environment:
             case "gnome":
                 return gnome
@@ -240,65 +244,65 @@ class PackageManager():
                 raise ValueError(desktop_environment, "invalid desktop environment")
 
     def install_packages(self, package_manager: str,
-                         custom_pkglist: Optional[list[str]] = None) -> None:
+                         desktop_environment: str,
+                         custom_pkglist: list[str] | None) -> None:
         """
         Installs packages based on the current distribution.
         """
-        if not self.current_distro == "Arch Linux":
-            raise NotImplementedError(f"{self.current_distro}: such distro is not implemented yet")
-
-        if custom_pkglist is not None:
+        if not custom_pkglist == None:
             packages = self.convert_list_to_str(custom_pkglist)
         else:
             main_packages = self.get_main_packages_list()
             main_pkglist = self.convert_list_to_str(main_packages)
 
-            extra_packages = self.get_package_list(self.desktop_environment)
+            extra_packages = self.get_package_list(desktop_environment)
             extra_pkglist = self.convert_list_to_str(extra_packages)
 
-            aur_packages = self.get_package_list(self.desktop_environment, only_get_aur=True)
-            aur_pkglist = self.convert_list_to_str(aur_packages)
-
-            packages = main_pkglist + " " + extra_pkglist + " " + aur_pkglist
+            match self.current_distro:
+                case "Arch Linux":
+                    aur_packages = self.get_package_list(desktop_environment,
+                                                         only_get_aur=True)
+                    aur_pkglist = self.convert_list_to_str(aur_packages)
+                    packages = main_pkglist + " " + extra_pkglist + " " + aur_pkglist
+                case _:
+                    packages = main_pkglist + " " + extra_pkglist + " "
 
         cmd: str = ""
 
-        if self.current_user != "root":
+        if self.current_user == "root":
             match package_manager:
                 case "apt":
-                    cmd = f"sudo {package_manager} update &&" + \
-                           "sudo {package_manager} install {packages}"
-                case "pacman":
-                    cmd = f"sudo {package_manager} -Syu --needed {packages}"
-                case "dnf":
-                    cmd = f"sudo {package_manager} update &&" \
-                           "sudo {package_manager} install {packages}"
-                case "paru":
-                    if custom_pkglist:
-                        cmd = f"{package_manager} -S --needed --sudoloop {packages}"
-                    else:
-                        cmd = f"{package_manager} -Syu --needed --sudoloop {packages}"
-                case "yay":
-                    if custom_pkglist:
-                        cmd = f"{package_manager} -S --needed --sudoloop {packages}"
-                    else:
-                        cmd = f"{package_manager} -Syu --needed --sudoloop {packages}"
-                case _:
-                    raise NotImplementedError(package_manager, "unknown package manager.")
-        else:
-            match package_manager:
-                case "apt":
-                    cmd = f"{package_manager} update && sudo {package_manager} install {packages}"
+                    cmd = f"{package_manager} update &&" + \
+                          f"{package_manager} install {packages}"
                 case "pacman":
                     cmd = f"{package_manager} -Syu --needed {packages}"
                 case "dnf":
-                    cmd = f"{package_manager} update && sudo {package_manager} install {packages}"
+                    cmd = f"{package_manager} update &&" \
+                          f"{package_manager} install {packages}"
                 case "paru" | "yay":
                     raise PermissionError(package_manager,
                                           "is an AUR helper and it cannot be ran as " +
                                           self.current_user)
                 case _:
                     raise NotImplementedError(package_manager, "unknown package manager.")
+        else:
+            match package_manager:
+                case "apt":
+                    cmd = f"sudo {package_manager} update &&" + \
+                          f"sudo {package_manager} install {packages}"
+                case "pacman":
+                    cmd = f"sudo {package_manager} -Syu --needed {packages}"
+                case "dnf":
+                    cmd = f"sudo {package_manager} update &&" \
+                          f"sudo {package_manager} install {packages}"
+                case "paru" | "yay":
+                    if custom_pkglist:
+                        cmd = f"{package_manager} -S --needed --sudoloop {packages}"
+                    else:
+                        cmd = f"{package_manager} -Syu --needed --sudoloop {packages}"
+                case _:
+                    raise NotImplementedError(package_manager, "unknown package manager.")
+
         try:
             subprocess.run(cmd, shell=True, universal_newlines=True, check=True, text=True)
         except Exception as e:
