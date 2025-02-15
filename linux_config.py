@@ -26,10 +26,6 @@ parser.add_argument("-a", "--action", choices=actions, type=str,
                     help="Runs the specified script. Available options are " +
                     ", ".join(actions), metavar="")
 
-group.add_argument("-d", "--distro", type=str,
-                   help="Specifies which distro is going to be modified." +
-                   " (e.g. arch, fedora, debian)", metavar="")
-
 parser.add_argument("-v", "--verbose", action="store_true", help="Print more messages")
 
 group.add_argument("--version", action="version", version="%(prog)s 1.0")
@@ -41,7 +37,8 @@ if __name__ == "__main__":
         raise RuntimeError(CURRENT_PLATFORM, ": platform not supported")
 
     if args.verbose:
-        print(f"[i] Action set to: {args.action}\n[i] Distribution set to: {args.distro}\n")
+        print("[VERBOSE] Action set to:", args.action)
+        print("[VERBOSE] Your platform is:", CURRENT_PLATFORM)
         input("Press any key to continue.\n")
 
     try:
@@ -51,11 +48,11 @@ if __name__ == "__main__":
                 pm = PackageManager()
 
                 if args.verbose:
-                    sbm.install_dependencies(verbose=True)
+                    sbm.install_dependencies(pm.get_desktop_environment(), verbose=True)
                     sbm.backup_boot_files(verbose=True)
                     sbm.install_shim(verbose=True)
                 else:
-                    sbm.install_dependencies()
+                    sbm.install_dependencies(pm.get_desktop_environment())
                     sbm.backup_boot_files()
                     sbm.install_shim()
 
@@ -71,12 +68,14 @@ if __name__ == "__main__":
 
             case "install-packages":
                 pm = PackageManager()
-                PACKAGE_MANAGER = pm.get_package_manager(override_package_manager=True)
+
+                PACKAGE_MANAGER = pm.get_package_manager(get_aur_helper=True)
+                DESKTOP_ENVIRONMENT = pm.get_desktop_environment()
 
                 if args.verbose:
-                    print("[i] Package manager to be used:", {PACKAGE_MANAGER})
+                    print("[VERBOSE] Package manager to be used:", {PACKAGE_MANAGER})
 
-                pm.install_packages(PACKAGE_MANAGER)
+                pm.install_packages(PACKAGE_MANAGER, DESKTOP_ENVIRONMENT, custom_pkglist=None)
 
             case "setup-rootfs":
                 raise NotImplementedError("This function is not implemented yet.")
@@ -84,15 +83,13 @@ if __name__ == "__main__":
             case "setup-services":
                 pm = PackageManager()
                 sm = ServicesManager()
-                DESKTOP_ENVIRONMENT = pm.desktop_environment
-
-                services = sm.get_services_list(DESKTOP_ENVIRONMENT)
+                services = sm.get_services_list(desktop_environment=None)
 
                 sm.enable_services(services)
 
             case _:
                 if not args.action:
                     raise ValueError("No action was specified.")
-                raise ValueError(f"{args.action}: invalid action")
+                raise ValueError(args.action, "invalid action")
     except Exception as e:
         raise e

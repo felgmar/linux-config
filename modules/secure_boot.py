@@ -17,7 +17,7 @@ class SecureBootManager():
     def __init__(self):
         self.current_user: str = getpass.getuser()
 
-    def install_dependencies(self, verbose: bool = False):
+    def install_dependencies(self, desktop_environment: str, verbose: bool = False):
         """
         Installs the necessary packages to setup secure boot.
         """
@@ -26,33 +26,31 @@ class SecureBootManager():
         ]
 
         pm = PackageManager()
-        pm_bin = pm.get_package_manager(override_package_manager=True)
+        pm_bin = pm.get_package_manager(get_aur_helper=True)
 
         if verbose:
-            print("The package manager has been set to:", pm_bin)
+            print("[VERBOSE] The package manager has been set to:", pm_bin)
 
-        pm.install_packages(pm_bin, custom_pkglist=pkglist)
+        pm.install_packages(pm_bin, desktop_environment, custom_pkglist=pkglist)
 
     def _check_file_access(self, file: str) -> None:
         if not os.access(file, os.R_OK):
             raise FileNotFoundError(file + " is not accessible.")
 
     def _copy_file(self, source: str, destination: str, verbose: bool = False):
-        command: str = ""
+        command: str | None = None
 
-        if self.current_user == "root":
-            if verbose:
-                command = f"cp -v {source} {destination}"
+        if command == None:
+            if self.current_user == "root":
+                if verbose:
+                    command = f"cp -v {source} {destination}"
+                else:
+                    command = f"cp {source} {destination}"
             else:
-                command = f"cp {source} {destination}"
-        else:
-            if verbose:
-                command = f"sudo cp -v {source} {destination}"
-            else:
-                command = f"sudo cp {source} {destination}"
-
-        if command == "":
-            raise ValueError(command)
+                if verbose:
+                    command = f"sudo cp -v {source} {destination}"
+                else:
+                    command = f"sudo cp {source} {destination}"
 
         try:
             subprocess.run(command, shell=True, universal_newlines=True,
