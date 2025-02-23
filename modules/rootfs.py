@@ -47,27 +47,34 @@ class RootFSManager():
         Fills the lists with the files to be copied.
         """
         try:
-            for path, subdirs, files in os.walk(directory): # type: ignore
+            for path, subdirs, files in os.walk(directory):
+                subdirs: list[str] = [os.path.join(path, subdir) for subdir in subdirs]
+
+                if verbose:
+                    print(f"[VERBOSE] Subdirectories: {subdirs}")
+                    print(f"[VERBOSE] Files: {files}")
+
                 for file in files:
                     file = os.path.join(file, path)
-                    if directory == self.boot_dir:
-                        if verbose:
-                            print(f"[i] Added {file} to the list boot_files")
-                        self.boot_files.append(file)
-                    elif directory == self.etc_dir:
-                        if verbose:
-                            print(f"[i] ({list}) Added {file} to the list etc_files")
-                        self.etc_files.append(file)
-                    elif directory == self.home_dir:
-                        if verbose:
-                            print(f"[i] ({list}) Added {file} to the list home_files")
-                        self.home_files.append(file)
-                    elif directory == self.usr_dir:
-                        if verbose:
-                            print(f"[i] ({list}) Added {file} to the list usr_files")
-                        self.usr_files.append(file)
-                    else:
-                        raise IOError(directory, "invalid directory")
+                    match directory:
+                        case self.boot_dir:
+                            if verbose:
+                                print(f"[VERBOSE] Added {file} to the list boot_files")
+                            self.boot_files.append(file)
+                        case self.etc_dir:
+                            if verbose:
+                                print(f"[VERBOSE] ({list}) Added {file} to the list etc_files")
+                            self.etc_files.append(file)
+                        case self.home_dir:
+                            if verbose:
+                                print(f"[VERBOSE] ({list}) Added {file} to the list home_files")
+                            self.home_files.append(file)
+                        case self.usr_dir:
+                            if verbose:
+                                print(f"[VERBOSE] ({list}) Added {file} to the list usr_files")
+                            self.usr_files.append(file)
+                        case _:
+                            raise IOError(directory, "invalid directory")
         except Exception as e:
             raise e
 
