@@ -42,7 +42,7 @@ class PackageManager():
         ]
 
         if get_aur_helper and not self.current_distro == "Arch Linux":
-            raise Exception(f"Couldn't find any AUR helpers on {self.current_distro}")
+            raise ValueError(f"Couldn't find any AUR helpers on {self.current_distro}")
 
         if get_aur_helper:
             for helper in aur_helpers:
@@ -57,10 +57,10 @@ class PackageManager():
                     pm_bin = pm
                     break
 
-        if not pm_bin == None:
-            return pm_bin
-        else:
+        if pm_bin is None:
             raise ValueError("No package manager could be set.")
+
+        return pm_bin
 
     def install_aur_helper(self, distro: str, package_manager: str):
         """
@@ -249,7 +249,10 @@ class PackageManager():
         """
         Installs packages based on the current distribution.
         """
-        if not custom_pkglist == None:
+        packages: str | None = None
+        cmd: str = ""
+
+        if not custom_pkglist is None:
             packages = self.convert_list_to_str(custom_pkglist)
         else:
             main_packages = self.get_main_packages_list()
@@ -266,8 +269,6 @@ class PackageManager():
                     packages = main_pkglist + " " + extra_pkglist + " " + aur_pkglist
                 case _:
                     packages = main_pkglist + " " + extra_pkglist + " "
-
-        cmd: str = ""
 
         if self.current_user == "root":
             match package_manager:
