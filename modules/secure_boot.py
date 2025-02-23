@@ -40,7 +40,7 @@ class SecureBootManager():
     def _copy_file(self, source: str, destination: str, verbose: bool = False):
         command: str | None = None
 
-        if command == None:
+        if command is None:
             if self.current_user == "root":
                 if verbose:
                     command = f"cp -v {source} {destination}"
