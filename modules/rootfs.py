@@ -18,8 +18,8 @@ class RootFSManager():
         self.home_dir: str = os.path.join(self.rootfs_dir, 'home')
         self.usr_dir: str = os.path.join(self.rootfs_dir, 'usr')
 
-        assert getpass.getuser() == "root", \
-            f"{self.__class__.__name__}: current user does not have enough privileges."
+        if not getpass.getuser() == "root":
+            raise PermissionError("current user does not have enough privileges.")
 
     def _is_directory(self, directory: str) -> bool:
         """
@@ -52,28 +52,24 @@ class RootFSManager():
         for path, subdirs, files in os.walk(from_directory):
             subdirs: list[str] = [os.path.join(path, subdir) for subdir in subdirs]
 
-            if verbose:
-                print(f"[VERBOSE] Subdirectories: {subdirs}")
-                print(f"[VERBOSE] Files: {files}")
-
             for file in files:
-                file = os.path.join(file, path)
+                file: str = os.path.join(path, file)
                 match from_directory:
                     case self.boot_dir:
                         if verbose:
-                            print(f"[VERBOSE] Added {file} to the list", to_list)
+                            print(f"[VERBOSE] Added {file} to the list")
                         to_list.append(file)
                     case self.etc_dir:
                         if verbose:
-                            print(f"[VERBOSE]Added {file} to the list", to_list)
+                            print(f"[VERBOSE] Added {file} to the list {to_list}")
                         to_list.append(file)
                     case self.home_dir:
                         if verbose:
-                            print(f"[VERBOSE] Added {file} to the list", to_list)
+                            print(f"[VERBOSE] Added {file} to the list {to_list}")
                         to_list.append(file)
                     case self.usr_dir:
                         if verbose:
-                            print(f"[VERBOSE] Added {file} to the list", to_list)
+                            print(f"[VERBOSE] Added {file} to the list {to_list}")
                         to_list.append(file)
                     case _:
                         raise IOError(from_directory, "invalid directory")
@@ -87,9 +83,6 @@ class RootFSManager():
             raise ValueError("No list was provided.")
 
         for file in from_list:
-            if not self._is_directory(file) or not self._is_file(file):
-                raise FileNotFoundError(file, "file or directory not found")
-
             match file:
                 case self.boot_dir:
                     if verbose:
@@ -124,20 +117,13 @@ class RootFSManager():
         usr_files: list[str] = []
 
         if verbose:
-            boot_files = self._create_list(self.boot_dir, boot_files,)
-            etc_files = self._create_list(self.etc_dir, etc_files,)
-            home_files = self._create_list(self.home_dir, home_files,)
-            usr_files = self._create_list(self.usr_dir, usr_files,)
-            self._copy_files(boot_files, True)
-            self._copy_files(etc_files, True)
-            self._copy_files(home_files, True)
-            self._copy_files(usr_files, True)
+            boot_files = self._create_list(self.boot_dir, boot_files, True)
+            etc_files = self._create_list(self.etc_dir, etc_files, True)
+            home_files = self._create_list(self.home_dir, home_files, True)
+            usr_files = self._create_list(self.usr_dir, usr_files, True)
+
         else:
             boot_files = self._create_list(self.boot_dir, boot_files)
             etc_files = self._create_list(self.etc_dir, etc_files)
             home_files = self._create_list(self.home_dir, home_files)
             usr_files = self._create_list(self.usr_dir, usr_files)
-            self._copy_files(boot_files)
-            self._copy_files(etc_files)
-            self._copy_files(home_files)
-            self._copy_files(usr_files)
