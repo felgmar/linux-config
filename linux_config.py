@@ -5,32 +5,18 @@ Main file for the Linux configuration script.
 """
 
 import sys
-import argparse
 
+from modules.args import ArgumentParser
 from modules.kernels import KernelManager
 from modules.packages import PackageManager
 from modules.secure_boot import SecureBootManager
 from modules.services import ServicesManager
 
+ARGUMENTS_PARSER = ArgumentParser()
+ARGUMENTS_PARSER.populate_args()
+args = ARGUMENTS_PARSER.parse_args()
+
 CURRENT_PLATFORM = sys.platform.lower()
-
-actions: list[str] = [
-    "setup-secure-boot", "install-tkg-kernel",
-    "install-packages", "setup-rootfs", "setup-services"
-]
-
-parser = argparse.ArgumentParser(prog="linux-config")
-group = parser.add_mutually_exclusive_group()
-
-parser.add_argument("-a", "--action", choices=actions, type=str,
-                    help="Runs the specified script. Available options are " +
-                    ", ".join(actions), metavar="")
-
-parser.add_argument("-v", "--verbose", action="store_true", help="Print more messages")
-
-group.add_argument("--version", action="version", version="%(prog)s 1.0")
-
-args = parser.parse_args()
 
 if __name__ == "__main__":
     if CURRENT_PLATFORM != "linux":
