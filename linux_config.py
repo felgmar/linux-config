@@ -84,9 +84,9 @@ if __name__ == "__main__":
                 rfsm = RootFSManager()
 
                 if args.verbose:
-                    rfsm.copy_files(verbose=True)
+                    rfsm.install_files(verbose=True)
                 else:
-                    rfsm.copy_files()
+                    rfsm.install_files()
 
             case "setup-services":
                 pm = PackageManager()

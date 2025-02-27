@@ -17,15 +17,11 @@ class RootFSManager():
         self.etc_dir: str = os.path.join(self.rootfs_dir, 'etc')
         self.home_dir: str = os.path.join(self.rootfs_dir, 'home')
         self.usr_dir: str = os.path.join(self.rootfs_dir, 'usr')
-        self.boot_files: list[str] = []
-        self.etc_files: list[str] = []
-        self.home_files: list[str] = []
-        self.usr_files: list[str] = []
 
         assert getpass.getuser() == "root", \
             f"{self.__class__.__name__}: current user does not have enough privileges."
 
-    def _check_directory_exists(self, directory: str) -> bool:
+    def _is_directory(self, directory: str) -> bool:
         """
         Checks if a directory exists.
         """
@@ -35,7 +31,8 @@ class RootFSManager():
             return False
         except Exception as e:
             raise e
-    def _check_file_exists(self, file: str) -> bool:
+
+    def _is_file(self, file: str) -> bool:
         """
         Checks if a file exists.
         """
@@ -46,83 +43,101 @@ class RootFSManager():
         except Exception as e:
             raise e
 
-    def _fill_lists(self, directory: str, verbose: bool = False) -> None:
+    def _create_list(self, from_directory: str,
+                     to_list: list[str], verbose: bool = False) -> list[str]:
         """
-        Fills the lists with the files to be copied.
+        Creates a list from the specified directory.
         """
-        try:
-            for path, subdirs, files in os.walk(directory):
-                subdirs: list[str] = [os.path.join(path, subdir) for subdir in subdirs]
 
-                if verbose:
-                    print(f"[VERBOSE] Subdirectories: {subdirs}")
-                    print(f"[VERBOSE] Files: {files}")
+        for path, subdirs, files in os.walk(from_directory):
+            subdirs: list[str] = [os.path.join(path, subdir) for subdir in subdirs]
 
-                for file in files:
-                    file = os.path.join(file, path)
-                    match directory:
-                        case self.boot_dir:
-                            if verbose:
-                                print(f"[VERBOSE] Added {file} to the list boot_files")
-                            self.boot_files.append(file)
-                        case self.etc_dir:
-                            if verbose:
-                                print(f"[VERBOSE] ({list}) Added {file} to the list etc_files")
-                            self.etc_files.append(file)
-                        case self.home_dir:
-                            if verbose:
-                                print(f"[VERBOSE] ({list}) Added {file} to the list home_files")
-                            self.home_files.append(file)
-                        case self.usr_dir:
-                            if verbose:
-                                print(f"[VERBOSE] ({list}) Added {file} to the list usr_files")
-                            self.usr_files.append(file)
-                        case _:
-                            raise IOError(directory, "invalid directory")
-        except Exception as e:
-            raise e
+            if verbose:
+                print(f"[VERBOSE] Subdirectories: {subdirs}")
+                print(f"[VERBOSE] Files: {files}")
 
-    def copy_files(self, verbose: bool = False) -> None:
+            for file in files:
+                file = os.path.join(file, path)
+                match from_directory:
+                    case self.boot_dir:
+                        if verbose:
+                            print(f"[VERBOSE] Added {file} to the list", to_list)
+                        to_list.append(file)
+                    case self.etc_dir:
+                        if verbose:
+                            print(f"[VERBOSE]Added {file} to the list", to_list)
+                        to_list.append(file)
+                    case self.home_dir:
+                        if verbose:
+                            print(f"[VERBOSE] Added {file} to the list", to_list)
+                        to_list.append(file)
+                    case self.usr_dir:
+                        if verbose:
+                            print(f"[VERBOSE] Added {file} to the list", to_list)
+                        to_list.append(file)
+                    case _:
+                        raise IOError(from_directory, "invalid directory")
+        return to_list
+
+    def _copy_files(self, from_list: list[str], verbose: bool = False) -> None:
         """
         Copies the files to the respective directories.
         """
-        try:
-            for directory in self.boot_dir, self.etc_dir, self.home_dir, self.usr_dir:
-                if verbose:
-                    self._fill_lists(directory, verbose)
-                else:
-                    self._fill_lists(directory)
-        except Exception as e:
-            raise e
+        if not from_list:
+            raise ValueError("No list was provided.")
 
-        try:
-            for directory in self.boot_dir, self.etc_dir, self.home_dir, self.usr_dir:
-                match directory:
-                    case self.boot_dir:
-                        for file in self.boot_files:
-                            if verbose:
-                                os.system(f"cp --backup -v {file} /boot")
-                            else:
-                                os.system(f"cp --backup {file} /boot")
-                    case self.etc_dir:
-                        for file in self.etc_files:
-                            if verbose:
-                                os.system(f"cp --backup -v {file} /etc")
-                            else:
-                                os.system(f"cp --backup {file} /etc")
-                    case self.home_dir:
-                        for file in self.home_files:
-                            if verbose:
-                                os.system(f"cp --backup -v {file} /home")
-                            else:
-                                os.system(f"cp --backup {file} /home")
-                    case self.usr_dir:
-                        for file in self.usr_files:
-                            if verbose:
-                                os.system(f"cp --backup -v {file} /usr")
-                            else:
-                                os.system(f"cp --backup {file} /usr")
-                    case _:
-                        raise Exception(directory, "invalid directory")
-        except Exception as e:
-            raise e
+        for file in from_list:
+            if not self._is_directory(file) or not self._is_file(file):
+                raise FileNotFoundError(file, "file or directory not found")
+
+            match file:
+                case self.boot_dir:
+                    if verbose:
+                        os.system(f"cp --backup -v {file} /boot")
+                    else:
+                        os.system(f"cp --backup {file} /boot")
+                case self.etc_dir:
+                    if verbose:
+                        os.system(f"cp --backup -v {file} /etc")
+                    else:
+                        os.system(f"cp --backup {file} /etc")
+                case self.home_dir:
+                    if verbose:
+                        os.system(f"cp --backup -v {file} /home")
+                    else:
+                        os.system(f"cp --backup {file} /home")
+                case self.usr_dir:
+                    if verbose:
+                        os.system(f"cp --backup -v {file} /usr")
+                    else:
+                        os.system(f"cp --backup {file} /usr")
+                case _:
+                    raise IOError(file, "invalid file")
+
+    def install_files(self, verbose: bool = False) -> None:
+        """
+        Installs the files to the respective directories.
+        """
+        boot_files: list[str] = []
+        etc_files: list[str] = []
+        home_files: list[str] = []
+        usr_files: list[str] = []
+
+        if verbose:
+            boot_files = self._create_list(self.boot_dir, boot_files,)
+            etc_files = self._create_list(self.etc_dir, etc_files,)
+            home_files = self._create_list(self.home_dir, home_files,)
+            usr_files = self._create_list(self.usr_dir, usr_files,)
+            self._copy_files(boot_files, True)
+            self._copy_files(etc_files, True)
+            self._copy_files(home_files, True)
+            self._copy_files(usr_files, True)
+        else:
+            boot_files = self._create_list(self.boot_dir, boot_files)
+            etc_files = self._create_list(self.etc_dir, etc_files)
+            home_files = self._create_list(self.home_dir, home_files)
+            usr_files = self._create_list(self.usr_dir, usr_files)
+            self._copy_files(boot_files)
+            self._copy_files(etc_files)
+            self._copy_files(home_files)
+            self._copy_files(usr_files)
