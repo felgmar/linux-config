@@ -5,6 +5,7 @@ Module containing the RootFSManager class.
 """
 
 import os
+import getpass
 
 class RootFSManager():
     """
@@ -20,6 +21,9 @@ class RootFSManager():
         self.etc_files: list[str] = []
         self.home_files: list[str] = []
         self.usr_files: list[str] = []
+
+        assert getpass.getuser() == "root", \
+            f"{self.__class__.__name__}: current user does not have enough privileges."
 
     def _check_directory_exists(self, directory: str) -> bool:
         """
