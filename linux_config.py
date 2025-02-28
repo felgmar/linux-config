@@ -9,6 +9,7 @@ import sys
 from modules.args import ArgumentParser
 from modules.kernels import KernelManager
 from modules.packages import PackageManager
+from modules.rootfs import RootFSManager
 from modules.secure_boot import SecureBootManager
 from modules.services import ServicesManager
 
@@ -64,7 +65,12 @@ if __name__ == "__main__":
                 pm.install_packages(PACKAGE_MANAGER, DESKTOP_ENVIRONMENT, custom_pkglist=None)
 
             case "setup-rootfs":
-                raise NotImplementedError("This function is not implemented yet.")
+                rfms = RootFSManager()
+                
+                if args.verbose:
+                    rfms.install_files(verbose=True)
+                else:
+                    rfms.install_files()
 
             case "setup-services":
                 pm = PackageManager()
