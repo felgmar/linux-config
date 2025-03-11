@@ -41,7 +41,7 @@ class PackageManager():
             "yay"
         ]
 
-        if get_aur_helper and not self.current_distro == "Arch Linux":
+        if get_aur_helper and not self.current_distro == "Arch":
             raise ValueError(f"Couldn't find any AUR helpers on {self.current_distro}")
 
         if get_aur_helper:
@@ -67,7 +67,7 @@ class PackageManager():
         Installs an AUR helper based on the distribution.
         """
         match distro:
-            case "Arch Linux":
+            case "Arch":
                 match package_manager:
                     case "paru":
                         raise NotImplementedError()
@@ -91,7 +91,7 @@ class PackageManager():
         Returns a list of main packages based on the current distribution.
         """
         match self.current_distro:
-            case "Arch Linux":
+            case "Arch":
                 pkglist = [
                     "7zip",
                     "alacritty",
@@ -166,7 +166,7 @@ class PackageManager():
         Returns a list of packages based on the desktop environment.
         """
         match self.current_distro:
-            case "Arch Linux":
+            case "Arch":
                 aur = [
                     "archlinux-artwork",
                     "bottles",
@@ -230,7 +230,7 @@ class PackageManager():
             case _:
                 raise ValueError(self.current_distro, "unsupported distro")
 
-        if only_get_aur and self.current_distro == "Arch Linux":
+        if only_get_aur and self.current_distro == "Arch":
             return aur
 
         match desktop_environment:
@@ -262,7 +262,7 @@ class PackageManager():
             extra_pkglist = self.convert_list_to_str(extra_packages)
 
             match self.current_distro:
-                case "Arch Linux":
+                case "Arch":
                     aur_packages = self.get_package_list(desktop_environment,
                                                          only_get_aur=True)
                     aur_pkglist = self.convert_list_to_str(aur_packages)
