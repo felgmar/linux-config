@@ -89,6 +89,10 @@ class SecureBootManager():
             "/usr/share/preloader-signed/PreLoader.efi",
         ]
 
+        systemd_files: list[str] = [
+            "/boot/EFI/systemd/systemd-bootx64.efi"
+        ]
+
         for file in preloader_files:
             try:
                 match file:
@@ -100,8 +104,25 @@ class SecureBootManager():
                             self._copy_file(file, "/boot/EFI/BOOT")
                     case "/usr/share/preloader-signed/PreLoader.efi":
                         self._check_file_access(file)
-                        self._copy_file(file, "/boot/EFI/BOOT/loader.efi")
+                        if verbose:
+                            self._copy_file(file, "/boot/EFI/BOOT/BOOTX64.EFI", verbose=True)
+                        else:
+                            self._copy_file(file, "/boot/EFI/BOOT/BOOTX64.EFI")
                     case _:
-                        raise FileNotFoundError(file)
+                        self._check_file_access(file)
+            except Exception as e:
+                raise e
+
+        for file in systemd_files:
+            try:
+                match file:
+                    case "/boot/EFI/systemd/systemd-bootx64.efi":
+                        self._check_file_access(file)
+                        if verbose:
+                            self._copy_file(file, "/boot/EFI/BOOT/BOOTX64.EFI", verbose=True)
+                        else:
+                            self._copy_file(file, "/boot/EFI/BOOT/BOOTX64.EFI")
+                    case _:
+                        self._check_file_access(file)
             except Exception as e:
                 raise e
