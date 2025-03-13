@@ -6,6 +6,7 @@ Module containing the RootFSManager class.
 
 import os
 import getpass
+import shutil
 
 class RootFSManager():
     """
@@ -69,49 +70,48 @@ class RootFSManager():
                 file_list.append(file_path)
         return file_list
 
-    def _copy_files(self, from_list: list[str], destination: str, verbose: bool = False) -> None:
+    def _copy_files(self, source: str, destination: str,
+                    verbose: bool = False) -> None:
         """
         Copies the files to the respective directories.
         """
-        if not from_list:
-            raise ValueError("No list was provided.")
-        
-        if not self._is_directory(destination):
-            raise FileNotFoundError("Destination directory does not exist.")
+        if not source:
+            raise ValueError("No source was provided.")
 
-        for file in from_list:
-            if verbose:
-                print(f"[VERBOSE] Copying {file} to {destination}")
-                command: str = f"cp --backup -v {file} {destination}"
-            else:
-                command: str = f"cp --backup {file} {destination}"
-            
-            os.system(command)
+        if not self._is_directory(destination):
+            raise FileNotFoundError(f"{destination} does not exist.")
+
+        for root, _, files in os.walk(source):
+            for file in files:
+                file_path: str = os.path.relpath(os.path.join(root, file))
+                file_relative_path: str = os.path.relpath(file_path, source)
+                destination_path: str = os.path.join(destination, file_relative_path)
+                is_dir: bool = os.path.isdir(os.path.dirname(destination_path))
+
+                try:
+
+                    if is_dir:
+                        if verbose:
+                            print(f"[VERBOSE] Copying '{file_path}' to '{destination_path}'...")
+
+                        shutil.copyfile(file_path, destination_path)
+                    else:
+                        print(f"[ERROR] {os.path.dirname(destination_path)} does not exist")
+                except Exception as e:
+                    raise e
 
     def install_files(self, verbose: bool = False) -> None:
         """
         Installs the files to the respective directories.
         """
-        IS_VERBOSE: bool = True if verbose else False
-
-        filesystem_paths = {
+        paths: dict[str, str] = {
             "boot": "/boot",
             "etc": "/etc",
             "home": os.path.join("/home/", self.CURRENT_USER),
             "usr": "/usr"
         }
 
-        boot_files: list[str] = []
-        etc_files: list[str] = []
-        home_files: list[str] = []
-        usr_files: list[str] = []
-
-        boot_files = self._create_list(self.local_dirs["boot_dir"], IS_VERBOSE)
-        etc_files = self._create_list(self.local_dirs["etc_dir"], IS_VERBOSE)
-        home_files = self._create_list(self.local_dirs["home_dir"], IS_VERBOSE)
-        usr_files = self._create_list(self.local_dirs["usr_dir"], IS_VERBOSE)
-
-        self._copy_files(boot_files, filesystem_paths["boot"], IS_VERBOSE)
-        self._copy_files(etc_files, filesystem_paths["etc"], IS_VERBOSE)
-        self._copy_files(home_files, filesystem_paths["home"], IS_VERBOSE)
-        self._copy_files(usr_files, filesystem_paths["usr"], IS_VERBOSE)
+        self._copy_files(self.local_dirs["boot_dir"], paths["boot"], verbose)
+        self._copy_files(self.local_dirs["etc_dir"], paths["etc"], verbose)
+        self._copy_files(self.local_dirs["home_dir"], paths["home"], verbose)
+        self._copy_files(self.local_dirs["usr_dir"], paths["usr"], verbose)
