@@ -89,7 +89,6 @@ class RootFSManager():
                 is_dir: bool = os.path.isdir(os.path.dirname(destination_path))
 
                 try:
-
                     if is_dir:
                         if verbose:
                             print(f"[VERBOSE] Copying '{file_path}' to '{destination_path}'...")
