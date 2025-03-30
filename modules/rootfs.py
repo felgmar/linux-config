@@ -18,12 +18,13 @@ class RootFSManager():
             "etc_dir": os.path.join(os.getcwd() + '/modules/rootfs/etc'),
             "home_dir": os.path.join(os.getcwd() + '/modules/rootfs/home'),
             "usr_dir": os.path.join(os.getcwd() + '/modules/rootfs/usr'),
-        }        
-        self.CURRENT_USER: str = getpass.getuser()
+        }
+        self.current_user: str = getpass.getuser()
 
         if not override_permissions:
             if not self._is_admin():
-                raise PermissionError(f"{self.CURRENT_USER} doesn't have privileges to use {self.__class__.__name__} ")
+                raise PermissionError(f"{self.current_user} doesn't have privileges to use" + \
+                                      " {self.__class__.__name__} ")
 
     def _is_admin(self) -> bool:
         """
@@ -106,7 +107,7 @@ class RootFSManager():
         paths: dict[str, str] = {
             "boot": "/boot",
             "etc": "/etc",
-            "home": os.path.join("/home/", self.CURRENT_USER),
+            "home": os.path.join("/home/", self.current_user),
             "usr": "/usr"
         }
 

@@ -25,7 +25,8 @@ def _validate_platform() -> None:
     """
     Validate the current platform and raise an error if it is not supported.
     """
-    assert _get_current_platform() == "linux", f"{_get_current_platform()} is not a supported platform."
+    assert _get_current_platform() == "linux", f"{_get_current_platform()}" + \
+        "is not a supported platform."
 
 def parse_actions() -> None:
     """
@@ -65,17 +66,17 @@ def parse_actions() -> None:
         case "install-packages":
             pm = PackageManager()
 
-            PACKAGE_MANAGER = pm.get_package_manager(get_aur_helper=True)
-            DESKTOP_ENVIRONMENT = pm.get_desktop_environment()
+            package_manager = pm.get_package_manager(get_aur_helper=True)
+            desktop_environment = pm.get_desktop_environment()
 
             if args.verbose:
-                print("[VERBOSE] Package manager to be used:", {PACKAGE_MANAGER})
+                print("[VERBOSE] Package manager to be used:", {package_manager})
 
-            pm.install_packages(PACKAGE_MANAGER, DESKTOP_ENVIRONMENT, custom_pkglist=None)
+            pm.install_packages(package_manager, desktop_environment, custom_pkglist=None)
 
         case "setup-rootfs":
             rfms = RootFSManager()
-            
+
             if args.verbose:
                 rfms.install_files(verbose=True)
             else:
