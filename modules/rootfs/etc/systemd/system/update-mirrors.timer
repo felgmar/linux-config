@@ -2,7 +2,7 @@
 Description=Update pacman mirrorlist
 
 [Timer]
-OnCalendar=hourly
+OnCalendar=daily
 OnBootSec=1min
 
 [Install]
