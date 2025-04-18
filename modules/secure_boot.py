@@ -119,9 +119,9 @@ class SecureBootManager():
                     case "/boot/EFI/systemd/systemd-bootx64.efi":
                         self._check_file_access(file)
                         if verbose:
-                            self._copy_file(file, "/boot/EFI/BOOT/BOOTX64.EFI", verbose=True)
+                            self._copy_file(file, "/boot/EFI/BOOT/loader.efi", verbose=True)
                         else:
-                            self._copy_file(file, "/boot/EFI/BOOT/BOOTX64.EFI")
+                            self._copy_file(file, "/boot/EFI/BOOT/loader.efi")
                     case _:
                         self._check_file_access(file)
             except Exception as e:
