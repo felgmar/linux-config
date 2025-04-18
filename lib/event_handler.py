@@ -85,7 +85,8 @@ def parse_actions() -> None:
         case "setup-services":
             pm = PackageManager()
             sm = ServicesManager()
-            services = sm.get_services_list(desktop_environment=None)
+            DESKTOP_ENVIRONMENT = pm.get_desktop_environment()
+            services = sm.get_services_list(desktop_environment=DESKTOP_ENVIRONMENT)
 
             sm.enable_services(services)
 
