@@ -1,5 +1,6 @@
 [Unit]
 Description=Allow reading power usage on Intel CPUs
+After=network-online.target
 
 [Service]
 Type=oneshot
