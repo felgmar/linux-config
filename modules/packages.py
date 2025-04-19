@@ -184,10 +184,8 @@ class PackageManager():
                     "rate-mirrors",
                     "rpcs3-git",
                     "spotify",
-                    "ttf-meslo-nerd-font-powerlevel10k",
                     "ventoy-bin",
                     "visual-studio-code-bin",
-                    "zsh-theme-powerlevel10k-git"
                 ]
 
                 gnome = [
