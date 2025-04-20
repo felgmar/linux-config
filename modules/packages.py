@@ -169,9 +169,7 @@ class PackageManager():
             case "Arch":
                 aur = [
                     "archlinux-artwork",
-                    "bottles",
                     "duckstation-git",
-                    "ckb-next-git",
                     "github-desktop",
                     "lib32-mangohud-git",
                     "mangohud-git",
