@@ -108,6 +108,7 @@ class PackageManager():
                     "firewalld",
                     "fwupd",
                     "gamemode",
+                    "geoclue",
                     "github-cli",
                     "intel-ucode",
                     "lib32-gamemode",
