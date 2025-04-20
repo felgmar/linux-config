@@ -70,7 +70,7 @@ class ServicesManager():
             service_status: subprocess.CompletedProcess[str] = \
                 subprocess.run(f"systemctl is-enabled {service_name}", shell=True,
                                universal_newlines=True, capture_output=True,
-                               check=True, text=True)
+                               text=True)
             readable_service_status: str = service_status.stdout.removesuffix("\n")
 
             if readable_service_status == "disabled":
