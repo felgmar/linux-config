@@ -9,4 +9,4 @@ ExecStart=/usr/bin/chmod o+r /sys/class/powercap/intel-rapl:0/energy_uj
 ExecStop=/usr/bin/chmod o-r /sys/class/powercap/intel-rapl:0/energy_uj
 
 [Install]
-WantedBy=graphical.target
+WantedBy=multi-user.target
