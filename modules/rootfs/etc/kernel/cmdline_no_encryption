@@ -1,1 +1,2 @@
-root=PARTUUID=<enter_partuuid_here> zswap.enabled=0 rootflags=subvol=@ rootfstype=btrfs rw add_efi_memmap delayacct lockdown=confidentiality apparmor=1 security=apparmor quiet splash intel_iommu=on amd_iommu=on iommu=pt
+root=PARTUUID=<enter_partuuid_here> rootflags=subvol=@ rw rootfstype=btrfs add_efi_memmap delayacct lockdown=confidentiality apparmor=1 security=apparmor quiet splash intel_iommu=on amd_iommu=on iommu=pt
+
