@@ -30,7 +30,6 @@ class RootFSManager():
         """
         Checks if the current user is an administrator.
         """
-
         if getpass.getuser() == "root":
             return True
         return False
@@ -65,10 +64,13 @@ class RootFSManager():
 
         for path, _, files in os.walk(from_directory):
             for file in files:
-                file_path = os.path.join(path, file)
-                if verbose:
-                    print(f"[VERBOSE] Added {file_path} to the list")
-                file_list.append(file_path)
+                try:
+                    file_path = os.path.join(path, file)
+                    if verbose:
+                        print(f"[VERBOSE] Added {file_path} to the list")
+                    file_list.append(file_path)
+                except Exception as e:
+                    raise e
         return file_list
 
     def _copy_files(self, source: str, destination: str,
@@ -111,7 +113,10 @@ class RootFSManager():
             "usr": "/usr"
         }
 
-        self._copy_files(self.local_dirs["boot_dir"], paths["boot"], verbose)
-        self._copy_files(self.local_dirs["etc_dir"], paths["etc"], verbose)
-        self._copy_files(self.local_dirs["home_dir"], paths["home"], verbose)
-        self._copy_files(self.local_dirs["usr_dir"], paths["usr"], verbose)
+        try:
+            self._copy_files(self.local_dirs["boot_dir"], paths["boot"], verbose)
+            self._copy_files(self.local_dirs["etc_dir"], paths["etc"], verbose)
+            self._copy_files(self.local_dirs["home_dir"], paths["home"], verbose)
+            self._copy_files(self.local_dirs["usr_dir"], paths["usr"], verbose)
+        except Exception as e:
+            raise e
