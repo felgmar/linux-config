@@ -86,9 +86,11 @@ def parse_actions() -> None:
             pm = PackageManager()
             sm = ServicesManager()
             DESKTOP_ENVIRONMENT = pm.get_desktop_environment()
-            services = sm.get_services_list(desktop_environment=DESKTOP_ENVIRONMENT)
 
-            sm.enable_services(services)
+            if verbose:
+                sm.enable_services(DESKTOP_ENVIRONMENT, True)
+            else:
+                sm.enable_services(DESKTOP_ENVIRONMENT)
 
         case _:
             if not args.action:
