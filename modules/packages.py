@@ -160,7 +160,7 @@ class PackageManager():
             case "xfce":
                 return "xfce"
             case _:
-                raise ValueError(desktop_environment, "invalid desktop environment")
+                raise ValueError(f"{desktop_environment}: invalid or unrecognized desktop environment")
 
     def get_package_list(self, desktop_environment: str, only_get_aur: bool = False) -> list[str]:
         """
