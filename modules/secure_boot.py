@@ -98,16 +98,10 @@ class SecureBootManager():
                 match file:
                     case "/usr/share/preloader-signed/HashTool.efi":
                         self._check_file_access(file)
-                        if verbose:
-                            self._copy_file(file, "/boot/EFI/BOOT", verbose=True)
-                        else:
-                            self._copy_file(file, "/boot/EFI/BOOT")
+                        self._copy_file(file, "/boot/EFI/BOOT", verbose)
                     case "/usr/share/preloader-signed/PreLoader.efi":
                         self._check_file_access(file)
-                        if verbose:
-                            self._copy_file(file, "/boot/EFI/BOOT/BOOTX64.EFI", verbose=True)
-                        else:
-                            self._copy_file(file, "/boot/EFI/BOOT/BOOTX64.EFI")
+                        self._copy_file(file, "/boot/EFI/BOOT/BOOTX64.EFI", verbose)
                     case _:
                         self._check_file_access(file)
             except Exception as e:
@@ -118,10 +112,7 @@ class SecureBootManager():
                 match file:
                     case "/boot/EFI/systemd/systemd-bootx64.efi":
                         self._check_file_access(file)
-                        if verbose:
-                            self._copy_file(file, "/boot/EFI/BOOT/loader.efi", verbose=True)
-                        else:
-                            self._copy_file(file, "/boot/EFI/BOOT/loader.efi")
+                        self._copy_file(file, "/boot/EFI/BOOT/loader.efi", verbose)
                     case _:
                         self._check_file_access(file)
             except Exception as e:
