@@ -23,7 +23,7 @@ class PackageManager():
         if not self.lsb_release_bin:
             raise FileNotFoundError("lsb_release: not found")
 
-    def get_package_manager(self, get_aur_helper: bool = False) -> str:
+    def get_package_manager(self, verbose: bool = False) -> str:
         """
         Returns the package manager based on the current distribution.
         """
@@ -41,21 +41,12 @@ class PackageManager():
             "yay"
         ]
 
-        if get_aur_helper and not self.current_distro == "Arch":
-            raise ValueError(f"Couldn't find any AUR helpers on {self.current_distro}")
-
-        if get_aur_helper:
-            for helper in aur_helpers:
-                if not shutil.which(helper):
+        if self.current_distro == "Arch":
+            for helper in aur_helpers + package_managers:
+                if not shutil.which(helper) and verbose:
                     print(helper, "was not found")
-                else:
-                    pm_bin = helper
-                    break
-        else:
-            for pm in package_managers:
-                if shutil.which(pm):
-                    pm_bin = pm
-                    break
+                pm_bin = helper
+                break
 
         if pm_bin is None:
             raise ValueError("No package manager could be set.")
