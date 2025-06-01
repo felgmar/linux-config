@@ -27,7 +27,8 @@ class ArgumentParser:
                             help="Runs the specified script. Available options are " +
                             ", ".join(self.actions), metavar="")
 
-        self.parser.add_argument("-v", "--verbose", action="store_true", help="Print more messages")
+        self.parser.add_argument("-v", "--verbose", action="store_true",
+                                 default=False, help="Print more messages")
         self.group.add_argument("--version", action="version", version="%(prog)s 1.0")
 
     def parse_args(self):
