@@ -23,8 +23,7 @@ class RootFSManager():
 
         if not override_permissions:
             if not self._is_admin():
-                raise PermissionError(f"{self.current_user} doesn't have privileges to use" + \
-                                      " {self.__class__.__name__} ")
+                raise PermissionError(f"Insufficient permissions for the class {self.__class__.__name__}")
 
     def _is_admin(self) -> bool:
         """
@@ -95,10 +94,10 @@ class RootFSManager():
                     if is_dir:
                         if verbose:
                             print(f"[VERBOSE] Copying '{file_path}' to '{destination_path}'...")
-
                         shutil.copyfile(file_path, destination_path)
                     else:
-                        print(f"[ERROR] {os.path.dirname(destination_path)} does not exist")
+                        print(f"[!] Skipping directory {os.path.dirname(destination_path)}, since it does not exist.")
+                        break
                 except Exception as e:
                     raise e
 
@@ -116,7 +115,10 @@ class RootFSManager():
         try:
             self._copy_files(self.local_dirs["boot_dir"], paths["boot"], verbose)
             self._copy_files(self.local_dirs["etc_dir"], paths["etc"], verbose)
-            self._copy_files(self.local_dirs["home_dir"], paths["home"], verbose)
+            if not self.current_user == "root":
+                self._copy_files(self.local_dirs["home_dir"], paths["home"], verbose)
+            else:
+                print("[!] Not copying home files for the root user.")
             self._copy_files(self.local_dirs["usr_dir"], paths["usr"], verbose)
         except Exception as e:
             raise e
