@@ -15,59 +15,52 @@ ARGUMENTS_PARSER = ArgumentParser()
 ARGUMENTS_PARSER.populate_args()
 args = ARGUMENTS_PARSER.parse_args()
 
-def _get_current_platform() -> str:
+def __get_current_platform() -> str:
     """
     Get the current platform of the system.
     """
     return sys.platform.lower()
 
-def _validate_platform() -> None:
+def __validate_platform() -> None:
     """
     Validate the current platform and raise an error if it is not supported.
     """
-    assert _get_current_platform() == "linux", f"{_get_current_platform()}" + \
+    assert __get_current_platform() == "linux", f"{_get_current_platform()}" + \
         "is not a supported platform."
 
 def parse_actions() -> None:
     """
     Parse the action specified in the command line arguments and execute the corresponding function.
     """
-    _validate_platform()
+    __validate_platform()
 
     if args.verbose:
-        print("[VERBOSE] ⚠️ Action set to:", args.action)
-        print("[VERBOSE] 💻 Your platform is:", _get_current_platform())
+        print("[VERBOSE] Action set to:", args.action)
+        print("[VERBOSE] Your platform is:", __get_current_platform())
         input("Press any key to continue.\n")
 
     match args.action:
         case "setup-secure-boot":
             sbm = SecureBootManager()
             pm = PackageManager()
+            desktop_environment: str = pm.get_desktop_environment()
 
-            if args.verbose:
-                sbm.install_dependencies(pm.get_desktop_environment(), verbose=True)
-                sbm.backup_boot_files(verbose=True)
-                sbm.install_shim(verbose=True)
-            else:
-                sbm.install_dependencies(pm.get_desktop_environment())
-                sbm.backup_boot_files()
-                sbm.install_shim()
+            sbm.install_dependencies(desktop_environment, args.verbose)
+            sbm.backup_boot_files(args.verbose)
+            sbm.install_shim(args.verbose)
 
         case "install-tkg-kernel":
             pm = PackageManager()
             km = KernelManager(kernel_url="https://github.com/frogging-family/linux-tkg.git",
-                                kernel_dir="linux-tkg")
+                               kernel_dir="linux-tkg")
 
-            if args.verbose:
-                km.install_kernel(verbose=True)
-            else:
-                km.install_kernel()
+            km.install_kernel(args.verbose)
 
         case "install-packages":
             pm = PackageManager()
 
-            package_manager = pm.get_package_manager(get_aur_helper=True)
-            desktop_environment = pm.get_desktop_environment()
+            package_manager: str = pm.get_package_manager(args.verbose)
+            desktop_environment: str = pm.get_desktop_environment()
 
             if args.verbose:
                 print("[VERBOSE] Package manager to be used:", {package_manager})
@@ -77,21 +70,14 @@ def parse_actions() -> None:
         case "setup-rootfs":
             rfms = RootFSManager()
 
-            if args.verbose:
-                rfms.install_files(verbose=True)
-            else:
-                rfms.install_files()
+            rfms.install_files(args.verbose)
 
         case "setup-services":
             pm = PackageManager()
             sm = ServicesManager()
-            DESKTOP_ENVIRONMENT = pm.get_desktop_environment()
+            desktop_environment = pm.get_desktop_environment()
 
-            if verbose:
-                sm.enable_services(DESKTOP_ENVIRONMENT, True)
-            else:
-                sm.enable_services(DESKTOP_ENVIRONMENT)
-
+            sm.enable_services(desktop_environment, args.verbose)
         case _:
             if not args.action:
                 raise ValueError("No action was specified.")
