@@ -86,6 +86,7 @@ class PackageManager():
                 pkglist = [
                     "7zip",
                     "alacritty",
+                    "alsa-utils",
                     "apparmor",
                     "archlinux-wallpaper",
                     "bridge-utils",
