@@ -54,13 +54,12 @@ if __name__ == "__main__":
     assert CURRENT_USER != "root", "This script must be run as root"
 
     root_partition: str = str(input("Enter the root partition (e.g., /dev/sda1): ")).strip()
+    cmdline: str = ""
 
     try:
         cmdline = _generate_cmdline(root_partition)
-    except Exception as e:
-        raise e
-
-    try:
         _write_cmdline(cmdline)
     except Exception as e:
         raise e
+    finally:
+        _write_cmdline(cmdline)
