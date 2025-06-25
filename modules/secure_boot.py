@@ -26,7 +26,7 @@ class SecureBootManager():
         ]
 
         pm = PackageManager()
-        pm_bin = pm.get_package_manager(get_aur_helper=True)
+        pm_bin = pm.get_package_manager()
 
         if verbose:
             print("[VERBOSE] The package manager has been set to:", pm_bin)
