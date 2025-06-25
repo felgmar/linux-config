@@ -9,9 +9,10 @@ import re
 import shutil
 import sys
 import subprocess
+import getpass
 
 CURRENT_PLATFORM: str = sys.platform.lower()
-CURRENT_USER: str = os.getlogin()
+CURRENT_USER: str = getpass.getuser()
 CMDLINE_FILE: str = "/etc/kernel/cmdline"
 
 CURRENT_DIR: str = os.getcwd()
