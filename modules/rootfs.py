@@ -100,7 +100,6 @@ class RootFSManager():
                     shutil.copyfile(file_path, destination_path)
                 else:
                     print(f"[!] Skipping directory {os.path.dirname(destination_path)}, since it does not exist.")
-                    break
             except Exception as e:
                 raise e
 
