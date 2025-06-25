@@ -52,7 +52,7 @@ def _write_cmdline(file: str) -> None:
 
 if __name__ == "__main__":
     assert CURRENT_PLATFORM == "linux", "This script only runs on Linux"
-    assert CURRENT_USER != "root", "This script must be run as root"
+    assert CURRENT_USER == "root", "This script must be run as root"
 
     root_partition: str = str(input("Enter the root partition (e.g., /dev/sda1): ")).strip()
     cmdline: str = ""
