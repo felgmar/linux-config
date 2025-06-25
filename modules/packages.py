@@ -162,18 +162,13 @@ class PackageManager():
             case "Arch":
                 aur = [
                     "archlinux-artwork",
-                    "duckstation-git",
-                    "github-desktop",
                     "lib32-mangohud-git",
                     "mangohud-git",
                     "minq-ananicy-git",
                     "mkinitcpio-firmware",
-                    "pcsx2-git",
                     "plymouth-theme-archlinux",
                     "preloader-signed",
-                    "protonup-rs",
                     "rate-mirrors",
-                    "rpcs3-git",
                     "spotify",
                     "ventoy-bin",
                     "visual-studio-code-bin",
