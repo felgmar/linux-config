@@ -25,8 +25,8 @@ def __validate_platform() -> None:
     """
     Validate the current platform and raise an error if it is not supported.
     """
-    assert __get_current_platform() == "linux", f"{_get_current_platform()}" + \
-        "is not a supported platform."
+    assert __get_current_platform() == "linux", __get_current_platform() + \
+        " is not a supported platform."
 
 def parse_actions() -> None:
     """
