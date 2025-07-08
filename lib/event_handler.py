@@ -2,6 +2,9 @@
 Event handler module for arguments parsing and action execution.
 """
 
+if __name__ == "__main__":
+    raise RuntimeError("This module is not meant to be run directly. Please use the main script.")
+
 import sys
 from argparse import ArgumentError
 
