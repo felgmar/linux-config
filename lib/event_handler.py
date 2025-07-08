@@ -3,6 +3,7 @@ Event handler module for arguments parsing and action execution.
 """
 
 import sys
+from argparse import ArgumentError
 
 from modules.kernels import KernelManager
 from modules.packages import PackageManager
@@ -80,5 +81,6 @@ def parse_actions() -> None:
             sm.enable_services(desktop_environment, args.verbose)
         case _:
             if not args.action:
-                raise ValueError("No action was specified.")
-            raise ValueError(args.action, "invalid action")
+                ARGUMENTS_PARSER.parser.print_help()
+            else:
+                raise ArgumentError(args.action, "Invalid action specified.")
