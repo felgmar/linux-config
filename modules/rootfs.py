@@ -15,7 +15,7 @@ class RootFSManager():
     """
     Handles files customized by the user.
     """
-    def __init__(self, override_permissions: bool = False):
+    def __init__(self):
         self.local_dirs: dict[str, str] = {
             "boot_dir": os.path.join(os.getcwd() + '/modules/rootfs/boot'),
             "etc_dir": os.path.join(os.getcwd() + '/modules/rootfs/etc'),
