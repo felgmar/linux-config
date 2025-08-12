@@ -102,6 +102,7 @@ class PackageManager():
                     "gamemode",
                     "geoclue",
                     "github-cli",
+                    "intel-media-driver",
                     "intel-ucode",
                     "lib32-gamemode",
                     "lib32-libpulse",
