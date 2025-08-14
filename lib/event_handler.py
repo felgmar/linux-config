@@ -54,7 +54,6 @@ def parse_actions() -> None:
             sbm.install_shim(args.verbose)
 
         case "install-tkg-kernel":
-            pm = PackageManager()
             km = KernelManager(kernel_url="https://github.com/frogging-family/linux-tkg.git",
                                kernel_dir="linux-tkg")
 
