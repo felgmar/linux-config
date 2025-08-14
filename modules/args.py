@@ -16,20 +16,27 @@ class ArgumentParser:
             "install-packages", "setup-rootfs", "setup-services"
         ]
 
-        self.parser = argparse.ArgumentParser(prog="linux-config")
+        self.parser = argparse.ArgumentParser(prog="linux-config",
+                                              description="Linux configuration script.")
         self.group = self.parser.add_mutually_exclusive_group()
 
     def populate_args(self):
         """
         This method populates the ArgumentParser object with the necessary arguments.
         """
-        self.parser.add_argument("-a", "--action", choices=self.actions, type=str,
-                            help="Runs the specified script. Available options are " +
-                            ", ".join(self.actions), metavar="")
-
-        self.parser.add_argument("-v", "--verbose", action="store_true",
-                                 default=False, help="Print more messages")
-        self.group.add_argument("--version", action="version", version="%(prog)s 1.0")
+        self.parser.add_argument("-a", "--action",
+                                 choices=self.actions,
+                                 type=str,
+                                 help="Runs the specified script. Available options are " +
+                                 ", ".join(self.actions),
+                                 metavar="")
+        self.parser.add_argument("-v", "--verbose",
+                                 action="store_true",
+                                 default=False,
+                                 help="Print more messages")
+        self.group.add_argument("--version",
+                                action="version",
+                                version="%(prog)s 1.0")
 
     def parse_args(self):
         """
