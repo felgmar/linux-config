@@ -123,7 +123,7 @@ class RootFSManager():
 
                 if is_dir:
                     if verbose:
-                        print(f"[VERBOSE] Backup up '{destination_path}' to '{destination_path}.backup'...")
+                        print(f"[VERBOSE] Backing up '{destination_path}' to '{destination_path}.backup'...")
                     shutil.copyfile(destination_path, f"{destination_path}.backup")
                     
                     if verbose:
