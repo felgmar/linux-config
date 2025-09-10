@@ -113,24 +113,29 @@ class RootFSManager():
             source_path: str = os.path.relpath(file)
             file_relative_path: str = os.path.relpath(source_path, source)
             destination_path: str = os.path.join(destination, file_relative_path)
-            is_dir: bool = os.path.isdir(os.path.dirname(destination_path))
+            is_dir: bool = self.__is_directory(os.path.dirname(destination_path))
+
+            if verbose:
+                print(f"""source_path={source_path}
+file_relative_path={file_relative_path}
+destination_path={destination_path}
+is_dir={is_dir}""")
 
             try:
                 assert self.__is_file(source_path), f"{source_path} is not a file."
 
-                if not self.__is_writable(destination_path):
-                    return
+                if not is_dir:
+                    print(f"[!] Skipped directory '{os.path.dirname(destination_path)}'" + \
+                           " since it does not exist.")
+                    file_list.remove(file)
 
-                if is_dir:
-                    if verbose:
-                        print(f"[VERBOSE] Backing up '{destination_path}' to '{destination_path}.backup'...")
-                    shutil.copyfile(destination_path, f"{destination_path}.backup")
-                    
-                    if verbose:
-                        print(f"[VERBOSE] Copying '{source_path}' to '{destination_path}'...")
-                    shutil.copyfile(source_path, destination_path)
-                else:
-                    print(f"[!] Skipped directory {os.path.dirname(destination_path)}, since it does not exist.")
+                if verbose:
+                    print(f"[VERBOSE] Backing up '{destination_path}' to '{destination_path}.backup'...")
+                shutil.copyfile(destination_path, f"{destination_path}.backup")
+
+                if verbose:
+                    print(f"[VERBOSE] Copying '{source_path}' to '{destination_path}'...")
+                shutil.copyfile(source_path, destination_path)
             except Exception as e:
                 raise e
 
