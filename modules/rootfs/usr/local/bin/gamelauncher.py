@@ -27,11 +27,9 @@ class GameLauncher():
         self.is_mangoapp_available: bool = bool(shutil.which("mangoapp"))
         self.is_mangohud_available: bool = bool(shutil.which("mangohud"))
         self.is_gamemoderun_available: bool = bool(shutil.which("gamemoderun"))
-        self.is_mangohud_dlsym_available: bool = subprocess.run("mangohud --dlsym",
-                                                                shell=True,
+        self.is_mangohud_dlsym_available: bool = subprocess.run(["mangohud", "--dlsym"],
                                                                 stdout=subprocess.PIPE,
                                                                 stderr=subprocess.PIPE).returncode == 0
-
 
         for arg in args:
             if arg == "AppId=255710":
@@ -54,7 +52,7 @@ class GameLauncher():
         display_resolution: dict[str, int] = {}
 
         if not self.is_gamescope_available:
-            raise RuntimeError("gamescope is not available on this system.")
+            print("[WARN] gamescope is not available on this system.")
 
         display_resolution["width"] = width
         display_resolution["height"] = height
@@ -94,9 +92,11 @@ class GameLauncher():
         command_line: list[str] = []
 
         if self.is_gamescope_available:
-            command_line.extend([self.gamescope_path,
-                                "-W", str(display['width']),
-                                "-H", str(display['height'])])
+            command_line.extend([
+                self.gamescope_path,
+                "-W", str(display['width']),
+                "-H", str(display['height'])
+            ])
             if not self.refresh_rate == 0:
                 command_line.extend(["-r", str(self.refresh_rate)])
             if self.is_wayland_available:
@@ -105,19 +105,17 @@ class GameLauncher():
                 command_line.append("--fullscreen")
             if self.is_mangohud_available and self.is_mangoapp_available:
                 command_line.append("--mangoapp")
+            if self.fullscreen_mode:
+                command_line.append("--fullscreen")
+            if self.always_grab_cursor:
+                command_line.append("--force-grab-cursor")
+            command_line.append("--")
         else:
             if self.is_mangohud_available:
                 command_line.append(self.mangohud_path)
             if self.is_mangohud_dlsym_available and \
                self.app_id == "255710":
                 command_line.append("--dlsym")
-
-        if self.fullscreen_mode:
-            command_line.append("--fullscreen")
-        if self.always_grab_cursor:
-            command_line.append("--force-grab-cursor")
-
-        command_line.append("--")
 
         if self.is_gamemoderun_available:
             command_line.append(self.gamemoderun_path)
