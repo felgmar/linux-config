@@ -94,11 +94,11 @@ class GameLauncher():
         command_line: list[str] = []
 
         if self.is_gamescope_available:
-            command_line.append(self.gamescope_path)
-            command_line.append(f"-W {display["width"]}")
-            command_line.append(f"-H {display["height"]}")
+            command_line.extend([self.gamescope_path,
+                                "-W", str(display['width']),
+                                "-H", str(display['height'])])
             if not self.refresh_rate == 0:
-                command_line.append(f"-r {self.refresh_rate}")
+                command_line.extend(["-r", str(self.refresh_rate)])
             if self.is_wayland_available:
                 command_line.append("--expose-wayland")
             if self.fullscreen_mode:
@@ -112,6 +112,8 @@ class GameLauncher():
                self.app_id == "255710":
                 command_line.append("--dlsym")
 
+        if self.fullscreen_mode:
+            command_line.append("--fullscreen")
         if self.always_grab_cursor:
             command_line.append("--force-grab-cursor")
 
