@@ -21,12 +21,16 @@ def _generate_cmdline(partition: str) -> str:
     """
     Generate the kernel command line for the current system.
     """
-    assert partition is not None, "A root partition is required."
+    assert partition == "", "A root partition is required."
 
     args: list[str] = ["blkid", "-s", "PARTUUID", "-o", "value", partition]
-    partition_partuuid: str = \
-        subprocess.run(args, capture_output=True, check=False, text=True).stdout.strip()
-    cmdline_path: str = os.path.join(CURRENT_DIR, "modules/rootfs/etc/kernel/cmdline_no_encryption")
+
+    partition_partuuid: str = subprocess.run(args,
+                                             capture_output=True,
+                                             check=False,
+                                             text=True).stdout.strip()
+
+    cmdline_path: str = os.path.join(CURRENT_DIR, "cmdline")
 
     with open(cmdline_path, "r", encoding="UTF-8") as file:
         new_cmdline: str = re.sub(r"<.*>", partition_partuuid, file.read().strip())
@@ -37,7 +41,7 @@ def _write_cmdline(file: str) -> None:
     """
     Write the generated command line to the kernel command line file.
     """
-    assert os.path.exists(CMDLINE_FILE[:-8])
+    assert os.path.exists(CMDLINE_FILE[:-8]), f"The directory {CMDLINE_FILE[:-8]} does not exist"
 
     assert os.access(CMDLINE_FILE, os.W_OK), f"{CMDLINE_FILE}: cannot write to file"
 
@@ -59,7 +63,6 @@ if __name__ == "__main__":
 
     try:
         cmdline = _generate_cmdline(root_partition)
-        _write_cmdline(cmdline)
     except Exception as e:
         raise e
     finally:
