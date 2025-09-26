@@ -1,2 +1,0 @@
-root=PARTUUID=<enter_partuuid_here> rootflags=subvol=@ rw rootfstype=btrfs add_efi_memmap delayacct lockdown=confidentiality apparmor=1 security=apparmor quiet splash intel_iommu=on amd_iommu=on iommu=pt
-
