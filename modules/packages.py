@@ -170,7 +170,6 @@ class PackageManager():
                     "plymouth-theme-archlinux",
                     "preloader-signed",
                     "rate-mirrors",
-                    "spotify",
                     "ventoy-bin",
                     "visual-studio-code-bin",
                 ]
