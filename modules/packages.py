@@ -7,6 +7,7 @@ Module containing the PackageManager class.
 import subprocess
 import shutil
 import getpass
+import distro
 
 class PackageManager():
     """
@@ -14,10 +15,8 @@ class PackageManager():
     """
     def __init__(self):
         self.lsb_release_bin: str | None = shutil.which("lsb_release")
-        current_distro_cmd: subprocess.CompletedProcess[str] = \
-            subprocess.run("lsb_release -is", shell=True, universal_newlines=True,
-                           capture_output=True, check=True, text=True)
-        self.current_distro = current_distro_cmd.stdout.replace("\"", "").removesuffix("\n")
+        self.distro_info = distro.distro_release_info()
+        self.current_distro: str = self.distro_info.get("distribution_id", "unknown").replace("\'", "")
         self.current_user = getpass.getuser()
 
         if not self.lsb_release_bin:
