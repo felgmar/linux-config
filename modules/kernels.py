@@ -16,15 +16,15 @@ class KernelManager():
     Manages the installation of custom kernels.
     """
     def __init__(self, kernel_url: str, kernel_dir: str):
-        self.current_user: str = getpass.getuser()
+        self.CURRENT_USER: str = getpass.getuser()
 
-        self.current_dir: str = os.getcwd()
+        self.CURRENT_DIR: str = os.getcwd()
 
-        self.kernel_url: str = kernel_url
-        self.kernel_dir: str = kernel_dir
+        self.KERNEL_URL: str = kernel_url
+        self.KERNEL_DIR: str = kernel_dir
 
-        self.repo_manager: RepositoryManager = RepositoryManager(repo_url=self.kernel_url,
-                                                                 repo_dir=self.kernel_dir)
+        self.repo_manager: RepositoryManager = RepositoryManager(repo_url=self.KERNEL_URL,
+                                                                 repo_dir=self.KERNEL_DIR)
 
     def clone_kernel(self) -> None:
         """
@@ -48,10 +48,15 @@ class KernelManager():
         """
         Installs a custom kernel.
         """
-        previous_dir: str = self.current_dir
+        PREVIOUS_DIR: str = self.CURRENT_DIR
+        FULL_REPOSITORY_PATH: str = os.path.join(self.repo_manager.repositories_dir,
+                                                 self.repo_manager.repo_dir)
+        DEFAULT_TEXT_EDITOR: str | None = os.environ.get("EDITOR")
+        CUSTOM_DEFINED_TEXT_EDITOR: str | None = shutil.which("nano") or \
+                                                 shutil.which("vim") or \
+                                                 shutil.which("vi")
 
-        if not os.path.isdir(os.path.join(self.repo_manager.repositories_dir,
-                                            self.repo_manager.repo_dir)):
+        if not os.path.isdir(FULL_REPOSITORY_PATH):
             try:
                 self.clone_kernel()
             except Exception as e:
@@ -62,33 +67,25 @@ class KernelManager():
             except Exception as e:
                 raise e
 
-        os.chdir(os.path.join(self.repo_manager.repositories_dir,
-                                self.repo_manager.repo_dir))
+        os.chdir(FULL_REPOSITORY_PATH)
 
-        if os.environ.get("EDITOR"):
-            subprocess.run("$EDITOR customization.cfg", shell=True, check=True)
-        else:
-            print("You do not seem to have set a default text editor.\n" + \
-                    "to edit the customization.cfg file.")
+        if not DEFAULT_TEXT_EDITOR:
+            if not CUSTOM_DEFINED_TEXT_EDITOR:
+                raise EnvironmentError("No text editor found.")
+            if verbose:
+                print(f"The text editor has been manually set to: {CUSTOM_DEFINED_TEXT_EDITOR}")
             try:
-                user_text_editor: str = input("Specify an alternate text editor: ")
-            except EOFError as e:
+                subprocess.run([CUSTOM_DEFINED_TEXT_EDITOR, "customization.cfg"], check=True)
+            except subprocess.CalledProcessError as e:
+                raise e
+        else:
+            try:
+                subprocess.run([DEFAULT_TEXT_EDITOR, "customization.cfg"], check=True)
+            except subprocess.CalledProcessError as e:
                 raise e
 
-            if user_text_editor:
-                if verbose:
-                    print(f"The text editor has been set manually to: {user_text_editor}")
-
-                if not shutil.which(user_text_editor):
-                    raise FileNotFoundError(f"Could not find {user_text_editor} on your system.")
-
-                subprocess.run(f"{user_text_editor} customization.cfg",
-                                shell=True, check=True)
-            else:
-                if verbose:
-                    print("No text editor was specified, omitting customization.")
 
         if os.path.isfile("PKGBUILD"):
             subprocess.run("makepkg -sirf", shell=True, check=True)
 
-        os.chdir(previous_dir)
+        os.chdir(PREVIOUS_DIR)
