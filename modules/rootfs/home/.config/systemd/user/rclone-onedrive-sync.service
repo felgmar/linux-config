@@ -1,0 +1,23 @@
+[Unit]
+Description=Sync OneDrive online using rclone
+After=network-online.target rclone-onedrive.service
+Wants=network-online.target rclone-onedrive.service
+
+[Service]
+Type=oneshot
+ExecStartPre=notify-send \
+    -u normal \
+    -a "OneDrive (rclone)" \
+    "Syncronization for OneDrive has started."
+ExecStartPost=notifysend \
+    -u normal \
+    -a "OneDrive (rclone)" \
+    "Syncronization for OneDrive ended."
+ExecStart=/usr/bin/rclone bisync onedrive: %h/OneDrive \
+    --exclude "/Personal Vault/**" \
+    --fast-list \
+    --drive-chunk-size 64M \
+    --transfers=8 \
+    --checkers=16 \
+    --log-file=%h/.cache/rclone-onedrive-sync.log \
+    --log-level=INFO

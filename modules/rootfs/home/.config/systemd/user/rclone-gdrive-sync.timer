@@ -1,0 +1,10 @@
+[Unit]
+Description=Sync Google Drive every 15 minutes
+
+[Timer]
+OnBootSec=10m
+OnUnitActiveSec=15m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,22 @@
+[Unit]
+Description=Mount OneDrive using rclone
+After=network-online.target
+Wants=rclone-onedrive-sync.timer
+
+[Service]
+Type=simple
+ExecStartPost=notify-send \
+    -u normal \
+    -a "OneDrive (rclone)" \
+    "Mounted OneDrive using rclone."
+ExecStart=/usr/bin/rclone mount onedrive: %h/OneDrive \
+    --vfs-cache-mode full \
+    --vfs-cache-max-size 5G \
+    --vfs-cache-max-age 168h \
+    --dir-cache-time 72h \
+    --buffer-size 64M \
+    --poll-interval 15s 
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
