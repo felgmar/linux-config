@@ -54,8 +54,6 @@ class KernelManager():
                                                  shutil.which("vim") or \
                                                  shutil.which("vi")
         
-        assert os.path.isdir(FULL_REPOSITORY_PATH), f"Could not find the repository directory."
-
         if not os.path.isdir(FULL_REPOSITORY_PATH):
             try:
                 self.clone_kernel()
