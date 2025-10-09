@@ -17,14 +17,12 @@ class KernelManager():
     """
     def __init__(self, kernel_url: str, kernel_dir: str):
         self.CURRENT_USER: str = getpass.getuser()
-
         self.CURRENT_DIR: str = os.getcwd()
-
         self.KERNEL_URL: str = kernel_url
         self.KERNEL_DIR: str = kernel_dir
-
-        self.repo_manager: RepositoryManager = RepositoryManager(repo_url=self.KERNEL_URL,
-                                                                 repo_dir=self.KERNEL_DIR)
+        self.repo_manager: RepositoryManager = \
+            RepositoryManager(repo_url=self.KERNEL_URL,
+                              repo_dir=self.KERNEL_DIR)
 
     def clone_kernel(self) -> None:
         """
@@ -55,6 +53,8 @@ class KernelManager():
         CUSTOM_DEFINED_TEXT_EDITOR: str | None = shutil.which("nano") or \
                                                  shutil.which("vim") or \
                                                  shutil.which("vi")
+        
+        assert os.path.isdir(FULL_REPOSITORY_PATH), f"Could not find the repository directory."
 
         if not os.path.isdir(FULL_REPOSITORY_PATH):
             try:
@@ -69,23 +69,26 @@ class KernelManager():
 
         os.chdir(FULL_REPOSITORY_PATH)
 
-        if not DEFAULT_TEXT_EDITOR:
-            if not CUSTOM_DEFINED_TEXT_EDITOR:
-                raise EnvironmentError("No text editor found.")
+        assert os.path.isfile ("customization.cfg"), "customization.cfg file is missing."
+        assert os.path.isfile ("PKGBUILD"), "PKGBUILD file is missing."
+
+        if CUSTOM_DEFINED_TEXT_EDITOR:
             if verbose:
                 print(f"The text editor has been manually set to: {CUSTOM_DEFINED_TEXT_EDITOR}")
             try:
                 subprocess.run([CUSTOM_DEFINED_TEXT_EDITOR, "customization.cfg"], check=True)
             except subprocess.CalledProcessError as e:
                 raise e
-        else:
+        elif DEFAULT_TEXT_EDITOR:
+            if verbose:
+                print(f"The text editor has been set to: {DEFAULT_TEXT_EDITOR}")
             try:
                 subprocess.run([DEFAULT_TEXT_EDITOR, "customization.cfg"], check=True)
             except subprocess.CalledProcessError as e:
                 raise e
+        else:
+            raise EnvironmentError("No valid text editor was found.")
 
-
-        if os.path.isfile("PKGBUILD"):
-            subprocess.run("makepkg -sirf", shell=True, check=True)
+        subprocess.run(["makepkg", "-sirf"], check=True)
 
         os.chdir(PREVIOUS_DIR)
