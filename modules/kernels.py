@@ -69,8 +69,8 @@ class KernelManager():
 
         os.chdir(FULL_REPOSITORY_PATH)
 
-        assert os.path.isfile ("customization.cfg"), "customization.cfg file is missing."
-        assert os.path.isfile ("PKGBUILD"), "PKGBUILD file is missing."
+        assert os.path.isfile("customization.cfg"), "customization.cfg file is missing."
+        assert os.path.isfile("PKGBUILD"), "PKGBUILD file is missing."
 
         if CUSTOM_DEFINED_TEXT_EDITOR:
             if verbose:
