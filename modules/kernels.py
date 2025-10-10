@@ -47,8 +47,8 @@ class KernelManager():
         Installs a custom kernel.
         """
         PREVIOUS_DIR: str = self.CURRENT_DIR
-        FULL_REPOSITORY_PATH: str = os.path.join(self.repo_manager.repositories_dir,
-                                                 self.repo_manager.repo_dir)
+        FULL_REPOSITORY_PATH: str = os.path.join(self.repo_manager.REPOSITORIES_DIR,
+                                                 self.repo_manager.REPO_DIR)
         DEFAULT_TEXT_EDITOR: str | None = os.environ.get("EDITOR")
         CUSTOM_DEFINED_TEXT_EDITOR: str | None = shutil.which("nano") or \
                                                  shutil.which("vim") or \
