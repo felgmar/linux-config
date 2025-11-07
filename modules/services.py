@@ -52,12 +52,18 @@ class ServicesManager():
         Retrieves a dictionary with all the services that are disabled.
         """
         disabled_services: dict[str, str] = {}
+        command: list[str] = []
 
         for service_name in services:
-            service_status: str = \
-                subprocess.run(f"systemctl is-enabled {service_name}", shell=True,
-                               universal_newlines=True, capture_output=True, check=False,
-                               text=True).stdout.removesuffix("\n")
+            command.clear()
+            command.extend([
+                "systemctl",
+                "is-enabled",
+                service_name
+            ])
+            service_status: str = subprocess.run(command,
+                                                 capture_output=True,
+                                                 text=True).stdout.strip()
 
             match service_status:
                 case "disabled":
@@ -70,9 +76,12 @@ class ServicesManager():
                 case "enabled":
                     if verbose:
                         print(f"{service_name} is already {service_status}")
+                case "not-found":
+                    if verbose:
+                        print(f"[!] {service_name} was not found")
                 case _:
-                    raise Exception(f"An error occurred with {service_name}. Status: {service_status}")
-        
+                    raise ValueError(f"{service_name} has an unknown status: {service_status}.")
+
         return disabled_services
 
     def enable_service(self, service: str) -> None:
