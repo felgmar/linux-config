@@ -16,7 +16,7 @@ class PackageManager():
     def __init__(self):
         self.lsb_release_bin: str | None = shutil.which("lsb_release")
         self.distro_info = distro.distro_release_info()
-        self.current_distro: str = self.distro_info.get("distribution_id", "unknown").replace("\'", "")
+        self.current_distro: str = self.distro_info.get("id", "unknown").replace("\'", "")
         self.current_user = getpass.getuser()
 
         if not self.lsb_release_bin:
@@ -56,7 +56,7 @@ class PackageManager():
         Installs an AUR helper based on the distribution.
         """
         match distro:
-            case "Arch":
+            case "arch":
                 match package_manager:
                     case "paru":
                         raise NotImplementedError()
@@ -80,7 +80,7 @@ class PackageManager():
         Returns a list of main packages based on the current distribution.
         """
         match self.current_distro:
-            case "Arch":
+            case "arch":
                 pkglist = [
                     "7zip",
                     "alacritty",
@@ -169,7 +169,7 @@ class PackageManager():
         Returns a list of packages based on the desktop environment.
         """
         match self.current_distro:
-            case "Arch":
+            case "arch":
                 aur = [
                     "archlinux-artwork",
                     "github-desktop-bin",
@@ -224,7 +224,7 @@ class PackageManager():
             case _:
                 raise ValueError(self.current_distro, "unsupported distro")
 
-        if only_get_aur and self.current_distro == "Arch":
+        if only_get_aur and self.current_distro == "arch":
             return aur
 
         match desktop_environment:
@@ -256,7 +256,7 @@ class PackageManager():
             extra_pkglist = self.convert_list_to_str(extra_packages)
 
             match self.current_distro:
-                case "Arch":
+                case "arch":
                     aur_packages = self.get_package_list(desktop_environment,
                                                          only_get_aur=True)
                     aur_pkglist = self.convert_list_to_str(aur_packages)
