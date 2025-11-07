@@ -104,7 +104,7 @@ class PackageManager():
                     "gptfdisk",
                     "intel-media-driver",
                     "intel-ucode",
-                    "libayatana-appindicator"
+                    "libayatana-appindicator",
                     "libappindicator-gtk2",
                     "libappindicator-gtk3",
                     "lib32-gamemode",
