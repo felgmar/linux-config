@@ -40,12 +40,11 @@ class PackageManager():
             "yay"
         ]
 
-        if self.current_distro == "Arch":
-            for helper in aur_helpers + package_managers:
-                if not shutil.which(helper) and verbose:
-                    print(helper, "was not found")
-                pm_bin = helper
-                break
+        for helper in aur_helpers + package_managers:
+            if not shutil.which(helper) and verbose:
+                print(helper, "was not found")
+            pm_bin = helper
+            break
 
         if pm_bin is None:
             raise ValueError("No package manager could be set.")
