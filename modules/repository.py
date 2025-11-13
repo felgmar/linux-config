@@ -9,7 +9,7 @@ import os
 
 class RepositoryManager():
     """
-    Handles repository tasks such as cloning and updating.
+    Handles tasks such as cloning and updating repositories.
     """
     def __init__(self, repo_url: str, repo_dir: str):
         self.REPO_URL: str = repo_url
