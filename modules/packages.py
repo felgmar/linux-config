@@ -6,8 +6,8 @@ Module containing the PackageManager class.
 
 import subprocess
 import shutil
-import getpass
-import distro
+
+from lib.platform import Platform
 
 class PackageManager():
     """
@@ -15,9 +15,9 @@ class PackageManager():
     """
     def __init__(self):
         self.lsb_release_bin: str | None = shutil.which("lsb_release")
-        self.distro_info = distro.distro_release_info()
-        self.current_distro: str = self.distro_info.get("id", "unknown").replace("\'", "")
-        self.current_user = getpass.getuser()
+        self.PLATFORM: Platform = Platform()
+        self.CURRENT_DISTRO: str = self.PLATFORM.get_distro()
+        self.CURRENT_USER: str = self.PLATFORM.get_user()
 
         if not self.lsb_release_bin:
             raise FileNotFoundError("lsb_release: not found")
@@ -79,72 +79,13 @@ class PackageManager():
         """
         Returns a list of main packages based on the current distribution.
         """
-        match self.current_distro:
+        match self.CURRENT_DISTRO:
             case "arch":
-                pkglist = [
-                    "7zip",
-                    "alacritty",
-                    "alsa-utils",
-                    "apparmor",
-                    "archlinux-wallpaper",
-                    "ananicy-cpp",
-                    "bridge-utils",
-                    "bitwarden",
-                    "ccache",
-                    "clamtk",
-                    "curl",
-                    "dnsmasq",
-                    "fail2ban",
-                    "fastfetch",
-                    "firewalld",
-                    "fwupd",
-                    "gamemode",
-                    "geoclue",
-                    "github-cli",
-                    "gptfdisk",
-                    "intel-media-driver",
-                    "intel-ucode",
-                    "libayatana-appindicator",
-                    "libappindicator-gtk2",
-                    "libappindicator-gtk3",
-                    "lib32-gamemode",
-                    "lib32-libappindicator-gtk2",
-                    "lib32-libappindicator-gtk3",
-                    "lib32-libpulse",
-                    "lib32-vulkan-mesa-layers",
-                    "libva-mesa-driver",
-                    "less",
-                    "lutris",
-                    "mesa-vdpau",
-                    "nfs-utils",
-                    "pacman-contrib",
-                    "papirus-icon-theme",
-                    "pipewire-alsa",
-                    "pipewire-pulse",
-                    "power-profiles-daemon",
-                    "ppsspp",
-                    "qemu-desktop",
-                    "steam",
-                    "swtpm",
-                    "rclone",
-                    "telegram-desktop",
-                    "trash-cli",
-                    "ttf-cascadia-code",
-                    "virt-firmware",
-                    "virt-manager",
-                    "vulkan-mesa-layers",
-                    "wine",
-                    "wget",
-                    "xdg-user-dirs",
-                    "zram-generator",
-                    "zsh",
-                    "zsh-autosuggestions",
-                    "zsh-completions",
-                    "zsh-syntax-highlighting"
-            ]
-                return pkglist
+                with open("config/arch/packages/main.txt", "r", encoding="utf-8") as file:
+                    MAIN_PACKAGE_LIST = file.read().splitlines()
+                return MAIN_PACKAGE_LIST
             case _:
-                raise ValueError(self.current_distro, "is not supported.")
+                raise ValueError(self.CURRENT_DISTRO, "is not supported.")
 
     def get_desktop_environment(self) -> str:
         """
@@ -169,7 +110,7 @@ class PackageManager():
         """
         Returns a list of packages based on the desktop environment.
         """
-        match self.current_distro:
+        match self.CURRENT_DISTRO:
             case "arch":
                 aur = [
                     "archlinux-artwork",
@@ -222,9 +163,9 @@ class PackageManager():
                     "xfce4"
                 ]
             case _:
-                raise ValueError(self.current_distro, "unsupported distro")
+                raise ValueError(self.CURRENT_DISTRO, "unsupported distro")
 
-        if only_get_aur and self.current_distro == "arch":
+        if only_get_aur and self.CURRENT_DISTRO == "arch":
             return aur
 
         match desktop_environment:
@@ -244,7 +185,7 @@ class PackageManager():
         Installs packages based on the current distribution.
         """
         packages: str | None = None
-        cmd: str = ""
+        command: list[str] = []
 
         if not custom_pkglist is None:
             packages = self.convert_list_to_str(custom_pkglist)
@@ -255,7 +196,7 @@ class PackageManager():
             extra_packages = self.get_package_list(desktop_environment)
             extra_pkglist = self.convert_list_to_str(extra_packages)
 
-            match self.current_distro:
+            match self.CURRENT_DISTRO:
                 case "arch":
                     aur_packages = self.get_package_list(desktop_environment,
                                                          only_get_aur=True)
@@ -264,20 +205,35 @@ class PackageManager():
                 case _:
                     packages = main_pkglist + " " + extra_pkglist + " "
 
-        if self.current_user == "root":
+        if self.CURRENT_USER == "root":
+            
+
             match package_manager:
                 case "apt":
-                    cmd = f"{package_manager} update &&" + \
-                          f"{package_manager} install {packages}"
+                    command.extend([
+                        package_manager,
+                        "update",
+                        "&&",
+                        package_manager,
+                        "install",
+                        packages
+                    ])
                 case "pacman":
-                    cmd = f"{package_manager} -Syu --needed {packages}"
+                    command.extend([
+                        package_manager,
+                        "-Syu",
+                        "--needed",
+                        "&&",
+                        package_manager,
+                        "-S",
+                        packages
+                    ])
                 case "dnf":
                     cmd = f"{package_manager} update &&" \
                           f"{package_manager} install {packages}"
                 case "paru" | "yay":
-                    raise PermissionError(package_manager,
-                                          "is an AUR helper and it cannot be ran as " +
-                                          self.current_user)
+                    raise PermissionError("{0} is an AUR helper and it cannot be ran as {1}"
+                                          .format(package_manager, self.CURRENT_USER))
                 case _:
                     raise NotImplementedError(package_manager, "unknown package manager.")
         else:
