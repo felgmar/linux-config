@@ -13,7 +13,7 @@ from modules.repository import RepositoryManager
 
 class KernelManager():
     """
-    Manages the installation of custom kernels.
+    Manages the installation of kernels.
     """
     def __init__(self, kernel_url: str, kernel_dir: str):
         self.CURRENT_USER: str = getpass.getuser()
@@ -26,7 +26,7 @@ class KernelManager():
 
     def clone_kernel(self) -> None:
         """
-        Clones the custom kernel repository.
+        Clones the kernel repository.
         """
         try:
             self.repo_manager.clone_repo()
@@ -35,7 +35,7 @@ class KernelManager():
 
     def update_kernel(self) -> None:
         """
-        Updates the custom kernel repository.
+        Updates the kernel repository.
         """
         try:
             self.repo_manager.update_repo()
@@ -44,7 +44,13 @@ class KernelManager():
 
     def install_kernel(self, verbose: bool = False) -> None:
         """
-        Installs a custom kernel.
+        Installs the kernel.
+        Args:
+            verbose (bool): Whether to enable verbose output.
+        Raises:
+            AssertionError: If required files are missing.
+            EnvironmentError: If no valid text editor is found.
+            subprocess.CalledProcessError: If the text editor or makepkg command fails.
         """
         PREVIOUS_DIR: str = self.CURRENT_DIR
         FULL_REPOSITORY_PATH: str = os.path.join(self.repo_manager.REPOSITORIES_DIR,
