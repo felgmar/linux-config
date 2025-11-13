@@ -5,40 +5,31 @@ Module containing the Platform class.
 """
 
 if __name__ == "__main__":
-    import sys
     print("This module is not meant to be run directly.")
     sys.exit(1)
 
-class Platform:
+import sys
+import distro
+import getpass
+import platform
+
+class Platform():
     """
     Class for detecting the current platform and distribution.
     """
+    def __init__(self) -> None:
+        self.CURRENT_DISTRO: str = distro.lsb_release_info().get("id", "unknown").lower()
+        self.CURRENT_PLATFORM: str = platform.system().lower()
+        self.CURRENT_USER = getpass.getuser()
+
     def __get_current_distro(self) -> str:
-        """
-        Returns the current distribution.
-        """
-        try:
-            import distro
-            DISTRO_NOT_FOUND: str = "Failed to get the current distribution."
-            CURRENT_DISTRIBUTION: str = distro.lsb_release_info().get("distributofr_id", DISTRO_NOT_FOUND).lower()
+        return self.CURRENT_DISTRO
 
-            if CURRENT_DISTRIBUTION == DISTRO_NOT_FOUND:
-                raise RuntimeError(DISTRO_NOT_FOUND)
-        except Exception as e:
-            raise e
-
-        return CURRENT_DISTRIBUTION
     def __get_current_platform(self) -> str:
-        """
-        Returns the current platform.
-        """
-        try:
-            import platform
-            CURRENT_PLATFORM: str = platform.system().lower()
-        except Exception as e:
-            raise e
+        return self.CURRENT_PLATFORM
 
-        return CURRENT_PLATFORM
+    def __get_current_user(self) -> str:
+        return self.CURRENT_USER
 
     def get_platform(self) -> str:
         """
@@ -51,3 +42,9 @@ class Platform:
         Returns the current distribution.
         """
         return self.__get_current_distro()
+
+    def get_user(self) -> str:
+        """
+        Returns the current user.
+        """
+        return self.__get_current_user()
