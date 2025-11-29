@@ -18,16 +18,19 @@ class GameLauncher():
         self.always_grab_cursor: bool = True
 
         self.gamescope_path: str = str(shutil.which("gamescope"))
-        self.mangoapp_path: str = str(shutil.which("mangoapp"))
         self.mangohud_path: str = str(shutil.which("mangohud"))
+        self.mangoapp_path: str = str(shutil.which("mangoapp"))
         self.gamemoderun_path: str = str(shutil.which("gamemoderun"))
 
         self.is_wayland_available: bool = os.environ.get("XDG_SESSION_TYPE") == "wayland"
         self.is_gamescope_available: bool = bool(shutil.which("gamescope"))
-        self.is_mangoapp_available: bool = bool(shutil.which("mangoapp"))
         self.is_mangohud_available: bool = bool(shutil.which("mangohud"))
+        self.is_mangoapp_available: bool = bool(shutil.which("mangoapp"))
         self.is_gamemoderun_available: bool = bool(shutil.which("gamemoderun"))
-        self.is_mangohud_dlsym_available: bool = subprocess.run(["mangohud", "--dlsym"],
+        self.is_mangohud_dlsym_available: bool = False
+
+        if self.is_mangohud_available:
+            self.is_mangohud_dlsym_available = subprocess.run([self.mangohud_path, "--dlsym"],
                                                                 stdout=subprocess.PIPE,
                                                                 stderr=subprocess.PIPE).returncode == 0
 
@@ -50,9 +53,6 @@ class GameLauncher():
             Dictionary containing the width and hight
         """
         display_resolution: dict[str, int] = {}
-
-        if not self.is_gamescope_available:
-            print("[WARN] gamescope is not available on this system.")
 
         display_resolution["width"] = width
         display_resolution["height"] = height
@@ -113,9 +113,8 @@ class GameLauncher():
         else:
             if self.is_mangohud_available:
                 command_line.append(self.mangohud_path)
-            if self.is_mangohud_dlsym_available and \
-               self.app_id == "255710":
-                command_line.append("--dlsym")
+                if self.is_mangohud_dlsym_available and self.app_id == "255710":
+                    command_line.append("--dlsym")
 
         if self.is_gamemoderun_available:
             command_line.append(self.gamemoderun_path)
@@ -125,9 +124,9 @@ class GameLauncher():
         print("Gamescope is available:", self.is_gamescope_available)
         print("MangoHud is available:", self.is_mangohud_available)
         print("MangoApp is available:", self.is_mangoapp_available)
+        print("MangoHud dlsym enabled:", self.is_mangohud_dlsym_available)
         print("gamemoderun is available:", self.is_gamemoderun_available)
         print("Wayland is available:", self.is_wayland_available)
-        print("MangoHud dlsym enabled:", self.is_mangohud_dlsym_available)
         print("Always grab cursor:", self.always_grab_cursor)
         print("Launch in fullscreen:", self.fullscreen_mode)
         print("Platform:", self.CURRENT_PLATFORM)
