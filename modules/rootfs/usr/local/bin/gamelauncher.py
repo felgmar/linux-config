@@ -67,11 +67,13 @@ class GameLauncher():
         """
         self.refresh_rate = new_refresh_rate
 
-    def run(self) -> int:
+    def __prepare(self) -> list[str]:
         """
-        Run the game with the specified arguments.
-        Returns:
-            int: The exit code of the game process.
+        Prepare the command line for launching the game.
+        Args:
+            Raises:
+                RuntimeError: If the platform is not supported.
+                PermissionError: If the script is run as root.
         """
         if not self.CURRENT_PLATFORM == "linux":
             raise RuntimeError(f"Your platform '{self.CURRENT_PLATFORM}' is not supported.")
@@ -121,20 +123,22 @@ class GameLauncher():
 
         command_line.extend(self.args)
 
-        print("Gamescope is available:", self.is_gamescope_available)
-        print("MangoHud is available:", self.is_mangohud_available)
-        print("MangoApp is available:", self.is_mangoapp_available)
-        print("MangoHud dlsym enabled:", self.is_mangohud_dlsym_available)
-        print("gamemoderun is available:", self.is_gamemoderun_available)
-        print("Wayland is available:", self.is_wayland_available)
-        print("Always grab cursor:", self.always_grab_cursor)
-        print("Launch in fullscreen:", self.fullscreen_mode)
-        print("Platform:", self.CURRENT_PLATFORM)
-        print("Refresh rate:", self.refresh_rate)
-        print("Running as:", self.CURRENT_USER)
-        print("Running command:", ' '.join(command_line))
+        return command_line
 
+    def run(self) -> int:
+        """
+        Run the game with the specified arguments.
+        Returns:
+            int: The exit code of the game process.
+        """
+        command_line: list[str] = []
         exit_code: int = 0
+        
+        try:
+            command_line: list[str] = self.__prepare()
+        except Exception as e:
+            print("An error occurred:", e)
+
         try:
             process = subprocess.run(
                 command_line,
@@ -143,10 +147,11 @@ class GameLauncher():
                 check=True
             )
             exit_code: int = process.returncode
+            process.check_returncode()
         except Exception as e:
             raise e
-        finally:
-            return exit_code
+
+        return exit_code
 
 if __name__ == "__main__":
     if len(sys.argv[1:]) == 0:
