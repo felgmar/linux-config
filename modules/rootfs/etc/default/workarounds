@@ -1,0 +1,24 @@
+#
+# Add these parameters to the kernel to workaround
+# firmware bugs/quirks least for the following motherboard:
+#   - ASUS PRIME H310M-A R2.0 (1)
+
+# Prevent the CPU going deeper than CSTATE 1
+# The firmware of the (1) motherboard is buggy
+# when it comes to managing CSTATES. This
+# parameter prevents the CPU from going any
+# deeper than C-STATE 1.
+intel_idle.max_cstate=1
+
+# This parameter tells the Linux kernel to ignore
+# PCI host bridge information provided by the
+# motherboard's (1) ACPI, which is buggy anyways
+# and instead let the Linux kernel manage it using
+# other ways.
+pci=nocrs
+
+# Prevents PCIe from entering deep power saving modes
+# known to be buggy on the motherboard (1) firmware.
+# Potentially workarounds another bug for suspend
+# and/or hibernation.
+pcie_aspm=off
