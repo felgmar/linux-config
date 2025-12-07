@@ -61,6 +61,7 @@ class ServicesManager():
                 "is-enabled",
                 service_name
             ])
+
             service_status: str = subprocess.run(command,
                                                  capture_output=True,
                                                  text=True).stdout.strip()
@@ -72,13 +73,19 @@ class ServicesManager():
                     try:
                         disabled_services[service_name] = service_status
                     except Exception as e:
-                        raise e
+                        raise RuntimeError("An error has occurred:", e)
                 case "enabled":
                     if verbose:
                         print(f"{service_name} is already {service_status}")
                 case "not-found":
                     if verbose:
-                        print(f"[!] {service_name} was not found")
+                        print(f"[!] {service_name} was not found, reloading systemd daemon...")
+
+                    try:
+                        subprocess.run(["systemctl", "daemon-reload"], check=True).check_returncode()
+                    except Exception as e:
+                        raise RuntimeError("An error has occurred:", e)
+
                 case _:
                     raise ValueError(f"{service_name} has an unknown status: {service_status}.")
 
@@ -88,15 +95,18 @@ class ServicesManager():
         """
         Enable a service using systemctl.
         """
+        cmd: list[str] = []
+
         match self.current_user:
             case "root":
-                cmd: str = f"systemctl enable {service}"
+                cmd.extend(["systemctl", "enable", service])
             case _:
-                cmd: str = f"sudo systemctl enable {service}"
+                cmd.extend(["sudo", "systemctl", "enable", service])
+
         try:
-            subprocess.run(cmd, shell=True, check=True)
+            subprocess.run(cmd).check_returncode()
         except Exception as e:
-            raise e
+            raise RuntimeError("An error has occurred:", e)
 
     def enable_services(self, desktop_environment: str, verbose: bool = False) -> None:
         """
