@@ -1,15 +1,32 @@
 #!/bin/sh
 
-command=$2
+AVAILABLE_CPU_CORES="$(getconf _NPROCESSORS_ONLN)"
 
-if [ "$command" = "started" ]
+if test "$((${AVAILABLE_CPU_CORES} - 1))" -lt 7
 then
-    systemctl set-property --runtime -- system.slice AllowedCPUs=0-3
-    systemctl set-property --runtime -- user.slice AllowedCPUs=0-3
-    systemctl set-property --runtime -- init.scope AllowedCPUs=0-3
-elif [ "$command" = "release" ]
-then
-    systemctl set-property --runtime -- system.slice AllowedCPUs=0-7
-    systemctl set-property --runtime -- user.slice AllowedCPUs=0-7
-    systemctl set-property --runtime -- init.scope AllowedCPUs=0-7
+    echo "Error: Not enough CPU cores available. At least 8 cores are required."
+    exit 1
 fi
+
+HOST_ALLOWED_CPU_CORES="$(($AVAILABLE_CPU_CORES / 2))"
+
+FULL_CPU_CORE_LIST="0-$(($AVAILABLE_CPU_CORES - 1))"
+CPU_CORE_LIST="0-$(($HOST_ALLOWED_CPU_CORES - 1))"
+
+case "$2" in
+    "started")
+        systemctl set-property --runtime -- system.slice AllowedCPUs=${CPU_CORE_LIST}
+        systemctl set-property --runtime -- user.slice AllowedCPUs=${CPU_CORE_LIST}
+        systemctl set-property --runtime -- init.scope AllowedCPUs=${CPU_CORE_LIST}
+        break
+    ;;
+
+    "release")
+        systemctl set-property --runtime -- system.slice AllowedCPUs=${FULL_CPU_CORE_LIST}
+        systemctl set-property --runtime -- user.slice AllowedCPUs=${FULL_CPU_CORE_LIST}
+        systemctl set-property --runtime -- init.scope AllowedCPUs=${FULL_CPU_CORE_LIST}
+        break
+    ;;
+
+    ?) break;;
+esac
