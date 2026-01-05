@@ -18,7 +18,7 @@ class Platform():
     Class for detecting the current platform and distribution.
     """
     def __init__(self) -> None:
-        self.CURRENT_DISTRO: str = distro.lsb_release_info().get("id", "unknown").lower()
+        self.CURRENT_DISTRO: str = distro.lsb_release_info().get("distributor_id", "unknown").lower()
         self.CURRENT_PLATFORM: str = platform.system().lower()
         self.CURRENT_USER = getpass.getuser()
 
