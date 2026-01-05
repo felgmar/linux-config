@@ -21,6 +21,7 @@ gptfdisk
 intel-media-driver
 intel-ucode
 less
+libvdpau-va-gl
 lib32-gamemode
 lib32-libappindicator-gtk2
 lib32-libappindicator-gtk3
@@ -31,7 +32,6 @@ libappindicator-gtk3
 libayatana-appindicator
 libva-mesa-driver
 lutris
-mesa-vdpau
 nfs-utils
 pacman-contrib
 papirus-icon-theme
