@@ -1,6 +1,7 @@
 [Unit]
-Description=Mount Google Drive using rclone
+Description=Mount Google Drive (rclone)
 After=network-online.target
+Wants=rclone-gdrive-sync.timer
 
 [Service]
 Type=simple

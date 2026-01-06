@@ -1,5 +1,5 @@
 [Unit]
-Description=Mount OneDrive using rclone
+Description=Mount OneDrive (rclone)
 After=network-online.target
 Wants=rclone-onedrive-sync.timer
 

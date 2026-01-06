@@ -9,7 +9,7 @@ ExecStartPre=notify-send \
     -u normal \
     -a "OneDrive (rclone)" \
     "Syncronization for OneDrive has started."
-ExecStartPost=notifysend \
+ExecStartPost=notify-send \
     -u normal \
     -a "OneDrive (rclone)" \
     "Syncronization for OneDrive ended."
@@ -20,4 +20,5 @@ ExecStart=/usr/bin/rclone bisync onedrive: %h/OneDrive \
     --transfers=8 \
     --checkers=16 \
     --log-file=%h/.cache/rclone-onedrive-sync.log \
-    --log-level=INFO
+    --log-level=INFO\
+    --resync

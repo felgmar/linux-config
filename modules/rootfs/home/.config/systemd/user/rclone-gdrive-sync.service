@@ -19,4 +19,5 @@ ExecStart=/usr/bin/rclone bisync gdrive: %h/GoogleDrive \
     --transfers=8 \
     --checkers=16 \
     --log-file=%h/.cache/rclone-gdrive-sync.log \
-    --log-level=INFO
+    --log-level=INFO\
+    --resync
