@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 import shutil
 import subprocess
+import logging
+import sys
 
 if __name__ == "__main__":
     paru_bin: str | None = shutil.which("paru")
-    paru_args: list[str] = ["-Syuu", "--needed", "--sudoloop", "--aur"]
+    paru_args: list[str] = [
+        "-Syuu",
+        "--needed",
+        "--sudoloop",
+        "--aur"
+    ]
 
     if paru_bin is None:
-        raise FileNotFoundError("paru binary not found!")
+        raise FileNotFoundError("paru was not found")
+
+    process = None
 
     cmd: list[str] = []
 
@@ -15,9 +24,10 @@ if __name__ == "__main__":
     cmd.extend(paru_args)
 
     try:
-        subprocess.run(cmd,
-                       stderr=subprocess.PIPE,
-                       stdout=subprocess.PIPE,
-                       check=True)
-    except Exception as ex:
-        raise RuntimeError("An error ocurred:", ex)
+        logging.info("Running: {}", cmd)
+        process = subprocess.run(cmd)
+        process.wait()
+    except Exception as e:
+        raise RuntimeError("An error ocurred:", e)
+    finally:
+        sys.exit(process.returncode)
