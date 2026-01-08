@@ -1,22 +1,37 @@
 [Unit]
-Description=Mount Google Drive (rclone)
+Description=Sync Google Drive online with rclone
+Documentation=man:rclone(1)
 After=network-online.target
-Wants=rclone-gdrive-sync.timer
+Wants=network-online.target 
+StartLimitIntervalSec=60
+StartLimitBurst=1
 
 [Service]
-Type=simple
+Type=oneshot
+ExecStartPre=notify-send \
+    -u normal \
+    -a "Google Drive" \
+    "Syncronization for Google Drive has started."
 ExecStartPost=notify-send \
     -u normal \
-    -a "Google Drive (rclone)" \
-    "Mounted Google Drive using rclone."
-ExecStart=/usr/bin/rclone mount gdrive: %h/GoogleDrive \
-    --vfs-cache-mode full \
-    --vfs-cache-max-size 15G \
-    --vfs-cache-max-age 168h \
-    --dir-cache-time 72h \
-    --buffer-size 64M \
-    --poll-interval 15s
-Restart=on-failure
-
-[Install]
-WantedBy=default.target
+    -a "Google Drive" \
+    "Syncronization for Google Drive has ended."
+ExecStart=/usr/bin/rclone bisync gdrive: %h/GoogleDrive \
+    -MvP \
+    --create-empty-src-dirs \
+    --compare size,modtime,checksum \
+    --filters-file %h/.config/systemd/user/rclone-gdrive.filter.txt \
+    --conflict-resolve newer \
+    --conflict-loser delete \
+    --conflict-suffix sync-conflict-{DateOnly}- \
+    --suffix-keep-extension \
+    --resilient \
+    --recover \
+    --no-slow-hash \
+    --drive-skip-gdocs \
+    --fix-case \
+    --fast-list \
+    --drive-chunk-size 64M \
+    --transfers=8 \
+    --checkers=16 \
+    --resync

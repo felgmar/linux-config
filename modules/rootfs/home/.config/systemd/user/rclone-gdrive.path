@@ -1,0 +1,3 @@
+[Path]
+Unit=rclone-gdrive.service
+PathChanged=%h/GoogleDrive
