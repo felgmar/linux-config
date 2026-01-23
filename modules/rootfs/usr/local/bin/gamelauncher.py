@@ -3,6 +3,7 @@ import os
 import sys
 import subprocess
 import shutil
+from typing import Any
 
 class GameLauncher():
     """
@@ -13,7 +14,11 @@ class GameLauncher():
         self.args: list[str] = args
 
         self.app_id: str = ""
-        self.refresh_rate: int = 0
+        self.resolution: dict[str, int] = {
+            "width": -1,
+            "height": -1
+        }
+        self.refresh_rate: int = -1
         self.fullscreen_mode: bool = False
         self.always_grab_cursor: bool = True
 
@@ -21,7 +26,6 @@ class GameLauncher():
         self.mangohud_path: str = str(shutil.which("mangohud"))
         self.mangoapp_path: str = str(shutil.which("mangoapp"))
         self.gamemoderun_path: str = str(shutil.which("gamemoderun"))
-
         self.is_wayland_available: bool = os.environ.get("XDG_SESSION_TYPE") == "wayland"
         self.is_gamescope_available: bool = bool(shutil.which("gamescope"))
         self.is_mangohud_available: bool = bool(shutil.which("mangohud"))
@@ -30,9 +34,11 @@ class GameLauncher():
         self.is_mangohud_dlsym_available: bool = False
 
         if self.is_mangohud_available:
-            self.is_mangohud_dlsym_available = subprocess.run([self.mangohud_path, "--dlsym"],
-                                                                stdout=subprocess.PIPE,
-                                                                stderr=subprocess.PIPE).returncode == 0
+            self.is_mangohud_dlsym_available = True if \
+                    subprocess.run([self.mangohud_path, "--dlsym"],
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE).returncode == 0 \
+                else False
 
         for arg in args:
             if arg == "AppId=255710":
@@ -43,62 +49,39 @@ class GameLauncher():
         self.CURRENT_USER: str = os.getlogin()
         self.CURRENT_PLATFORM: str = sys.platform.lower()
 
-    def set_display_resolution(self, width: int, height: int) -> dict[str, int]:
+    def set_display_resolution(self, width: int, height: int) -> None:
         """
-        Sets the display resolution using gamescope.
+        Set the resolution to be used inside gamescope.
         Args:
             width (int): The desired width.
             height (int): The desired height.
-        Returns:
-            Dictionary containing the width and hight
         """
-        display_resolution: dict[str, int] = {}
-
-        display_resolution["width"] = width
-        display_resolution["height"] = height
-
-        return display_resolution
+        self.resolution["width"] = width
+        self.resolution["height"] = height
 
     def set_refresh_rate(self, new_refresh_rate: int) -> None:
         """
-        Set the refresh rate to be used by gamescope.
+        Set the refresh rate to be used inside gamescope.
         Args:
             refresh_rate: int
         """
         self.refresh_rate = new_refresh_rate
 
-    def __prepare(self) -> list[str]:
-        """
-        Prepare the command line for launching the game.
-        Args:
-            Raises:
-                RuntimeError: If the platform is not supported.
-                PermissionError: If the script is run as root.
-        """
-        if not self.CURRENT_PLATFORM == "linux":
-            raise RuntimeError(f"Your platform '{self.CURRENT_PLATFORM}' is not supported.")
-
-        if self.CURRENT_USER == "root":
-            raise PermissionError("Do not run this script as root.")
-
-        try:
-            display = self.set_display_resolution(1920, 1080)
-        except Exception as e:
-            raise e
-
-        try:
-            self.set_refresh_rate(75)
-        except Exception as e:
-            raise e
-
+    def __build_cmdline(self, refresh_rate: int = 60,
+                        resolution_width: int = 1920,
+                        resolution_height: int = 1080) -> list[str]:
         command_line: list[str] = []
 
+        self.set_refresh_rate(refresh_rate)
+        self.set_display_resolution(resolution_width,
+                                    resolution_height)
+
         if self.is_gamescope_available:
+            command_line.append(self.gamescope_path)
             command_line.extend([
-                self.gamescope_path,
-                "-W", str(display['width']),
-                "-H", str(display['height'])
-            ])
+                "-W", str(self.resolution['width']),
+                "-H", str(self.resolution['height'])
+                ])
             if not self.refresh_rate == 0:
                 command_line.extend(["-r", str(self.refresh_rate)])
             if self.is_wayland_available:
@@ -125,26 +108,77 @@ class GameLauncher():
 
         return command_line
 
-    def run(self) -> int:
+    def __prepare(self) -> list[str]:
+        """
+        Prepare the command line for launching the game.
+        Args:
+        Raises:
+            RuntimeError: If the platform is not supported.
+            PermissionError: If the script is run as root.
+        """
+        if not self.CURRENT_PLATFORM == "linux":
+            raise RuntimeError(f"Your platform '{self.CURRENT_PLATFORM}' is not supported.")
+
+        if self.CURRENT_USER == "root":
+            raise PermissionError("Do not run this script as root.")
+
+        user_overrides: dict[str, int] = {
+            "refresh_rate": -1,
+            "resolution_width": -1,
+            "resolution_height": -1
+        }
+
+        user_overrides["refresh_rate"] = 200
+        user_overrides["resolution_width"] = 2560
+        user_overrides["resolution_height"] = 1440
+
+        try:
+            return self.__build_cmdline(user_overrides["refresh_rate"],
+                                        user_overrides["resolution_width"],
+                                        user_overrides["resolution_height"])
+        except Exception as e:
+            raise e
+
+    def run(self, show_debug_info: bool = False) -> int:
         """
         Run the game with the specified arguments.
         Returns:
             int: The exit code of the game process.
         """
-        command_line: list[str] = []
+        cmdline: list[str] = []
         exit_code: int = 0
-        
+
         try:
-            command_line: list[str] = self.__prepare()
+            cmdline = self.__prepare()
         except Exception as e:
             print("An error occurred:", e)
 
+        if show_debug_info:
+            debug_info: dict[str, Any] = {
+                "args": self.args,
+                "app_id": self.app_id,
+                "resolution": "{}x{}".format(self.resolution["width"],
+                                             self.resolution["height"]),
+                "refresh_rate": self.refresh_rate,
+                "fullscreen_mode": self.fullscreen_mode,
+                "always_grab_cursor": self.always_grab_cursor,
+                "is_wayland_available": self.is_wayland_available,
+                "is_gamescope_available": self.is_gamescope_available,
+                "is_mangohud_available": self.is_mangohud_available,
+                "is_mangoapp_available": self.is_mangoapp_available,
+                "is_gamemoderun_available": self.is_gamemoderun_available,
+                "is_mangohud_dlsym_available": self.is_mangohud_dlsym_available
+            }
+            for key, value in debug_info.items():
+                print(key, value)
+
+        print(f"Running command: {' '.join(cmdline)}")
+
         try:
             process = subprocess.run(
-                command_line,
+                cmdline,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                check=True
             )
             exit_code: int = process.returncode
             process.check_returncode()
@@ -159,6 +193,6 @@ if __name__ == "__main__":
 
     try:
         launcher = GameLauncher(sys.argv[1:])
-        launcher.run()
+        launcher.run(show_debug_info=True)
     except Exception as e:
         raise e
