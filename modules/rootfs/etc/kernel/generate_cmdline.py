@@ -11,6 +11,7 @@ import sys
 import subprocess
 import getpass
 import datetime
+from typing import Any
 
 CURRENT_PLATFORM: str = sys.platform.lower()
 CURRENT_USER: str = getpass.getuser()
@@ -18,30 +19,45 @@ CMDLINE_FILE: str = "/etc/kernel/cmdline"
 
 CURRENT_DIR: str = os.getcwd()
 
-def _generate_cmdline(directory: str, output_column: str) -> str:
-    """
-    Generate the kernel command line for the current system.
-    """
-    assert directory == "", "A root partition is required."
 
-    CMDLINE_FILE_PATH: str = os.path.join(CURRENT_DIR, "cmdline")
-
-    args: list[str] = ["findmnt", "-n", "-T", directory, "-o", output_column]
+def __get_root_partition_info() -> str:
+    args: list[str] = ["findmnt", "-n", "-T", "/", "-o", "PARTUUID"]
 
     try:
         partition_partuuid: str = subprocess.run(args,
                                                  capture_output=True,
-                                                 check=False,
                                                  text=True).stdout.strip()
     except Exception as e:
         raise e
 
+    return partition_partuuid
+
+def __generate_parameters(root_uuid: str | None,
+                          rootflags: str = "subvol=@",
+                          rootfstype: str = "btrfs") -> dict[str, Any]:
+    assert root_uuid is not None, "A root UUID is required."
+
+    return {
+        "root_uuid": root_uuid,
+        "rootflags": rootflags,
+        "rootfstype": rootfstype
+    }
+
+def __generate_cmdline() -> str:
+    """
+    Generate the kernel command line for the current system.
+    """
+    CMDLINE_FILE_PATH: str = os.path.join(CURRENT_DIR, "cmdline")
+    root_partition_info = __get_root_partition_info()
+
+    parameters = __generate_parameters(root_partition_info)
+
     with open(CMDLINE_FILE_PATH, "r", encoding="UTF-8") as file:
-        new_cmdline: str = re.sub(r"<.*>", partition_partuuid, file.read().strip())
+        new_cmdline: str = re.sub(r"<.*>", parameters["root_uuid"], file.read().strip())
 
     return new_cmdline
 
-def _write_cmdline(file: str) -> None:
+def __write_cmdline(file: str) -> None:
     """
     Write the generated command line to the kernel command line file.
     """
@@ -66,14 +82,12 @@ if __name__ == "__main__":
     assert CURRENT_PLATFORM == "linux", "This script only runs on Linux"
     assert CURRENT_USER == "root", "This script must be run as root"
 
-    OUTPUT_COLUMN: str = "PARTUUID"
-    ROOT_DIRECTORY: str = "/"
-
     cmdline: str = ""
 
     try:
-        cmdline = _generate_cmdline(ROOT_DIRECTORY, OUTPUT_COLUMN)
+        cmdline = __generate_cmdline()
     except Exception as e:
         raise e
     finally:
-        _write_cmdline(cmdline)
+        __write_cmdline(cmdline)
+        print(cmdline)
