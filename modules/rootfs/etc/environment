@@ -1,8 +1,0 @@
-#
-# This file is parsed by pam_env module
-#
-# Syntax: simple "KEY=VAL" pairs on separate lines
-#
-EDITOR=vim
-QT_QPA_PLATFORM=wayland
-QT_PLUGIN_PATH=/usr/lib/qt/plugins

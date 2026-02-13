@@ -11,11 +11,6 @@ class ArgumentParser:
     This class manages the command line arguments.
     """
     def __init__(self):
-        self.actions: list[str] = [
-            "setup-secure-boot", "install-tkg-kernel",
-            "install-packages", "setup-rootfs", "setup-services"
-        ]
-
         self.parser = argparse.ArgumentParser(prog="linux-config",
                                               description="Linux configuration script.")
         self.group = self.parser.add_mutually_exclusive_group()
@@ -24,12 +19,6 @@ class ArgumentParser:
         """
         This method populates the ArgumentParser object with the necessary arguments.
         """
-        self.parser.add_argument("-a", "--action",
-                                 choices=self.actions,
-                                 type=str,
-                                 help="Runs the specified script. Available options are " +
-                                 ", ".join(self.actions),
-                                 metavar="")
         self.parser.add_argument("-v", "--verbose",
                                  action="store_true",
                                  default=False,

@@ -14,36 +14,13 @@ class ServicesManager():
     def __init__(self):
         self.current_user = getpass.getuser()
 
-    def __get_services_list(self, desktop_environment: str) -> list[str]:
+    def __get_services_list(self) -> list[str]:
         """
         Returns a list of services based on the desktop environment.
         """
         services: list[str] = [
-            "systemd-oomd.socket",
-            "systemd-boot-update.service",
-            "fail2ban.service",
-            "apparmor.service",
-            "firewalld.service",
-            "ananicy.service",
-            "bluetooth.service",
-            "libvirtd.socket",
-            "libvirtd-ro.socket",
-            "libvirtd-admin.socket",
-            "fancontrol.service",
-            "cronie.service",
-            "fstrim.timer",
-            "clamav-freshclam.service"
+            "ufw.service"
         ]
-
-        match desktop_environment:
-            case "gnome":
-                services.append("gdm.service")
-            case "kde" | "plasma" | "kde_plasma":
-                services.append("sddm.service")
-            case "xfce":
-                services.append("lightdm.service")
-            case _:
-                raise ValueError(f"{desktop_environment}: invalid or unrecognized desktop environment")
 
         return services
 
@@ -108,11 +85,11 @@ class ServicesManager():
         except Exception as e:
             raise RuntimeError("An error has occurred:", e)
 
-    def enable_services(self, desktop_environment: str, verbose: bool = False) -> None:
+    def enable_services(self, verbose: bool = False) -> None:
         """
         Enable a list of services using systemctl.
         """
-        services_list = self.__get_services_list(desktop_environment)
+        services_list = self.__get_services_list()
         services_to_enable = self.__get_disabled_services(services_list, verbose)
 
         for name, status in services_to_enable.items():

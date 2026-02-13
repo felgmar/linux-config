@@ -1,3 +1,0 @@
-[Path]
-Unit=rclone-onedrive.service
-PathChanged=%h/OneDrive

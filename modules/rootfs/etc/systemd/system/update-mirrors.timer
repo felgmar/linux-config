@@ -1,9 +1,0 @@
-[Unit]
-Description=Update pacman mirrorlist
-
-[Timer]
-OnCalendar=daily
-OnBootSec=1min
-
-[Install]
-WantedBy=timers.target

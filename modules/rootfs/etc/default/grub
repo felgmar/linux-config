@@ -1,0 +1,2 @@
+GRUB_CMDLINE_LINUX_INTEL="lockdown=confidentiality apparmor=1 security=apparmor intel_iommu=on iommu=pt"
+GRUB_CMDLINE_LINUX_AMD="lockdown=confidentiality apparmor=1 security=apparmor amd_iommu=on iommu=pt"

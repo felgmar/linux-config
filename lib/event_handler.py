@@ -5,14 +5,12 @@ Event handler module for arguments parsing and action execution.
 if __name__ == "__main__":
     raise RuntimeError("This module is not meant to be run directly. Please use the main script.")
 
+import logging
 import sys
-from argparse import ArgumentError
 
 from lib.args import ArgumentParser
-from modules.kernels import KernelManager
 from modules.packages import PackageManager
 from modules.rootfs import RootFSManager
-from modules.secure_boot import SecureBootManager
 from modules.services import ServicesManager
 
 ARGUMENTS_PARSER = ArgumentParser()
@@ -32,6 +30,26 @@ def __validate_platform() -> None:
     ERROR_MESSAGE: str = __get_current_platform() + " is not a supported platform."
     assert __get_current_platform() == "linux", ERROR_MESSAGE
 
+def __install_packages(verbose: bool = False) -> None:
+    pm = PackageManager()
+
+    package_manager: str = pm.get_package_manager(verbose)
+
+    if verbose:
+        print("[VERBOSE] Package manager was set to:", package_manager)
+
+    pm.install_packages(package_manager)
+
+def __enable_services(verbose: bool = False) -> None:
+    SERVICE_MANAGER = ServicesManager()
+
+    SERVICE_MANAGER.enable_services(verbose)
+
+def __setup_rootfs(verbose: bool = False) -> None:
+    rfms = RootFSManager()
+
+    rfms.install_files(args.verbose)
+
 def parse_actions() -> None:
     """
     Parse the action specified in the command line
@@ -43,51 +61,26 @@ def parse_actions() -> None:
         raise e
 
     if args.verbose:
-        print("[VERBOSE] Action set to:", args.action)
         print("[VERBOSE] Your platform is:", __get_current_platform())
         input("Press any key to continue.\n")
 
+    try:
+        should_install_packages: bool = input("Do you want to install packages? (y/n): ").lower() == "y"
+        if should_install_packages:
+            __install_packages(args.verbose)
+    except Exception as e:
+        logging.error("An error has occurred while installing packages: %s", e)
 
-    match args.action:
-        case "setup-secure-boot":
-            SECURE_BOOT_MANAGER = SecureBootManager()
-            PACKAGE_MANAGER = PackageManager()
-            desktop_environment: str = PACKAGE_MANAGER.get_desktop_environment()
+    try:
+        should_enable_services: bool = input("Do you want to enable services? (y/n): ").lower() == "y"
+        if should_enable_services:
+            __enable_services(args.verbose)
+    except Exception as e:
+        logging.error("An error has occurred while enabling services: %s", e)
 
-            SECURE_BOOT_MANAGER.install_dependencies(desktop_environment, args.verbose)
-            SECURE_BOOT_MANAGER.backup_boot_files(args.verbose)
-            SECURE_BOOT_MANAGER.install_shim(args.verbose)
-
-        case "install-tkg-kernel":
-            km = KernelManager(kernel_url="https://github.com/frogging-family/linux-tkg.git",
-                               kernel_dir="linux-tkg")
-
-            km.install_kernel(args.verbose)
-
-        case "install-packages":
-            pm = PackageManager()
-
-            package_manager: str = pm.get_package_manager(args.verbose)
-            desktop_environment: str = pm.get_desktop_environment()
-
-            if args.verbose:
-                print("[VERBOSE] Package manager to be used:", {package_manager})
-
-            pm.install_packages(package_manager, desktop_environment, custom_pkglist=None)
-
-        case "setup-rootfs":
-            rfms = RootFSManager()
-
-            rfms.install_files(args.verbose)
-
-        case "setup-services":
-            pm = PackageManager()
-            sm = ServicesManager()
-            desktop_environment = pm.get_desktop_environment()
-
-            sm.enable_services(desktop_environment, args.verbose)
-        case _:
-            if not args.action:
-                ARGUMENTS_PARSER.parser.print_help()
-            else:
-                raise ArgumentError(args.action, "Invalid action specified.")
+    try:
+        should_setup_rootfs: bool = input("Do you want to set up the root filesystem? (y/n): ").lower() == "y"
+        if should_setup_rootfs:
+            __setup_rootfs(args.verbose)
+    except Exception as e:
+        logging.error("An error has occurred while setting up the root filesystem: %s", e)

@@ -41,9 +41,8 @@ class GameLauncher():
                 else False
 
         for arg in args:
-            if arg == "AppId=255710":
-                self.app_id = "255710"
-                print("[INFO] found {}!".format(arg))
+            if arg.startswith("AppId="):
+                self.app_id = arg.split("=")[1]
                 break
 
         self.CURRENT_USER: str = os.getlogin()

@@ -1,1 +1,0 @@
-root=PARTUUID=<enter_partuuid_here> rw rootfstype=ext4 add_efi_memmap delayacct lockdown=confidentiality apparmor=1 security=apparmor quiet splash intel_iommu=on amd_iommu=on iommu=pt
