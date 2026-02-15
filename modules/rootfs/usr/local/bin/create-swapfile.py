@@ -30,7 +30,6 @@ if __name__ == "__main__":
         print(f"{SWAP_FILE_LOCATION} already exists, creation skipped.")
         sys.exit(2)
 
-
     try:
         print("Creating swap file...")
         process = subprocess.run(CREATE_SWAP_FILE_COMMAND, check=True)
