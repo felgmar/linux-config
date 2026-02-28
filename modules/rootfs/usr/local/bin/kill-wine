@@ -1,15 +1,15 @@
 #!/bin/sh
 
-wine_processes="$(ps -e | grep exe | awk '{print $1}')"
-wine_process_count="$(ps -e | grep exe | awk '{print $1}' | wc -l)"
+wine_processes="$(ps -e | pgrep exe | awk '{print $1}')"
+wine_process_count="$(echo "$wine_processes" | wc -l)"
 
 if test "${wine_process_count}" -gt 0
 then
-    for f in $(ps -e | grep exe | awk '{print $1}')
+    for f in ${wine_processes}
     do
-        echo "Killing process ID $f..." && kill -9 $f
+        echo "Killing process ID $f..." && kill -9 "$f"
     done
-else
-    echo "Wine is not running!"
-    exit 2
 fi
+
+echo "Wine is not running!"
+exit 2
