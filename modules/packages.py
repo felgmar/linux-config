@@ -59,7 +59,8 @@ class PackageManager():
         packages: list[str] = self.get_package_list()
         command: list[str] = []
 
-        command.append("sudo")
+        if not self.CURRENT_USER == "root":
+            command.append("sudo")
         command.append(package_manager)
         command.extend(["install", "-y"])
         command.extend(packages)
