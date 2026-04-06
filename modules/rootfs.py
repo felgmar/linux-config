@@ -17,7 +17,6 @@ class RootFSManager():
     """
     def __init__(self):
         self.local_dirs: dict[str, str] = {
-            "boot_dir": os.path.join(os.getcwd() + '/modules/rootfs/boot'),
             "etc_dir": os.path.join(os.getcwd() + '/modules/rootfs/etc'),
             "home_dir": os.path.join(os.getcwd() + '/modules/rootfs/home'),
             "usr_dir": os.path.join(os.getcwd() + '/modules/rootfs/usr'),
@@ -37,7 +36,7 @@ class RootFSManager():
         """
         Checks if the current user is an administrator.
         """
-        if getpass.getuser() == "root":
+        if self.CURRENT_USER == "root":
             return True
         return False
 
@@ -103,9 +102,6 @@ class RootFSManager():
         
         if source == destination:
             raise ValueError("Source and destination cannot be the same.")
-        
-        if self.CURRENT_DISTRO == "fedora" and destination == "/boot":
-            print(f"[!] {self.CURRENT_DISTRO} does not use systemd-boot, skipping boot files.")
 
         file_list: list[str] = self.__create_list(source, verbose)
 
@@ -146,19 +142,14 @@ is_dir={is_dir}""")
         paths: dict[str, str] = {
             "boot": "/boot",
             "etc": "/etc",
-            "home": os.path.join("/home/", self.CURRENT_USER),
+            "home": os.path.join("/home", os.path.sep, self.CURRENT_USER),
             "usr": "/usr"
         }
 
         try:
-            self.__copy_files(self.local_dirs["boot_dir"], paths["boot"], verbose)
-            self.__copy_files(self.local_dirs["etc_dir"], paths["etc"], verbose)
-
             if not self.CURRENT_USER == "root":
                 self.__copy_files(self.local_dirs["home_dir"], paths["home"], verbose)
-            else:
-                print("[!] Running as root, not copying home files.")
-
+            self.__copy_files(self.local_dirs["etc_dir"], paths["etc"], verbose)
             self.__copy_files(self.local_dirs["usr_dir"], paths["usr"], verbose)
         except Exception as e:
             raise e
