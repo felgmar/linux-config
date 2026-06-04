@@ -19,7 +19,7 @@ class ServicesManager():
         Returns a list of services based on the desktop environment.
         """
         services: list[str] = [
-            "ufw.service"
+            "cpu-readable-power.service"
         ]
 
         return services
