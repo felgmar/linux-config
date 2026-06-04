@@ -85,8 +85,6 @@ class GameLauncher():
                 command_line.extend(["-r", str(self.refresh_rate)])
             if self.is_wayland_available:
                 command_line.append("--expose-wayland")
-            if self.fullscreen_mode:
-                command_line.append("--fullscreen")
             if self.is_mangohud_available and self.is_mangoapp_available:
                 command_line.append("--mangoapp")
             if self.fullscreen_mode:
