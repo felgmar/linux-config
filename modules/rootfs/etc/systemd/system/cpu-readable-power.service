@@ -1,5 +1,5 @@
 [Unit]
-Description=Allow reading power usage on Intel CPUs
+Description=Allow to read power usage on Intel CPUs
 After=multi-user.target
 
 [Service]
