@@ -21,6 +21,7 @@ class GameLauncher():
         self.refresh_rate: int = -1
         self.fullscreen_mode: bool = False
         self.always_grab_cursor: bool = True
+        self.hdr_enabled: bool = False
 
         self.gamescope_path: str = str(shutil.which("gamescope"))
         self.mangohud_path: str = str(shutil.which("mangohud"))
@@ -83,6 +84,8 @@ class GameLauncher():
                 ])
             if not self.refresh_rate == 0:
                 command_line.extend(["-r", str(self.refresh_rate)])
+            if self.hdr_enabled:
+                command_line.append("--hdr-enable")
             if self.is_wayland_available:
                 command_line.append("--expose-wayland")
             if self.is_mangohud_available and self.is_mangoapp_available:
